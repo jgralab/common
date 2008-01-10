@@ -1,0 +1,510 @@
+% document class options
+%----------------------------------------------------------------------------------------------
+\documentclass
+[
+		a4paper,
+		twoside, 										
+		BCOR10mm,											
+		11pt,												
+		halfparskip,								
+		bigheadings,								
+		notitlepage,			
+		pdftex											
+]
+{scrartcl}												
+
+
+% used packages
+%----------------------------------------------------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+\usepackage[T1]{fontenc}				
+\usepackage{palatino}							
+\usepackage{url}									
+\usepackage{paralist}							
+
+
+% other 
+%----------------------------------------------------------------------------------------------
+\sloppy
+
+
+% document options
+%----------------------------------------------------------------------------------------------
+\begin{document}
+
+\pagestyle{headings}							
+
+\title{Common Apache ANT file}									
+\author{Kerstin Falkowski \\ falke@uni-koblenz.de}
+\date{Version 0.1, 20.09.2007}			
+\maketitle
+
+\tableofcontents
+
+%-----------------------------------------------------------------
+\section{Common Apache ANT file}
+\label{CommonApacheANTFile}
+
+\textbf{Apache ANT} is 'a software tool for \emph{automating software build processes}. It is similar to \emph{make} but is written in the \emph{Java} language, requires the Java platform, and is best suited to building Java projects.'\footnote{\url{http://en.wikipedia.org/wiki/Apache_Ant}}
+
+Disclaimer: This is no tutorial for Apache ANT itself. For further information see the Apache ANT Website\footnote{\url{http://ant.apache.org}}\footnote{\url{http://ant.apache.org/manual}}.
+
+We created an ANT file containing a couple of \textbf{targets that are required in most of our projects depending on JGraLab}. This document describes how one can use this common ANT file in such a project. Section  \ref{ProjectRequirements} describes the project requirements that have to be fulfilled in order to use the common ANT file and how to create such a project automatically. Section \ref{CommonANTFileDescription} describes the realized targets in the common ANT file and how they can be used in local ANT files. Section \ref{ExampleLocalANTFileDescription} describes a minimal local ANT file, its dependencies and common ANT file calls.
+
+The following projects are already using the common ANT file:
+\begin{compactitem}
+	\item jgralab
+	\item rsleditor
+\end{compactitem}
+Attention: add your project to the list if it uses the ANT file too!
+
+
+%-----------------------------------------------------------------
+\subsection{Project Requirements}
+\label{ProjectRequirements}
+
+There are some requirements that have to be fulfilled by a project in order to use the common ANT file.
+
+
+%-----------------------------------------------------------------
+\subsubsection{Folder structure}
+\label{FolderStructure}
+
+The project folder must be a child of the \texttt{project} folder in your sandbox. The absolute location of the sandbox doesn't matter, here \texttt{...re-group} is the base directory of your checkout of the SVN repository \texttt{https://svn.uni-koblenz.de/gup/re-group}.
+
+\footnotesize
+\begin{compactitem}
+	\item \texttt{...re-group/project/\$projectname}
+\end{compactitem}
+\normalsize
+
+The following folders and their content have to be inside:
+\footnotesize
+\begin{compactitem}
+	\item \texttt{lib} (contains project specific libraries)
+	\item \texttt{src/de/uni\_koblenz/\$projectname} (contains java source code, schema files and grammar files)
+	\item \texttt{testit/de/uni\_koblenz/\$projectnametest} (contains junit test cases)
+\end{compactitem}
+\normalsize
+
+The following folders are generated as well as deleted by the ant-file and therefore should not be used otherwise:
+\footnotesize
+\begin{compactitem}
+	\item \texttt{build/classes}
+	\item \texttt{build/doc/html}
+	\item \texttt{build/jar}
+	\item \texttt{build/temp}
+	\item \texttt{build/testresults}
+\end{compactitem}
+\normalsize
+
+
+%-----------------------------------------------------------------
+\subsubsection{Adapt an exisiting project}
+\label{LocalANTFile}
+
+If your project already exists and has got the required folder structure (section \ref{FolderStructure}) you can copy \texttt{regroup/project/common/newproject/build.xml} into your project's top folder and rename the value of the property \texttt{projectname} inside the file as \texttt{\$projectname}. 
+
+
+%-----------------------------------------------------------------
+\subsubsection{Creation of a new project}
+\label{CreationOfANewSuitableProject}
+
+If you want to create a new project see section \ref{Newproject}.
+
+
+
+%-----------------------------------------------------------------
+\subsection{Common ANT file description}
+\label{CommonANTFileDescription}
+
+The common ANT file contains the targets listet below.
+
+
+%-----------------------------------------------------------------
+\subsubsection{Build}
+\label{Build}
+
+The target \textbf{build} does nothing.
+
+
+%-----------------------------------------------------------------
+\subsubsection{Modify}
+\label{Modify}
+
+The target \textbf{modify} modifies the build-id of a JGraLab project.
+
+The build-id of JGraLab itself is stored in its main-class \texttt{de.uni\_koblenz.jgralab.JGraLab}.
+This class provides meta-information and prints it to the console. This information includes the build-id and the revision-id. The latter is automatically generated by svn. Svn generates this value, if the content of the file has changed.
+
+To force a change of the file's content, the build-id is used. The target \emph{modify} uses a small tool, that performs this task automatically. After that, a java-based svn-client is called to check in the modified file. Svn changes the revision-id during this process.
+
+This mechanism can be used in other JGraLab-projects, to keep the revision id up-to-date.
+You have to include the following code in the main-class of your project:
+
+\begin{lstlisting}[language = java]
+ private final String revision = "$Revision: 1234 $";
+ private final String buildID = "1";
+\end{lstlisting}
+
+The build-id will be incremented each time this target is called. Additionally, the Revision-String is kept up to date, because of the svn-checkin this task performs. If this checkin fails, the Revision is not updated.
+
+
+%-----------------------------------------------------------------
+\subsubsection{Clean}
+\label{Clean}
+
+The target \textbf{clean} deletes all classes, the jar, the temporary files and all generated schema and parser files by deleting the following folders:
+\footnotesize
+\begin{compactitem}
+	\item \texttt{build/classes}
+	\item \texttt{build/jar}
+	\item \texttt{build/temp}	
+	\item \texttt{src/de/uni\_koblenz/<subprojectname>/schema}
+	\item \texttt{src/de/uni\_koblenz/<subprojectname>/parser}
+\end{compactitem}
+\normalsize
+
+\textbf{clean} should be called from a local ANT file using the following command: 
+\footnotesize
+\verb|<ant dir="${common.dir}" antfile="build.xml" target="clean"/>|
+\normalsize.
+
+If your schema and/or parser files are from a subproject of your project, you can give a \texttt{\$subprojectname} referring to your projectname:\\
+\footnotesize
+\verb|<ant dir="${common.dir}" antfile="build.xml" target="clean">|\\ \verb|   <property name="subprojectname" value="$subprojectname>"/>|\\ \verb|</ant>|
+\normalsize\\
+(see JGraLab for example)
+
+
+%-----------------------------------------------------------------
+\subsubsection{Cleanall}
+\label{Cleanall}
+
+The target \textbf{cleanall} deletes all classes, the documentation, the jar, the temporary files, the testresults and all generated schema and parser files by deleting the following folders:
+\footnotesize
+\begin{compactitem}
+	\item \texttt{build}
+	\item \texttt{src/de/uni\_koblenz/<subprojectname>/schema}
+	\item \texttt{src/de/uni\_koblenz/<subprojectname>/parser}
+\end{compactitem}
+\normalsize
+
+\textbf{cleanall} should be called from a local ANT file using the following command: 
+\footnotesize
+\verb|<ant dir="${common.dir}" antfile="build.xml" target="cleanall"/>|
+\normalsize.
+
+If your schema and/or parser files are from a subproject of your project, you can give a \texttt{\$subprojectname} referring to your projectname:\\
+\footnotesize
+\verb|<ant dir="${common.dir}" antfile="build.xml" target="cleanall">|\\ \verb|   <property name="subprojectname" value="$subprojectname"/>|\\ \verb|</ant>|
+\normalsize\\
+(see JGraLab for example)
+
+
+%-----------------------------------------------------------------
+\subsubsection{Compile}
+\label{Compile}
+
+The target \textbf{compile} compiles all Java sources in:
+\footnotesize
+\begin{compactitem}
+	\item \texttt{src}
+\end{compactitem}
+\normalsize
+and puts the generated files into:
+\footnotesize
+\begin{compactitem}
+	\item \texttt{build/classes}
+\end{compactitem}
+\normalsize
+
+\textbf{compile} should be called from a local ANT file using the following command: 
+\footnotesize
+\verb|<ant dir="${common.dir}" antfile="build.xml" target="compile"/>|
+\normalsize.
+
+If you want to include or exclude some directories or files you can give \texttt{\$compileincludes} and \texttt{\$compileexcludes} referring to the source folder:\\
+\footnotesize
+\verb|<ant dir="${common.dir}" antfile="build.xml" target="compile"/>|\\ \verb|   <property name="compileincludes" value="$compileincludes"/>|\\ \verb|   <property name="compileexcludes" value="$compileexcludes"/>|\\ \verb|</ant>|
+\normalsize\\
+(see JGraLab for example)
+
+
+%-----------------------------------------------------------------
+\subsubsection{Jarfiletest}
+\label{Jarfiletest}
+
+The target \textbf{jarfiletest} tests the existence of a project's jar file in
+\footnotesize
+\begin{compactitem}
+	\item \texttt{build/jar}
+\end{compactitem}
+\normalsize
+and creates it if it does not exist at that time.
+
+\textbf{jarfiletest} should be called from a local ANT file using the following command: 
+\footnotesize
+\verb|<ant dir="${common.dir}" antfile="build.xml" target="jarfiletest"/>|
+\normalsize.
+
+If you want test the existence of another projects jar file than the calling one, you can give the other projects \texttt{\$projectname}:\\
+\footnotesize
+\verb|<ant dir="${common.dir}" antfile="build.xml" target="jarfiletest">|\\ \verb|   <property name="projectname" value="$projectname"/>"/>|\\ \verb|</ant>|
+\normalsize\\
+(see RSLEditor for example)
+
+
+%-----------------------------------------------------------------
+\subsubsection{Generateschema}
+\label{Generateschema}
+
+The target \textbf{generateschema} generates JGraLab Java schema sources using a given \texttt{\$schemafile} (file extension \texttt{.tg}) and the JGraLab utility \texttt{TgSchema2Java} and puts them into:
+\footnotesize
+\begin{compactitem}
+	\item \texttt{src/de/uni\_koblenz/<subprojectname>/schema}
+\end{compactitem}
+\normalsize
+
+\textbf{generateschema} should be called from a local ANT file using the following command:\\
+\footnotesize
+\verb|<ant dir="${common.dir}" antfile="build.xml" target="generateschema">|\\ \verb|   <property name="schemafile" value = "$schemafile.tg"/>"/>|\\ \verb|</ant>|
+\normalsize
+
+If your schema files are from a subproject of your project, you can also give a \texttt{\$subprojectname} referring to your projectname:\\
+\footnotesize
+\verb|<ant dir="${common.dir}" antfile="build.xml" target="generateschema">|\\ \verb|   <property name="subprojectname" value = "$subprojectname"/>|\ \verb|   <property name="schemafile" value = "$schemafile.tg"/>"/>|\\ \verb|</ant>|
+\normalsize
+\\(see JGraLab for example)
+
+
+%-----------------------------------------------------------------
+\subsubsection{Generateparser}
+\label{Generateparser}
+
+The target \textbf{generateparser} generates parser sources using a given \texttt{\$grammarfile} (file extension \texttt{.g}) and \texttt{ANTLR} and puts them into:
+\footnotesize
+\begin{compactitem}
+	\item \texttt{src/de/uni\_koblenz/<subprojectname>/parser}
+\end{compactitem}
+\normalsize
+
+\textbf{generateparser} should be called from a local ANT file using the following command:\\
+\footnotesize
+\verb|<ant dir="${common.dir}" antfile="build.xml" target="generateparser">|\\ \verb|   <property name="schemafile" value = "$parserfile.tg"/>"/>|\\ \verb|</ant>|
+\normalsize
+
+If your parser files are from a subproject of your project, you can also give a \texttt{\$subprojectname} referring to your projectname:\\
+\footnotesize
+\verb|<ant dir="${common.dir}" antfile="build.xml" target="generateparser">|\\ \verb|   <property name="subprojectname" value = "$subprojectname"/>|\ \verb|   <property name="parserfile" value = "$parserfile.tg"/>"/>|\\ \verb|</ant>|
+\normalsize
+\\(see JGraLab for example)
+
+
+%-----------------------------------------------------------------
+\subsubsection{Unjar}
+\label{Unjar}
+
+The target \textbf{unjar} unpacks all libs insde:
+\footnotesize
+\begin{compactitem}
+	\item \texttt{lib}
+\end{compactitem}
+\normalsize
+and puts the unpacked source files into:
+\footnotesize
+\begin{compactitem}
+	\item \texttt{build/temp}
+\end{compactitem}
+\normalsize
+
+\textbf{unjar} should be called from a local ANT file using the following command: 
+\footnotesize
+\verb|<ant dir="${common.dir}" antfile="build.xml" target="unjar"/>|
+\normalsize
+
+
+%-----------------------------------------------------------------
+\subsubsection{Jar}
+\label{Jar}
+
+The target \textbf{jar} creates an executable jar file containing all files in:
+\footnotesize
+\begin{compactitem}
+	\item \texttt{build/classes}
+	\item \texttt{build/temp}
+\end{compactitem}
+\normalsize
+and puts the jarfile into:
+\footnotesize
+\begin{compactitem}
+	\item \texttt{build/jar}
+\end{compactitem}
+\normalsize
+
+\textbf{jar} should be called from a local ANT file using the following command: 
+\footnotesize
+\verb|<ant dir="${common.dir}" antfile="build.xml" target="jar"/>|
+\normalsize
+
+
+%-----------------------------------------------------------------
+\subsubsection{Sourcejar}
+\label{Sourcejar}
+
+The target \textbf{sourcejar} creates a not executable jar file containing all files in:
+\footnotesize
+\begin{compactitem}
+	\item \texttt{src}
+\end{compactitem}
+\normalsize
+and puts the jarfile into:
+\footnotesize
+\begin{compactitem}
+	\item \texttt{build/jar}
+\end{compactitem}
+\normalsize
+
+\textbf{sourcejar} should be called from a local ANT file using the following command: 
+\footnotesize
+\verb|<ant dir="${common.dir}" antfile="build.xml" target="sourcejar"/>|
+\normalsize
+
+
+%-----------------------------------------------------------------
+\subsubsection{Run}
+\label{Run}
+
+The target \textbf{run} tests the existence of the project jar file in:
+\footnotesize
+\begin{compactitem}
+	\item \texttt{build/jar}
+\end{compactitem}
+\normalsize
+creates it if it does not exist at that time and executes it.
+
+\textbf{run} should be called from a local ANT file using the following command:\\
+\footnotesize
+\verb|<ant dir="${common.dir}" antfile="build.xml" target="run"/>|
+\normalsize
+
+You can also give some Arguments. To do so, set the \texttt{\$run.args} property:\\
+\footnotesize
+\verb|<ant dir="${common.dir}" antfile="build.xml" target="run">|\\ \verb|   <property name="run.args" value = "$run.args"/>"/>|\\ \verb|</ant>|
+\normalsize
+\\(see RSLEditor for example)
+
+
+%-----------------------------------------------------------------
+\subsubsection{Document}
+\label{Document}
+
+The target \textbf{document} documents all source files in:
+\footnotesize
+\begin{compactitem}
+	\item \texttt{src}
+\end{compactitem}
+\normalsize
+puts the html documentation into
+\footnotesize
+\begin{compactitem}
+	\item \texttt{build/doc/html}
+\end{compactitem}
+\normalsize
+and a zip-file containing the documentation into
+\footnotesize
+\begin{compactitem}
+	\item \texttt{build/doc}
+\end{compactitem}
+\normalsize
+
+\textbf{document} should be called from a local ANT file using the following command:\\
+\footnotesize
+\verb|<ant dir="${common.dir}" antfile="build.xml" target="document"/>|
+\normalsize
+
+If you want to exclude some directories or files you can give \texttt{\$documentexcludes} referring to the source folder:\\
+\footnotesize
+\verb|<ant dir="${common.dir}" antfile="build.xml" target="document">|\\ \verb|   <property name="docmentexcludes" value = "$documentexcludes"/>|\\ \verb|</ant>|
+\normalsize
+\\(see RSLEditor for example)
+
+
+%-----------------------------------------------------------------
+\subsubsection{Test}
+\label{Test}
+
+The target \textbf{test} compiles all junit test case sources in:
+\footnotesize
+\begin{compactitem}
+	\item testit/de/uni-koblenz/\$projectnametest
+\end{compactitem}
+\normalsize
+puts the generated classes into:
+\footnotesize
+\begin{compactitem}
+	\item build/classes
+\end{compactitem}
+\normalsize
+executes the testcases and puts the testresults into:
+\footnotesize
+\begin{compactitem}
+	\item build/testresults
+\end{compactitem}
+\normalsize
+
+\textbf{test} should be called from a local ANT file using the following command:\\
+\footnotesize
+\verb|<ant dir="${common.dir}" antfile="build.xml" target="test"/>|
+\normalsize
+
+
+%-----------------------------------------------------------------
+\subsubsection{Newproject}
+\label{Newproject}
+
+The target \textbf{newproject} creates a new project folder \texttt{\$projectname} into the folder 
+\footnotesize
+\begin{compactitem}
+	\item regroup/project
+\end{compactitem}
+\normalsize
+if it does not exist at that time and prepares it for the new project. This means it creates the required project folder structure (section \ref{FolderStructure}) and copies some test sources inside.
+
+\textbf{newproject} can not be called out of a local ANT file, it can be called only one time per project from the command line in folder
+\footnotesize
+\begin{compactitem}
+	\item regroup/project/common
+\end{compactitem}
+\normalsize
+using the following command:\\
+\footnotesize
+\verb|ant newproject -Dprojectname=$projectname|
+\normalsize
+
+
+
+%-----------------------------------------------------------------
+\subsection{Example local ANT file description}
+\label{ExampleLocalANTFileDescription}
+
+A \textbf{minimal local ANT file} containing all required features for building a JGraLab depending project should contain the following targets, dependencies and calls of the common ANT file targets listet above:
+\begin{compactitem}
+	\item \textbf{build} (depends on \texttt{clean}, \texttt{jar})
+	\item \textbf{release} (depends on \texttt{modify}, \texttt{cleanall}, \texttt{jar}, \texttt{test}, \texttt{document})
+	\item \textbf{modify} (calls \texttt{modify} in common ANT file)
+	\item \textbf{clean} (calls \texttt{clean} in common ANT file)
+	\item \textbf{cleanall} (calls \texttt{cleanall} in common ANT file)
+	\item \textbf{jgralabjarfiletest} (calls \texttt{jarfiletest} with \texttt{property projectname = jgralab} in common ANT file)
+	\item \textbf{generateschema} (depends on \texttt{jgralabjarfiletest}, calls \texttt{generate\-schema} in common ANT file)
+	\item \textbf{generateparser} (calls \texttt{generateparser} in common ANT file)
+	\item \textbf{compile} (depends on \texttt{generateschema}, \texttt{generateparser}, calls \texttt{compile} in common ANT file)
+	\item \textbf{jar} (depends on \texttt{compile} calls \texttt{unjar}, \texttt{jar} in common ANT file)
+	\item \textbf{run} (calls \texttt{run} in common ANT file)
+	\item \textbf{test} (depends on \texttt{compile}, calls \texttt{test} in common ANT file)
+	\item \textbf{document} (depends on \texttt{generateschema} and \texttt{generateparser}, calls \texttt{document} in common ANT file)
+\end{compactitem}
+For an example see common/newproject/build.xml or the build.xml in a new project folder generated with the common ANT file target \texttt{newproject} (section \ref{Newproject}).
+
+\end{document}
