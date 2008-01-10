@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	
+
+<project name="de.uni_koblenz.ant" basedir="." default="build">
+	
+	
+	<!-- project name -->
+	<!-- propterty has to be overwritten from caller -->
+	<property name="projectname"			
+		value=""/>
+	
+	<!-- subproject name -->
+	<!-- propterty can be overwritten from caller -->
+	<property name="subprojectname"			
+		value="${projectname}"/>
+	
+	<!-- projects main class name -->
+	<!-- propterty can be overwritten from caller -->
+	<property name="main"					
+		value="${projectname}"/>
+	
+	<!-- projects base package -->
+	<!-- propterty can be overwritten from caller -->
+	<property name="basePackage"					
+		value="de.uni_koblenz.${projectname}"/>
+	
+	<!-- project directory -->
+	<!-- propterty can be overwritten from caller -->
+	<property name="project.dir"			
+		value="../${projectname}"/>
+	
+	<!-- source directory -->
+	<!-- propterty can be overwritten from caller -->
+	<property name="src.dir"				
+		value="${project.dir}/src"/>
+	
+	<!-- test source directory -->
+	<!-- propterty can be overwritten from caller -->
+	<property name="testcases.dir" 			
+		value="${project.dir}/testit"/>	
+
+	<!-- library directory -->
+	<!-- propterty can be overwritten from caller -->
+	<property name="lib.dir"				
+		value="${project.dir}/lib"/>	
+	
+	<!-- build directory -->
+	<!-- propterty can be overwritten from caller -->
+	<property name="build.dir"
+		  value="${project.dir}/build"/>
+	
+	<!-- classes directory -->
+	<!-- propterty can be overwritten from caller -->
+	<property name="classes.dir"			
+		value="${build.dir}/classes"/>
+	
+	<!-- jar directory -->
+	<!-- propterty can be overwritten from caller -->
+	<property name="jar.dir" 				
+		value="${build.dir}/jar"/>
+	
+	<!-- documentation directory -->
+	<!-- propterty can be overwritten from caller -->
+	<property name="doc.dir" 				
+		value="${build.dir}/doc"/>
+	
+	<!-- maximum memory for javadoc VM -->
+	<!-- propterty can be overwritten from caller -->
+	<property name="doc.maxmem"
+		  value="1024"/>
+	
+	<!--Target VM for javac-->
+	<!--property can be overwritten from caller-->
+	<property name="javac.targetVM"
+		  value="1.6"/>
+	
+	<!-- test result directory -->
+	<!-- propterty can be overwritten from caller -->
+	<property name="testresults.dir" 		
+		value="${build.dir}/testresults"/>
+	
+	<!-- temporary directory -->
+	<!-- propterty can be overwritten from caller -->
+	<property name="tmp.dir" 		
+		value="${build.dir}/tmp"/>
+	
+	<!-- common directory -->
+	<property name="common.dir"				
+		value="../common"/>
+	
+	<!-- common library directory -->
+	<property name="comlib.dir"				
+		value="${common.dir}/lib"/>	
+	
+	<!-- classpath -->
+	<path id="classpath">
+		<pathelement location="${classes.dir}" />
+		<fileset dir="${lib.dir}" includes="**/*.jar"/>	
+		<pathelement location="${jar.dir}/${projectname}.jar"/>
+		<fileset dir="${comlib.dir}" includes="**/*.jar"/>	
+		<pathelement location="../jgralab/build/jar/jgralab.jar" />
+	</path>
+	
+	
+	<!-- build -->
+	<!-- main target - does nothing -->
+	<target name="build"/>
+
+	
+	<!-- clean -->
+	<!-- deletes all classes, the jar, the temporary files and all generated schema and parser files -->
+	<target name="clean">
+		<echo>../common/build.xml clean - deleting generated files</echo>
+		<delete dir="${build.dir}/classes"/>
+		<delete dir="${build.dir}/jar"/>
+		<delete dir="${build.dir}/temp"/>
+		<delete dir="${src.dir}/de/uni_koblenz/${subprojectname}/parser"/>
+		<delete dir="${src.dir}/de/uni_koblenz/${subprojectname}/schema"/>
+		<echo>clean finished</echo>
+	</target>
+	
+	
+	<!-- clean all -->
+	<!-- deletes all classes, the jar, the temporary files, the documentation, the testresults and all generated schema and grammar files -->
+	<target name="cleanall">
+		<echo>../common/build.xml clean all - deleting all generated files</echo>
+		<delete dir="${build.dir}"/>
+		<delete dir="${src.dir}/de/uni_koblenz/${subprojectname}/parser"/>
+		<delete dir="${src.dir}/de/uni_koblenz/${subprojectname}/schema"/>
+		<echo>clean all finished</echo>
+	</target>
+	
+	
+	<!-- modify -->
+	<!-- modifies the projects main class -->
+	<target name="modify">
+		<mkdir dir="${classes.dir}"/>
+	<!-- modify build-ID -->
+		<java classname="de.uni_koblenz.autobuildid.AutoBuildID">
+			<classpath>
+				<fileset dir="${comlib.dir}" includes="**/*.jar"/>	
+			</classpath>
+			<arg line="-m ${src.dir}/de/uni_koblenz/${projectname}/${main}.java"/>
+		</java>
+	<!-- commit the changed file to svn -->
+	 	<java classname="org.tmatesoft.svn.cli.SVN" fork="true">
+			<arg value="commit"/>
+			<arg value="-m"/>
+			<arg value='Automated modification of ${main}.java to generate correct revision-ID'/>
+			<arg value="${src.dir}/de/uni_koblenz/${projectname}/${main}.java"/>
+			<classpath>
+				<fileset dir="${comlib.dir}" includes="**/*.jar"/>	
+			</classpath>
+		</java>
+	</target>
+
+	
+	<!-- includes for compiling sources -->
+	<!-- propterty can be overwritten from caller -->
+	<property name="compileincludes"				
+		value=""/>
+	
+	<!-- excludes for compiling sources -->
+	<!-- propterty can be overwritten from caller -->
+	<property name="compileexcludes"				
+		value=""/>
+	
+	<!-- compile -->
+	<!-- compiles all Java sources in $src.dir and puts teh generated classes into $classes.dir-->
+	<target name="compile">
+		<echo>../common/build.xml compile - compiling sources</echo>
+		<mkdir dir="${classes.dir}"/>
+		<javac fork="true"
+			srcdir="${src.dir}" includes="${compileincludes}" excludes="${compileexcludes}"
+			destdir="${classes.dir}" 
+			memoryinitialsize="512m" memorymaximumsize="512m"
+			classpathref="classpath"
+			target="${javac.targetVM}">
+		</javac>
+		<echo>compile finished</echo>
+	</target>
+	
+	
+	<!-- jarfiletest -->
+	<!-- tests existence of ${projectname}s jar file and generates it if not existing -->	
+	<target name="checkforjar">
+		<echo>../common/build.xml jarfiletest - testing existence of ${projectname}s jar file</echo>
+		<condition property="jar-file exists">
+			<available file="../${projectname}/build/jar/${projectname}.jar"/>
+		</condition>
+	</target>
+	
+	<target name="jarfiletest" depends="checkforjar" unless="jar-file exists">
+		<echo>${projectname}s jar file has to be build!</echo>
+		<ant dir="../${projectname}" antfile="build.xml" inheritAll="false"/>
+	<echo>jarfiletest finished</echo>
+	</target>
+	
+
+	<!-- schema file -->
+	<!-- propterty can be overwritten from caller -->
+	<property name="schemafile"				
+		value=""/>
+
+	<!-- generateschema -->
+	<!-- generates schmema sources out of schema ${schemafile} and puts them into ${src.dir}/de/uni_koblenz/${subprojectname}/schema -->
+	<target name="generateschema">
+		<echo>../common/build.xml generateschema - executing TgSchema2Java</echo>
+		<java classname="de.uni_koblenz.jgralab.utilities.tgschema2java.TgSchema2Java" 
+			classpathref="classpath">
+			<arg line="-f ${src.dir}/de/uni_koblenz/${subprojectname}/${schemafile} -i array -p ${src.dir}"/>
+		</java>
+		<echo>generateschema finished</echo>
+	</target>
+
+
+	<!-- grammar file -->
+	<!-- propterty can be overwritten from caller -->
+	<property name="grammarfile"				
+		value=""/>
+		
+	<!-- generateparser -->
+	<!-- generates parser sources out of grammar ${grammarfile} and puts them into ${src.dir}/de/uni_koblenz/${subprojectname}/parser -->
+	<target name="generateparser">
+		<echo>../common/build.xml generateparser - executing ANTLR</echo>	
+		<java classname="antlr.Tool"
+			classpathref="classpath">
+			<arg line="-o ${src.dir}/de/uni_koblenz/${subprojectname}/parser ${src.dir}/de/uni_koblenz/${subprojectname}/${grammarfile}"/>
+		</java>
+		<echo>generateparser finished</echo>
+	</target>
+	
+			
+	<!-- unjar -->
+	<!-- unpacks the libs in $lib.dir -->
+	<target name="unjar">
+		<echo>../common/build.xml unjar - unpacks libs</echo>
+		<mkdir dir="${tmp.dir}"/>
+		<unjar dest="${tmp.dir}">
+			<fileset dir="${lib.dir}" includes="**/*.jar"/>
+		</unjar>
+		<echo>unjar finished</echo>
+	</target>
+	
+		
+	<!-- jar -->
+	<!-- makes executable jar file out of all classes in ${classes.dir} and puts jar file into ${jar.dir}-->
+	<target name="jar">
+		<echo>../common/build.xml jar - creating executable jar file</echo>
+		<mkdir dir="${jar.dir}"/>
+		<mkdir dir="${classes.dir}"/>
+		<mkdir dir="${tmp.dir}"/>
+		<jar destfile="${jar.dir}/${projectname}.jar" 
+			basedir="${classes.dir}"
+			compress="true">
+			<manifest>
+				<attribute name="Main-Class" value="de.uni_koblenz.${projectname}.${main}" />
+			</manifest>
+		</jar>
+		<jar destfile="${jar.dir}/${projectname}.jar" 
+			basedir="${tmp.dir}"
+			update="true"
+			compress="true"
+			filesetmanifest="skip">
+		</jar>
+		<delete dir="${tmp.dir}"/>
+		<echo>jar finished</echo>
+	</target>
+	
+			<!-- jar -->
+			<!-- makes executable jar file out of all classes in ${classes.dir} and puts jar file into ${jar.dir}-->
+			<target name="sourcejar">
+				<echo>../common/build.xml jar - creating executable jar file containing sources</echo>
+				<mkdir dir="${jar.dir}"/>
+				<mkdir dir="${src.dir}"/>
+				<mkdir dir="${tmp.dir}"/>
+				<jar destfile="${jar.dir}/${projectname}_src.jar" 
+					basedir="${src.dir}"
+					compress="true">
+					<manifest>
+						<attribute name="Main-Class" value="de.uni_koblenz.${projectname}.${main}" />
+					</manifest>
+				</jar>
+				<jar destfile="${jar.dir}/${projectname}_src.jar" 
+					basedir="${tmp.dir}"
+					update="true"
+					compress="true"
+					filesetmanifest="skip">
+				</jar>
+				<delete dir="${tmp.dir}"/>
+				<echo>jar finished</echo>
+			</target>
+	
+	<!-- run arguments -->
+	<property name="run.args"				
+		value=""/>
+	
+<!-- 	project directory -->
+	<property name = "run.dir"
+		  value = "${project.dir}"/>
+	
+	<!-- run -->
+	<!-- runs project with given arguments ${run.args} in the
+             $project.dir}-->
+	<target name="run">
+		<echo>../common/build.xml run - running project</echo>
+		<ant target="jarfiletest"/>
+		<java classname="de.uni_koblenz.${projectname}.${main}" 
+			classpathref="classpath"
+			fork="true"
+			dir="${run.dir}">
+			<arg line="${run.args}"/>
+		</java>
+		<echo>run finished</echo>
+	</target>
+
+		
+	<!-- excludeded package names for documenting sources -->
+	<property name="documentexcludes"	
+		value=""/>
+	
+	<!-- document -->
+	<!-- document all sources out of ${src.dir} and puts documentation into ${doc.dir}-->
+	<target name="document">
+		<echo>../common/build.xml document - documenting sources</echo>
+		<delete dir="${doc.dir}/html"/>
+		<mkdir dir="${doc.dir}/html"/>
+		<javadoc sourcepath="${src.dir}" 
+			destdir="${doc.dir}/html" 
+			packagenames="${basePackage}.*" 
+			excludepackagenames="${documentexcludes}"
+			access="public"
+			maxmemory="${doc.maxmem}M"
+			classpathref="classpath">
+		</javadoc>
+		<zip destfile="${doc.dir}/${projectname}.zip" basedir="${doc.dir}/html" compress="true"/>
+		<echo>document finished</echo>
+	</target>
+	
+	
+	<!-- test -->
+	<!-- tests all exisiting junit tests -->
+	<target name="test">
+		<echo>../common/build.xml test - testing sources</echo>
+		<mkdir dir="${testresults.dir}"/>
+		<mkdir dir="${classes.dir}"/>
+		<javac fork="true"
+			srcdir="${testcases.dir}" includes="de/uni_koblenz/${projectname}test/**"
+			destdir="${classes.dir}" 
+			memoryinitialsize="512m"
+			memorymaximumsize="512m"
+			classpathref="classpath">
+		</javac>
+		<junit fork="yes"
+			forkmode="perTest" 
+			maxmemory="512M"
+			printsummary="on"
+			showoutput="true"
+			outputtoformatters="true">
+			<classpath>
+				<pathelement location="${src.dir}"/>
+				<pathelement location="${testcases.dir}"/>
+				<pathelement location="${classes.dir}" />
+				<fileset dir="${lib.dir}" includes="**/*.jar"/>	
+				<pathelement location="${jar.dir}/${projectname}.jar"/>
+				<fileset dir="${comlib.dir}" includes="**/*.jar"/>	
+				<pathelement location="../jgralab/build/jar/jgralab.jar" />
+			</classpath>
+			<formatter type="brief"/>
+			<batchtest todir="${testresults.dir}">
+				<fileset dir="${testcases.dir}">
+					<include name="de/uni_koblenz/${projectname}test/**/*Test.java"/>
+				</fileset>
+			</batchtest>
+		</junit>
+		<echo>test finished</echo>
+	</target>
+
+	
+	<!-- newproject -->
+	<!-- creates a new project folder ${projectname} if it does not exist
+		and prepares it for the new project -->
+	<target name="checkIfProjectExists">
+		<echo>../common/build.xml newproject - creating new project folder "${projectname}" 
+			if it does not exist yet</echo>	
+		<condition property="project exists">
+			<available type="dir" file="${project.dir}"/>
+		</condition>
+		<echo>newproject finished</echo>
+	</target>
+	<target name="newproject" depends="checkIfProjectExists" unless="project exists">
+		<mkdir dir="${lib.dir}"/>
+		<copy file="newproject/HelloWorld.java" 
+			todir="${src.dir}/de/uni_koblenz/${projectname}"/>
+		<replace file="${src.dir}/de/uni_koblenz/${projectname}/HelloWorld.java" 
+			token="newproject" 
+			value="${projectname}"/>
+		<copy file="newproject/HelloWorldTest.java" 
+			todir="${testcases.dir}/de/uni_koblenz/${projectname}test"/>
+		<replace file="${testcases.dir}/de/uni_koblenz/${projectname}test/HelloWorldTest.java" 
+			token="newproject" 
+			value="${projectname}"/>
+		<copy file="newproject/build.xml" 
+			todir="${project.dir}"/>
+		<replace file="${project.dir}/build.xml" 
+			token="newproject" 
+			value="${projectname}"/>
+	</target>
+	
+	
+</project>
