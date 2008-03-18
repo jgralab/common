@@ -142,15 +142,19 @@
 			</classpath>
 			<arg line="-m ${src.dir}/de/uni_koblenz/${projectname}/${main}.java"/>
 		</java>
+		<echo>${src.dir}/de/uni_koblenz/${projectname}/${main}.java</echo>
 	<!-- commit the changed file to svn -->
-	 	<java classname="org.tmatesoft.svn.cli.SVN" fork="true">
+	 	<java classname="org.tmatesoft.svn.cli.SVN"
+		      fork="true"
+		      classpathref="classpath"
+		      dir="${src.dir}/de/uni_koblenz/${projectname}">
 			<arg value="commit"/>
 			<arg value="-m"/>
 			<arg value='Automated modification of ${main}.java to generate correct revision-ID'/>
-			<arg value="${src.dir}/de/uni_koblenz/${projectname}/${main}.java"/>
-			<classpath>
+			<arg value="${main}.java"/>
+			<!--<classpath>
 				<fileset dir="${comlib.dir}" includes="**/*.jar"/>	
-			</classpath>
+			</classpath>-->
 		</java>
 	</target>
 
@@ -208,7 +212,7 @@
 		<echo>../common/build.xml generateschema - executing TgSchema2Java</echo>
 		<java classname="de.uni_koblenz.jgralab.utilities.tgschema2java.TgSchema2Java" 
 			classpathref="classpath">
-			<arg line="-f ${src.dir}/de/uni_koblenz/${subprojectname}/${schemafile} -i array -p ${src.dir}"/>
+			<arg line="-f ${src.dir}/de/uni_koblenz/${subprojectname}/${schemafile} -p ${src.dir}"/>
 		</java>
 		<echo>generateschema finished</echo>
 	</target>
