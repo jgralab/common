@@ -150,7 +150,7 @@
 		      dir="${src.dir}/de/uni_koblenz/${projectname}">
 			<arg value="commit"/>
 			<arg value="-m"/>
-			<arg value='Automated modification of ${main}.java to generate correct revision-ID'/>
+			<arg value='Released new version - automatic modification of revision number in ${main}.java.'/>
 			<arg value="${main}.java"/>
 			<!--<classpath>
 				<fileset dir="${comlib.dir}" includes="**/*.jar"/>	
