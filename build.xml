@@ -8,7 +8,7 @@
 	<!-- propterty has to be overwritten from caller -->
 	<property name="projectname"			
 		value=""/>
-	
+		
 	<!-- subproject name -->
 	<!-- propterty can be overwritten from caller -->
 	<property name="subprojectname"			
@@ -23,6 +23,11 @@
 	<!-- propterty can be overwritten from caller -->
 	<property name="basePackage"					
 		value="de.uni_koblenz.${projectname}"/>
+	
+	<!-- projects base package -->
+	<!-- propterty can be overwritten from caller -->
+	<property name="basePackagePath"					
+		value="de/uni_koblenz/${projectname}"/>
 	
 	<!-- project directory -->
 	<!-- propterty can be overwritten from caller -->
@@ -212,7 +217,7 @@
 		<echo>../common/build.xml generateschema - executing TgSchema2Java</echo>
 		<java classname="de.uni_koblenz.jgralab.utilities.tgschema2java.TgSchema2Java" 
 			classpathref="classpath">
-			<arg line="-f ${src.dir}/de/uni_koblenz/${subprojectname}/${schemafile} -p ${src.dir}"/>
+			<arg line="-f ${src.dir}/${basePackagePath}/${subprojectname}/${schemafile} -p ${src.dir}"/>
 		</java>
 		<echo>generateschema finished</echo>
 	</target>
@@ -229,7 +234,7 @@
 		<echo>../common/build.xml generateparser - executing ANTLR</echo>	
 		<java classname="antlr.Tool"
 			classpathref="classpath">
-			<arg line="-o ${src.dir}/de/uni_koblenz/${subprojectname}/parser ${src.dir}/de/uni_koblenz/${subprojectname}/${grammarfile}"/>
+			<arg line="-o ${src.dir}/${basePackagePath}/${subprojectname}/parser ${src.dir}/${basePackagePath}/${subprojectname}/${grammarfile}"/>
 		</java>
 		<echo>generateparser finished</echo>
 	</target>
@@ -309,7 +314,7 @@
 	<target name="run">
 		<echo>../common/build.xml run - running project</echo>
 		<ant target="jarfiletest"/>
-		<java classname="de.uni_koblenz.${projectname}.${main}" 
+		<java classname="${basePackage}.${main}" 
 			classpathref="classpath"
 			fork="true"
 			dir="${run.dir}">
@@ -349,7 +354,7 @@
 		<mkdir dir="${testresults.dir}"/>
 		<mkdir dir="${classes.dir}"/>
 		<javac fork="true"
-			srcdir="${testcases.dir}" includes="de/uni_koblenz/${projectname}test/**"
+			srcdir="${testcases.dir}" includes="${basePackagePath}test/**"
 			destdir="${classes.dir}" 
 			memoryinitialsize="512m"
 			memorymaximumsize="512m"
