@@ -97,6 +97,9 @@
 	<property name="comlib.dir"				
 		value="${common.dir}/lib"/>	
 	
+	<property name="additional.lib.dir"		
+		  value=""/>
+	
 	<!-- classpath -->
 	<path id="classpath">
 		<pathelement location="${classes.dir}" />
@@ -104,6 +107,7 @@
 		<pathelement location="${jar.dir}/${projectname}.jar"/>
 		<fileset dir="${comlib.dir}" includes="**/*.jar"/>	
 		<pathelement location="../jgralab/build/jar/jgralab.jar" />
+                <fileset dir="${additional.lib.dir}" includes="**/*.jar" />
 	</path>
 	
 	
@@ -173,7 +177,7 @@
 	<!-- propterty can be overwritten from caller -->
 	<property name="compileexcludes"				
 		value=""/>
-	
+
 	<!-- compile -->
 	<!-- compiles all Java sources in $src.dir and puts teh generated classes into $classes.dir-->
 	<target name="compile">
@@ -184,6 +188,7 @@
 			destdir="${classes.dir}" 
 			memoryinitialsize="512m" memorymaximumsize="512m"
 			classpathref="classpath"
+			debug="true"
 			target="${javac.targetVM}">
 		</javac>
 		<echo>compile finished</echo>
