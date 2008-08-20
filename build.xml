@@ -101,6 +101,7 @@
 		  value=""/>
 	<property name="additional.additional.lib.dir"		
 		  value=""/>
+	<property name="additional.pathelementlocation" value=""/>
 	
 	<!-- classpath -->
 	<path id="classpath">
@@ -111,6 +112,7 @@
 		<pathelement location="../jgralab/build/jar/jgralab.jar" />
                 <fileset dir="${additional.lib.dir}" includes="**/*.jar" />
                 <fileset dir="${additional.additional.lib.dir}" includes="**/*.jar" />
+				<pathelement location="${additional.pathelementlocation}" />
 	</path>
 	
 	
@@ -191,7 +193,7 @@
 			destdir="${classes.dir}" 
 			memoryinitialsize="512m" memorymaximumsize="512m"
 			classpathref="classpath"
-			debug="true"
+			debug="true"			
 			target="${javac.targetVM}">
 		</javac>
 		<echo>compile finished</echo>
