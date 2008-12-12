@@ -128,7 +128,7 @@
 		<delete dir="${build.dir}/classes"/>
 		<delete dir="${build.dir}/jar"/>
 		<delete dir="${build.dir}/temp"/>
-		<delete dir="${src.dir}/de/uni_koblenz/${subprojectname}/parser"/>
+		<!--<delete dir="${src.dir}/de/uni_koblenz/${subprojectname}/parser"/>-->
 		<delete dir="${src.dir}/de/uni_koblenz/${subprojectname}/schema"/>
 		<echo>clean finished</echo>
 	</target>
@@ -241,10 +241,22 @@
 	<!-- generateparser -->
 	<!-- generates parser sources out of grammar ${grammarfile} and puts them into ${src.dir}/de/uni_koblenz/${subprojectname}/parser -->
 	<target name="generateparser">
-		<echo>../common/build.xml generateparser - executing ANTLR</echo>	
+		<echo>../common/build.xml generateparser - executing ANTLR 2</echo>	
 		<java classname="antlr.Tool"
 			classpathref="classpath">
 			<arg line="-o ${src.dir}/${basePackagePath}/${subprojectname}/parser ${src.dir}/${basePackagePath}/${subprojectname}/${grammarfile}"/>
+		</java>
+		<echo>generateparser finished</echo>
+	</target>
+	
+	
+		<!-- generateparser -->
+	<!-- generates parser sources out of grammar ${grammarfile} and puts them into ${src.dir}/de/uni_koblenz/${subprojectname}/parser -->
+	<target name="generateparser-antlr3">
+		<echo>../common/build.xml generateparser - executing ANTLR 3</echo>	
+		<java classname="org.antlr.Tool"
+			classpathref="classpath">
+			<arg line="${src.dir}/${basePackagePath}/${subprojectname}/parser/${grammarfile}"/>
 		</java>
 		<echo>generateparser finished</echo>
 	</target>
