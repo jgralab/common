@@ -256,7 +256,7 @@
 		<echo>../common/build.xml generateparser - executing ANTLR 3</echo>	
 		<java classname="org.antlr.Tool"
 			classpathref="classpath">
-			<arg line="${src.dir}/${basePackagePath}/${subprojectname}/parser/${grammarfile}"/>
+			<arg line="-Xconversiontimeout 12000 ${src.dir}/${basePackagePath}/${subprojectname}/parser/${grammarfile}"/>
 		</java>
 		<echo>generateparser finished</echo>
 	</target>
