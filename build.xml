@@ -255,7 +255,9 @@
 	<target name="generateparser-antlr3">
 		<echo>../common/build.xml generateparser - executing ANTLR 3</echo>	
 		<java classname="org.antlr.Tool"
-			classpathref="classpath">
+			classpathref="classpath"
+			fork="true"
+			maxmemory="512M">
 			<arg line="-Xconversiontimeout 12000 ${src.dir}/${basePackagePath}/${subprojectname}/parser/${grammarfile}"/>
 		</java>
 		<echo>generateparser finished</echo>
