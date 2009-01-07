@@ -110,9 +110,9 @@
 		<pathelement location="${jar.dir}/${projectname}.jar"/>
 		<fileset dir="${comlib.dir}" includes="**/*.jar"/>	
 		<pathelement location="../jgralab/build/jar/jgralab.jar" />
-                <fileset dir="${additional.lib.dir}" includes="**/*.jar" />
-                <fileset dir="${additional.additional.lib.dir}" includes="**/*.jar" />
-				<pathelement location="${additional.pathelementlocation}" />
+        <fileset dir="${additional.lib.dir}" includes="**/*.jar" />
+        <fileset dir="${additional.additional.lib.dir}" includes="**/*.jar" />
+		<pathelement location="${additional.pathelementlocation}" />
 	</path>
 	
 	
@@ -139,7 +139,10 @@
 	<target name="cleanall">
 		<echo>../common/build.xml clean all - deleting all generated files</echo>
 		<delete dir="${build.dir}"/>
-		<delete dir="${src.dir}/de/uni_koblenz/${subprojectname}/parser"/>
+        <!-- FIXME: Normally the parser dir should be deleted, but currently in
+             jgralab there are some files that may not be deleted. (Greql2.g
+             SymbolTable.java, VertexPosition.java) -->
+		<!-- <delete dir="${src.dir}/de/uni_koblenz/${subprojectname}/parser"/> -->
 		<delete dir="${src.dir}/de/uni_koblenz/${subprojectname}/schema"/>
 		<echo>clean all finished</echo>
 	</target>
