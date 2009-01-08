@@ -197,7 +197,6 @@
 		   destdir="${classes.dir}"
 		   memoryinitialsize="512m" memorymaximumsize="512m"
 		   classpathref="classpath"
-		   <!-- debug="true" -->
 		   target="${javac.targetVM}">
 	</javac>
 	<echo>compile finished</echo>
@@ -376,7 +375,7 @@
 
 
   <!-- test -->
-  <!-- tests all exisiting junit tests -->
+  <!-- run the test suite specified by test.suite -->
   <target name="test">
 	<echo>../common/build.xml test - testing sources</echo>
 	<mkdir dir="${testresults.dir}"/>
