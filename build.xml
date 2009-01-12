@@ -69,6 +69,12 @@
   <property name="jar.dir"
 		    value="${build.dir}/jar"/>
 
+  <!-- jar excludes -->
+  <!-- propterty can be overwritten from caller -->
+  <property name="unjarexcludes"
+		    value=""/>
+
+
   <!-- documentation directory -->
   <!-- propterty can be overwritten from caller -->
   <property name="doc.dir"
@@ -195,7 +201,8 @@
 	<javac fork="true"
 		   srcdir="${src.dir}" includes="${compileincludes}" excludes="${compileexcludes}"
 		   destdir="${classes.dir}"
-		   memoryinitialsize="512m" memorymaximumsize="512m"
+		   memoryinitialsize="512m"
+           memorymaximumsize="512m"
 		   classpathref="classpath"
 		   target="${javac.targetVM}">
 	</javac>
@@ -273,7 +280,7 @@
 	<echo>../common/build.xml unjar - unpacks libs</echo>
 	<mkdir dir="${tmp.dir}"/>
 	<unjar dest="${tmp.dir}">
-	  <fileset dir="${lib.dir}" includes="**/*.jar"/>
+	  <fileset dir="${lib.dir}" includes="**/*.jar" excludes="${unjarexcludes}" />
 	</unjar>
 	<echo>unjar finished</echo>
   </target>
