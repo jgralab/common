@@ -401,6 +401,7 @@
 		   printsummary="on"
 		   showoutput="true"
 		   outputtoformatters="true">
+      <jvmarg value="-enableassertions"/>
 	  <classpath>
 		<pathelement location="${src.dir}"/>
 		<pathelement location="${testcases.dir}"/>
