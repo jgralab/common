@@ -3,7 +3,6 @@
 
 <project name="de.uni_koblenz.ant" basedir="." default="build">
 
-
   <!-- project name -->
   <!-- propterty has to be overwritten from caller -->
   <property name="projectname"
@@ -193,6 +192,12 @@
   <property name="compileexcludes"
 		    value=""/>
 
+  <!-- debug infos in compiled sources -->
+  <!-- propterty can be overwritten from caller -->
+  <property name="debug"
+		    value="false"/>
+
+
   <!-- compile -->
   <!-- compiles all Java sources in $src.dir and puts teh generated classes into $classes.dir-->
   <target name="compile">
@@ -204,6 +209,7 @@
 		   memoryinitialsize="512m"
            memorymaximumsize="512m"
 		   classpathref="classpath"
+           debug="${debug}"
 		   target="${javac.targetVM}">
 	</javac>
 	<echo>compile finished</echo>
@@ -235,8 +241,10 @@
   <!-- generates schmema sources out of schema ${schemafile} and puts them into ${src.dir}/de/uni_koblenz/${subprojectname}/schema -->
   <target name="generateschema">
 	<echo>../common/build.xml generateschema - executing TgSchema2Java</echo>
-	<java classname="de.uni_koblenz.jgralab.utilities.tgschema2java.TgSchema2Java"
+	<java fork="true"
+          classname="de.uni_koblenz.jgralab.utilities.tgschema2java.TgSchema2Java"
 		  classpathref="classpath">
+      <jvmarg value="-ea" />
 	  <arg line="-f ${src.dir}/${basePackagePath}/${subprojectname}/${schemafile} -p ${src.dir}"/>
 	</java>
 	<echo>generateschema finished</echo>
