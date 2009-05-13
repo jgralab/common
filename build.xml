@@ -244,7 +244,7 @@
 	<java fork="true"
           classname="de.uni_koblenz.jgralab.utilities.tgschema2java.TgSchema2Java"
 		  classpathref="classpath">
-      <jvmarg value="-ea" />
+      <jvmarg line="-ea" />
 	  <arg line="-f ${src.dir}/${basePackagePath}/${subprojectname}/${schemafile} -p ${src.dir}"/>
 	</java>
 	<echo>generateschema finished</echo>
