@@ -60,12 +60,11 @@
 		<copy file="${jar.dir}/${projectname}.jar" todir="${lib.dir}/ist_utilities"></copy>
 		<java classname="org.tmatesoft.svn.cli.SVN"
 				  fork="true"
-				  classpathref="classpath"
-				  dir="${target.dir}">
+				  classpathref="classpath">
 			  <arg value="commit"/>
 			  <arg value="-m"/>
 			  <arg value='Auto deploy of ist.utilities.jar'/>
-			  <arg value="${main}.java"/>
+			  <arg value="${target.dir}/${projectname}.jar"/>
 			  <!--<classpath>
 				 <fileset dir="${comlib.dir}" includes="**/*.jar"/>
 			  </classpath>-->
