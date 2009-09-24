@@ -3,7 +3,7 @@
 <project name="ist.utilities" basedir="." default="build">
 
 	<property name="projectname" value="" />
-	<property name="build.dir" value="./classes" />
+	<property name="build.dir" value="./build" />
 	<property name="classes.dir" value="${build.dir}/classes" />
 	<property name="jar.dir" value="${build.dir}/jar" />
 	<property name="src.dir" value="./src"/>
@@ -27,6 +27,7 @@
 	<target name="build" depends="clean,jar"/>
 
 	<target name="compile">
+		<mkdir dir="${classes.dir}"/>
 		<javac fork="true"
 				   srcdir="${src.dir}" includes="${compileincludes}" excludes="${compileexcludes}"
 				   destdir="${classes.dir}"
