@@ -159,7 +159,7 @@
   <target name="modify">
 	<mkdir dir="${classes.dir}"/>
 	<!-- modify build-ID -->
-	<java classname="de.uni_koblenz.autobuildid.AutoBuildID">
+	<java classname="de.uni_koblenz.ist.utilities.auto_build_id.AutoBuildID">
 	  <classpath>
 		<fileset dir="${comlib.dir}" includes="**/*.jar"/>
 	  </classpath>
