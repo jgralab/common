@@ -1,11 +1,10 @@
 /*
- * JGraLab - The Java graph laboratory
+ * IST Utilities
  * (c) 2006-2009 Institute for Software Technology
  *               University of Koblenz-Landau, Germany
  *
  *               ist@uni-koblenz.de
  *
- * Please report bugs to http://serres.uni-koblenz.de/bugzilla
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
