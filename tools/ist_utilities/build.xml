@@ -1,0 +1,62 @@
+<!--This build.xml only works if called from within common/ist_utilities. 
+    It fails if called from within eclipse. -->
+<project name="ist.utilities" basedir="." default="build">
+
+	<property name="projectname" value="" />
+	<property name="build.dir" value="./classes" />
+	<property name="classes.dir" value="${build.dir}/classes" />
+	<property name="jar.dir" value="${build.dir}/jar" />
+	<property name="src.dir" value="./src"/>
+	<property name="common.dir" value="../../" />
+	<property name="lib.dir" value="${common.dir}/lib"/>
+	<property name="target.dir" value="${lib.dir}/ist_utilities" />
+	<property name="javac.targetVM"
+			    value="1.6"/>
+	<property name="debug" value="lines"/>
+	<property name="compileincludes" value="**"/>
+	<property name="compileexcludes" value=""/>
+	<property name="main" value="None"/>
+
+	<!-- classpath -->
+	<path id="classpath">
+		<pathelement location="${classes.dir}" />
+		<fileset dir="${lib.dir}" includes="**/*.jar" />
+		<pathelement location="${jar.dir}/${projectname}.jar" />
+	</path>
+
+	<target name="build" depends="clean,jar"/>
+
+	<target name="compile">
+		<javac fork="true"
+				   srcdir="${src.dir}" includes="${compileincludes}" excludes="${compileexcludes}"
+				   destdir="${classes.dir}"
+				   memoryinitialsize="512m"
+		           memorymaximumsize="512m"
+				   classpathref="classpath"
+		           debug="${debug}"
+				   target="${javac.targetVM}">
+			</javac>	
+	</target>
+	
+	<target name="clean">
+		<delete dir="${build.dir}/classes"/>
+		<delete dir="${build.dir}/jar"/>
+	</target>
+	
+	<target name="jar" depends="compile">
+		<mkdir dir="${jar.dir}"/>
+		<mkdir dir="${classes.dir}"/>
+		<jar destfile="${jar.dir}/${projectname}.jar"
+				 basedir="${classes.dir}"
+				 compress="true">
+			  <manifest>
+				<attribute name="Main-Class" value="de.uni_koblenz.${projectname}.${main}" />
+			  </manifest>
+			</jar>
+	</target>
+	
+	<target name="deploy" depends="jar">
+		<copy file="${jar.dir}/${projectname}.jar" todir="${lib.dir}/ist_utilities"></copy>
+	</target>
+
+</project>
