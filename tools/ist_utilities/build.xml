@@ -63,7 +63,7 @@
 				  classpathref="classpath">
 			  <arg value="commit"/>
 			  <arg value="-m"/>
-			  <arg value='Auto deploy of ist.utilities.jar'/>
+			  <arg value='Auto deploy of ist_utilities.jar'/>
 			  <arg value="${target.dir}/${projectname}.jar"/>
 			  <!--<classpath>
 				 <fileset dir="${comlib.dir}" includes="**/*.jar"/>
