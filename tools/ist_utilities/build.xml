@@ -58,6 +58,18 @@
 	
 	<target name="deploy" depends="jar">
 		<copy file="${jar.dir}/${projectname}.jar" todir="${lib.dir}/ist_utilities"></copy>
+		<java classname="org.tmatesoft.svn.cli.SVN"
+				  fork="true"
+				  classpathref="classpath"
+				  dir="${target.dir}">
+			  <arg value="commit"/>
+			  <arg value="-m"/>
+			  <arg value='Auto deploy of ist.utilities.jar'/>
+			  <arg value="${main}.java"/>
+			  <!--<classpath>
+				 <fileset dir="${comlib.dir}" includes="**/*.jar"/>
+			  </classpath>-->
+			</java>
 	</target>
 
 </project>
