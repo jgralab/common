@@ -25,7 +25,7 @@ public class XmlProcessor {
 	/**
 	 * Contains XML element names in the format "name>xmiId".
 	 */
-	protected Stack<String> elementNameStack;
+	private Stack<String> elementNameStack;
 
 	/**
 	 * Collects character data per element.
@@ -186,7 +186,19 @@ public class XmlProcessor {
 		}
 	}
 
+	public int getNestingDepth() {
+		return elementNameStack.size();
+	}
+
 	public String getFileName() {
 		return fileName;
+	}
+
+	public Stack<String> getElementNameStack() {
+		return elementNameStack;
+	}
+
+	public XMLStreamReader getParser() {
+		return parser;
 	}
 }
