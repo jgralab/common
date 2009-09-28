@@ -58,6 +58,8 @@
 	
 	<target name="deploy" depends="jar">
 		<copy file="${jar.dir}/${projectname}.jar" todir="${lib.dir}/ist_utilities"></copy>
+		<echo>The file file has to be checked in to svn manually.</echo>
+		<!--
 		<java classname="org.tmatesoft.svn.cli.SVN"
 				  fork="true"
 				  classpathref="classpath">
@@ -65,10 +67,7 @@
 			  <arg value="-m"/>
 			  <arg value='Auto deploy of ist_utilities.jar'/>
 			  <arg value="${target.dir}/${projectname}.jar"/>
-			  <!--<classpath>
-				 <fileset dir="${comlib.dir}" includes="**/*.jar"/>
-			  </classpath>-->
-			</java>
+			</java> -->
 	</target>
 
 </project>
