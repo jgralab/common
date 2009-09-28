@@ -16,14 +16,12 @@ import javax.xml.stream.XMLStreamReader;
 public class XmlProcessor {
 
 	/**
-	 * The STAX reader for parsing the XMI file to convert. TODO Was there a
-	 * reason for passing this reference as parameter instead of having it as
-	 * member like this?
+	 * The STAX reader for parsing the XML file to convert.
 	 */
 	private XMLStreamReader parser;
 
 	/**
-	 * Contains XML element names in the format "name>xmiId".
+	 * Contains XML element names.
 	 */
 	private Stack<String> elementNameStack;
 
