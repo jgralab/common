@@ -182,6 +182,10 @@ public class CsvReader {
 		}
 		if (logger != null) logger.println(line);
 
+		if(line.startsWith("\\s*#")){
+			// if comment, try again
+			return readRecord();
+		}
 		// not EOF, so create a new result record
 		currentRecord.clear();
 
