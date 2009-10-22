@@ -13,7 +13,7 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-public class XmlProcessor {
+public abstract class XmlProcessor {
 
 	/**
 	 * The STAX reader for parsing the XML file to convert.
@@ -74,14 +74,14 @@ public class XmlProcessor {
 		endDocumentEvent();
 	}
 
-	protected void startDocumentEvent() throws XMLStreamException {
+	private void startDocumentEvent() throws XMLStreamException {
 		elementNameStack = new Stack<String>();
 		elementContentStack = new Stack<StringBuilder>();
 		ignoreCounter = 0;
 		startDocument();
 	}
 
-	protected void endDocumentEvent() throws XMLStreamException {
+	private void endDocumentEvent() throws XMLStreamException {
 		if (!elementNameStack.isEmpty()) {
 			StringBuilder openElements = new StringBuilder(
 					"Missing end tags for");
@@ -147,22 +147,14 @@ public class XmlProcessor {
 		elementContentStack.pop();
 	}
 
-	protected void startElement(String name) throws XMLStreamException {
+	protected abstract void startElement(String name) throws XMLStreamException;
 
-	}
+	protected abstract void endElement(String name, StringBuilder content)
+			throws XMLStreamException;
 
-	protected void endElement(String name, StringBuilder content)
-			throws XMLStreamException {
+	protected abstract void startDocument() throws XMLStreamException;
 
-	}
-
-	protected void startDocument() throws XMLStreamException {
-
-	}
-
-	protected void endDocument() throws XMLStreamException {
-
-	}
+	protected abstract void endDocument() throws XMLStreamException;
 
 	protected String getAttribute(String nsPrefix, String name)
 			throws XMLStreamException {
