@@ -81,8 +81,8 @@
 
   <!-- maximum memory for javadoc VM -->
   <!-- propterty can be overwritten from caller -->
-  <property name="doc.maxmem"
-		    value="1024"/>
+  <property name="maxmemsize"
+		    value="512M"/>
 
   <!--Target VM for javac-->
   <!--property can be overwritten from caller-->
@@ -207,7 +207,7 @@
 		   srcdir="${src.dir}" includes="${compileincludes}" excludes="${compileexcludes}"
 		   destdir="${classes.dir}"
 		   memoryinitialsize="512m"
-           memorymaximumsize="512m"
+           memorymaximumsize="${maxmemsize}"
 		   classpathref="classpath"
            debug="${debug}"
 		   target="${javac.targetVM}">
@@ -275,7 +275,7 @@
 	<java classname="org.antlr.Tool"
 		  classpathref="classpath"
 		  fork="true"
-		  maxmemory="512M">
+		  maxmemory="${maxmemsize}">
 	  <arg line="-Xconversiontimeout 12000 ${src.dir}/${basePackagePath}/${subprojectname}/parser/${grammarfile}"/>
 	</java>
 	<echo>generateparser finished</echo>
@@ -381,7 +381,7 @@
 			 packagenames="${basePackage}.*"
 			 excludepackagenames="${documentexcludes}"
 			 access="public"
-			 maxmemory="${doc.maxmem}M"
+			 maxmemory="${maxmemsize}"
 			 classpathref="classpath">
 	</javadoc>
 	<zip destfile="${doc.dir}/${projectname}.zip" basedir="${doc.dir}/html" compress="true"/>
@@ -400,12 +400,12 @@
            includes="${basePackagePath}test/**"
 		   destdir="${classes.dir}"
 		   memoryinitialsize="512m"
-		   memorymaximumsize="512m"
+		   memorymaximumsize="${maxmemsize}"
 		   classpathref="classpath">
 	</javac>
 	<junit fork="yes"
 		   forkmode="perTest"
-		   maxmemory="512M"
+		   maxmemory="${maxmemsize}"
 		   printsummary="on"
 		   showoutput="true"
 		   outputtoformatters="true">
