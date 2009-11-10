@@ -252,14 +252,14 @@ public class OptionHandler {
 			if (optionalArgument) {
 				out.append("[");
 			}
-			if(argumentCount == Option.UNLIMITED_VALUES){
+			if (argumentCount == Option.UNLIMITED_VALUES) {
+				appendArgument(out);
+				out.append(" ");
 				out.append("{");
 				appendArgument(out);
 				out.append("}");
 			} else {
-				appendArgument(out);
-				out.append(" ");
-				for(int i = 0; i < argumentCount; i++){
+				for (int i = 0; i < argumentCount; i++) {
 					appendArgument(out);
 				}
 			}
