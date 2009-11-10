@@ -118,6 +118,12 @@ public class OptionHandler {
 	 */
 	private HelpFormatter helpFormatter;
 
+	private int argumentCount;
+
+	private String argumentName;
+
+	private boolean optionalArgument;
+
 	/**
 	 * The only constructor of this class. It sets the toolString and the
 	 * versionString. In this constructor the two options -h and -v are created
@@ -154,6 +160,9 @@ public class OptionHandler {
 		mainOptions.addOption(version);
 
 		options.addOptionGroup(mainOptions);
+		argumentCount = 0;
+		argumentName = "parameter";
+		optionalArgument = false;
 	}
 
 	/**
@@ -231,9 +240,37 @@ public class OptionHandler {
 					out.append("]");
 				}
 			}
+			appendAdditionalArguments(out);
 			usageString = out.toString();
 		}
 		return usageString;
+	}
+
+	private void appendAdditionalArguments(StringBuilder out) {
+		if (argumentCount != 0) {
+			out.append(" ");
+			if (optionalArgument) {
+				out.append("[");
+			}
+			if(argumentCount == Option.UNLIMITED_VALUES){
+				out.append("{");
+				appendArgument(out);
+				out.append("}");
+			} else {
+				for(int i = 0; i < argumentCount; i++){
+					appendArgument(out);
+				}
+			}
+			if (optionalArgument) {
+				out.append("]");
+			}
+		}
+	}
+
+	private void appendArgument(StringBuilder out) {
+		out.append("<");
+		out.append(argumentName);
+		out.append(">");
 	}
 
 	/**
@@ -399,4 +436,36 @@ public class OptionHandler {
 
 		return sb.toString();
 	}
+
+	/**
+	 * Sets the amount of additional arguments. The default is 0. It can be set
+	 * to Option.UNLIMITED_VALUES for an arbitrary amount. This number will not
+	 * be enforced, it is only used for usage string generation.
+	 * 
+	 * @param argumentCount
+	 */
+	public void setArgumentCount(int argumentCount) {
+		this.argumentCount = argumentCount;
+	}
+
+	/**
+	 * Sets the name of additional arguments. This value is needed for usage
+	 * string creation.
+	 * 
+	 * @param argumentName
+	 */
+	public void setArgumentName(String argumentName) {
+		this.argumentName = argumentName;
+	}
+
+	/**
+	 * Sets if additional arguments are optional. This is not enforced, it is
+	 * only used for usage string generation.
+	 * 
+	 * @param optionalArgument
+	 */
+	public void setOptionalArgument(boolean optionalArgument) {
+		this.optionalArgument = optionalArgument;
+	}
+
 }
