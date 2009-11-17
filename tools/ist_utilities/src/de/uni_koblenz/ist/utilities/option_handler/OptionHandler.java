@@ -248,7 +248,7 @@ public class OptionHandler {
 
 	private void appendAdditionalArguments(StringBuilder out) {
 		if (argumentCount != 0) {
-			out.append(" ");
+			out.append(" (");
 			if (optionalArgument) {
 				out.append("[");
 			}
@@ -266,6 +266,7 @@ public class OptionHandler {
 			if (optionalArgument) {
 				out.append("]");
 			}
+			out.append(")");
 		}
 	}
 
