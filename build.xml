@@ -103,6 +103,9 @@
   <property name="common.dir"
 		    value="../common"/>
 
+  <!-- generateschema opts -->
+  <property name="generateschema.opts" value="" />
+
   <!-- common library directory -->
   <property name="comlib.dir"
 		    value="${common.dir}/lib"/>
@@ -245,7 +248,7 @@
           classname="de.uni_koblenz.jgralab.utilities.tgschema2java.TgSchema2Java"
 		  classpathref="classpath">
       <jvmarg line="-ea" />
-	  <arg line="-s ${src.dir}/${basePackagePath}/${subprojectname}/${schemafile} -p ${src.dir}"/>
+	  <arg line="${generateschema.opts} -s ${src.dir}/${basePackagePath}/${subprojectname}/${schemafile} -p ${src.dir}"/>
 	</java>
 	<echo>generateschema finished</echo>
   </target>
