@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
@@ -97,11 +98,12 @@ public abstract class XmlProcessor {
 	}
 
 	private void startElementEvent() throws XMLStreamException {
+		QName qname = parser.getName();
 		String name;
-		if (parser.getPrefix() == null) {
-			name = parser.getLocalName();
+		if ((qname.getPrefix() == null) || qname.getPrefix().isEmpty()) {
+			name = qname.getLocalPart();
 		} else {
-			name = parser.getPrefix() + ":" + parser.getLocalName();
+			name = qname.getPrefix() + ":" + qname.getLocalPart();
 		}
 
 		elementNameStack.push(name);
@@ -116,11 +118,12 @@ public abstract class XmlProcessor {
 	}
 
 	private void endElementEvent() throws XMLStreamException {
+		QName qname = parser.getName();
 		String name;
-		if (parser.getPrefix() == null) {
-			name = parser.getLocalName();
+		if ((qname.getPrefix() == null) || qname.getPrefix().isEmpty()) {
+			name = qname.getLocalPart();
 		} else {
-			name = parser.getPrefix() + ":" + parser.getLocalName();
+			name = qname.getPrefix() + ":" + qname.getLocalPart();
 		}
 
 		if (elementNameStack.isEmpty()) {
