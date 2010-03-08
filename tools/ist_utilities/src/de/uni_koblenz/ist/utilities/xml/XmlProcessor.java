@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
+import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -165,7 +166,23 @@ public abstract class XmlProcessor {
 	}
 
 	protected String getAttribute(String name) throws XMLStreamException {
-		return parser.getAttributeValue(null, name);
+		// TODO: The following line should work, but with java 1.6.0.18 it
+		// returns the first attribute named `name' and doesn't care about
+		// namespaces. Thus in <a ns1:x="..." x="..."/> there's no way of
+		// getting the unprefixed attribute value.
+
+		// return parser.getAttributeValue(null, name);
+
+		// This is a workaround... Iterate over all attributes and return the
+		// unprefixed attribute with the given name.
+		for (int i = 0; i < parser.getAttributeCount(); i++) {
+			if (((parser.getAttributeNamespace(i) == null) || XMLConstants.NULL_NS_URI
+					.equals(parser.getAttributeNamespace(i)))
+					&& name.equals(parser.getAttributeLocalName(i))) {
+				return parser.getAttributeValue(i);
+			}
+		}
+		return null;
 	}
 
 	protected void addIgnoredElements(String... names) {
