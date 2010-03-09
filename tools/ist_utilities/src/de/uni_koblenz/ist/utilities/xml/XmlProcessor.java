@@ -171,10 +171,10 @@ public abstract class XmlProcessor {
 		// namespaces. Thus in <a ns1:x="..." x="..."/> there's no way of
 		// getting the unprefixed attribute value.
 
-		String value = parser.getAttributeValue(null, name);
-		if (value != null) {
-			return value;
-		}
+		// String value = parser.getAttributeValue(null, name);
+		// if (value != null) {
+		// return value;
+		// }
 
 		// This is a workaround... Iterate over all attributes and return the
 		// unprefixed attribute with the given name.
