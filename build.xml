@@ -110,8 +110,8 @@
 	<pathelement location="${jar.dir}/${projectname}.jar"/>
 	<fileset dir="${comlib.dir}" includes="**/*.jar"/>
 	<pathelement location="../jgralab/build/jar/jgralab.jar" />
-    <fileset dir="${additional.lib.dir}" includes="**/*.jar" />
-    <fileset dir="${additional.additional.lib.dir}" includes="**/*.jar" />
+	<fileset dir="${additional.lib.dir}" includes="**/*.jar" />
+	<fileset dir="${additional.additional.lib.dir}" includes="**/*.jar" />
 	<pathelement location="${additional.pathelementlocation}" />
   </path>
 <!-- TODO define an additional classpath and add it to "classpath"-->
