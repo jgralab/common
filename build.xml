@@ -3,120 +3,107 @@
 
 <project name="de.uni_koblenz.ant" basedir="." default="build">
 
+<!-- global project specific properties -->
+
   <!-- project name -->
-  <!-- propterty has to be overwritten from caller -->
+  <!-- propterty has to be overwritten by caller -->
   <property name="projectname"
 		    value=""/>
 
-  <!-- subproject name -->
-  <!-- propterty can be overwritten from caller -->
+  <!-- subproject name (subject to be removed) -->
+  <!-- propterty can be overwritten by caller -->
   <property name="subprojectname"
 		    value="${projectname}"/>
 
   <!-- projects main class name -->
-  <!-- propterty can be overwritten from caller -->
+  <!-- propterty can be overwritten by caller -->
   <property name="main"
 		    value="${projectname}"/>
 
   <!-- projects base package -->
-  <!-- propterty can be overwritten from caller -->
+  <!-- propterty can be overwritten by caller -->
   <property name="basePackage"
 		    value="de.uni_koblenz.${projectname}"/>
 
   <!-- projects base package -->
-  <!-- propterty can be overwritten from caller -->
+  <!-- propterty can be overwritten by caller -->
   <property name="basePackagePath"
 		    value="de/uni_koblenz/${projectname}"/>
 
+  <!-- maximum memory for forked java tasks (java, javadoc, test) -->
+  <!-- propterty can be overwritten by caller -->
+  <property name="maxmemsize"
+		    value="512M"/>
+
+<!-- global project specific directories -->
   <!-- project directory -->
-  <!-- propterty can be overwritten from caller -->
+  <!-- propterty can be overwritten by caller -->
   <property name="project.dir"
 		    value="../${projectname}"/>
 
   <!-- source directory -->
-  <!-- propterty can be overwritten from caller -->
+  <!-- propterty can be overwritten by caller -->
   <property name="src.dir"
 		    value="${project.dir}/src"/>
 
-  <!-- test source directory -->
-  <!-- propterty can be overwritten from caller -->
-  <property name="testcases.dir"
-		    value="${project.dir}/testit"/>
-
-  <!-- Should be overwritten by caller to point to a suite
-       running all test -->
-  <property name="test.suite" value=""/>
-
-
-  <!-- library directory -->
-  <!-- propterty can be overwritten from caller -->
-  <property name="lib.dir"
-		    value="${project.dir}/lib"/>
-
-  <!-- build directory -->
-  <!-- propterty can be overwritten from caller -->
-  <property name="build.dir"
-		    value="${project.dir}/build"/>
-
   <!-- classes directory -->
-  <!-- propterty can be overwritten from caller -->
+  <!-- propterty can be overwritten by caller -->
   <property name="classes.dir"
 		    value="${build.dir}/classes"/>
 
-  <!-- jar directory -->
-  <!-- propterty can be overwritten from caller -->
-  <property name="jar.dir"
-		    value="${build.dir}/jar"/>
+  <!-- build directory -->
+  <!-- propterty can be overwritten by caller -->
+  <property name="build.dir"
+		    value="${project.dir}/build"/>
 
-  <!-- jar excludes -->
-  <!-- propterty can be overwritten from caller -->
-  <property name="unjarexcludes"
-		    value=""/>
-
-
-  <!-- documentation directory -->
-  <!-- propterty can be overwritten from caller -->
-  <property name="doc.dir"
-		    value="${build.dir}/doc"/>
-
-  <!-- maximum memory for javadoc VM -->
-  <!-- propterty can be overwritten from caller -->
-  <property name="maxmemsize"
-		    value="512M"/>
-
-  <!--Target VM for javac-->
-  <!--property can be overwritten from caller-->
-  <property name="javac.targetVM"
-		    value="1.6"/>
-
-  <!-- test result directory -->
-  <!-- propterty can be overwritten from caller -->
-  <property name="testresults.dir"
-		    value="${build.dir}/testresults"/>
-
-  <!-- temporary directory -->
-  <!-- propterty can be overwritten from caller -->
-  <property name="tmp.dir"
-		    value="${build.dir}/tmp"/>
+  <!-- library directory -->
+  <!-- propterty can be overwritten by caller -->
+  <property name="lib.dir"
+		    value="${project.dir}/lib"/>
 
   <!-- common directory -->
+  <!-- propterty should not be overwritten -->
   <property name="common.dir"
 		    value="../common"/>
 
-  <!-- generateschema opts -->
-  <property name="generateschema.opts" value="" />
-
   <!-- common library directory -->
+  <!-- propterty should not be overwritten -->
   <property name="comlib.dir"
 		    value="${common.dir}/lib"/>
 
+  <!-- the following three are subject to be removed -->  
   <property name="additional.lib.dir"
 		    value=""/>
   <property name="additional.additional.lib.dir"
 		    value=""/>
   <property name="additional.pathelementlocation" value=""/>
 
-  <!-- classpath -->
+  <!-- jar directory -->
+  <!-- propterty can be overwritten by caller -->
+  <property name="jar.dir"
+		    value="${build.dir}/jar"/>
+
+  <!-- documentation directory -->
+  <!-- propterty can be overwritten by caller -->
+  <property name="doc.dir"
+		    value="${build.dir}/doc"/>
+
+  <!-- temporary directory -->
+  <!-- propterty can be overwritten by caller -->
+  <property name="tmp.dir"
+		    value="${build.dir}/tmp"/>
+
+  <!-- test source directory -->
+  <!-- propterty can be overwritten by caller -->
+  <property name="testcases.dir"
+		    value="${project.dir}/testit"/>
+
+  <!-- test result directory -->
+  <!-- propterty can be overwritten by caller -->
+  <property name="testresults.dir"
+		    value="${build.dir}/testresults"/>
+  
+<!-- classpath -->
   <path id="classpath">
 	<pathelement location="${classes.dir}" />
 	<fileset dir="${lib.dir}" includes="**/*.jar"/>
@@ -127,7 +114,80 @@
     <fileset dir="${additional.additional.lib.dir}" includes="**/*.jar" />
 	<pathelement location="${additional.pathelementlocation}" />
   </path>
+<!-- TODO define an additional classpath and add it to "classpath"-->
 
+
+
+<!-- properties for the target "compile" -->
+  
+  <!-- includes for compiling sources -->
+  <!-- propterty can be overwritten by caller -->
+  <property name="compileincludes"
+		    value=""/>
+
+  <!-- excludes for compiling sources -->
+  <!-- propterty can be overwritten by caller -->
+  <property name="compileexcludes"
+		    value=""/>
+
+  <!--Target VM for javac-->
+  <!--property can be overwritten by caller-->
+  <property name="javac.targetVM"
+		    value="1.6"/>
+
+  <!-- debug infos in compiled sources -->
+  <!-- propterty can be overwritten by caller -->
+  <property name="debug"
+		    value="false"/>  
+
+<!-- properties for the target "generateschema" -->
+
+  <!-- schema file -->
+  <!-- propterty can be overwritten by caller -->
+  <property name="schemafile"
+		    value=""/>
+
+<!-- generateschema opts -->
+  <property name="generateschema.opts" value="" />
+	<!-- TODO add proper default value -->
+
+<!-- properties for the target "generateparser" -->
+
+  <!-- grammar file -->
+  <!-- propterty can be overwritten by caller -->
+  <property name="grammarfile"
+		    value=""/>
+
+<!-- properties for the target "test" -->
+  <!-- Should be overwritten by caller to point to a suite
+       running all test -->
+  <property name="test.suite" value=""/>
+
+
+<!-- properties for the target "unjar" -->
+
+  <!-- unjar excludes -->
+  <!-- propterty should be overwritten by caller -->
+  <property name="unjarexcludes"
+		    value=""/>
+
+  <!-- TODO add unjar includes -->
+  
+<!-- properties for the target "run" -->
+  <!-- run arguments -->
+  <property name="run.args"
+		    value=""/>
+	
+  <!-- run arguments -->
+  <property name="run.jvmargs"
+			value=""/>
+
+  <!-- 	project directory -->
+  <property name = "run.dir"
+		    value = "${project.dir}"/>
+  
+
+<!-- the targets -->
 
   <!-- build -->
   <!-- main target - does nothing -->
@@ -185,22 +245,6 @@
   </target>
 
 
-  <!-- includes for compiling sources -->
-  <!-- propterty can be overwritten from caller -->
-  <property name="compileincludes"
-		    value=""/>
-
-  <!-- excludes for compiling sources -->
-  <!-- propterty can be overwritten from caller -->
-  <property name="compileexcludes"
-		    value=""/>
-
-  <!-- debug infos in compiled sources -->
-  <!-- propterty can be overwritten from caller -->
-  <property name="debug"
-		    value="false"/>
-
-
   <!-- compile -->
   <!-- compiles all Java sources in $src.dir and puts teh generated classes into $classes.dir-->
   <target name="compile">
@@ -235,11 +279,6 @@
   </target>
 
 
-  <!-- schema file -->
-  <!-- propterty can be overwritten from caller -->
-  <property name="schemafile"
-		    value=""/>
-
   <!-- generateschema -->
   <!-- generates schmema sources out of schema ${schemafile} and puts them into ${src.dir}/de/uni_koblenz/${subprojectname}/schema -->
   <target name="generateschema">
@@ -253,11 +292,6 @@
 	<echo>generateschema finished</echo>
   </target>
 
-
-  <!-- grammar file -->
-  <!-- propterty can be overwritten from caller -->
-  <property name="grammarfile"
-		    value=""/>
 
   <!-- generateparser -->
   <!-- generates parser sources out of grammar ${grammarfile} and puts them into ${src.dir}/de/uni_koblenz/${subprojectname}/parser -->
@@ -284,6 +318,42 @@
 	<echo>generateparser finished</echo>
   </target>
 
+  <!-- test -->
+  <!-- run the test suite specified by test.suite -->
+  <target name="test">
+	<echo>../common/build.xml test - testing sources</echo>
+	<mkdir dir="${testresults.dir}"/>
+	<mkdir dir="${classes.dir}"/>
+	<javac fork="true"
+		   srcdir="${testcases.dir}"
+           includes="${basePackagePath}test/**"
+		   destdir="${classes.dir}"
+		   memoryinitialsize="512m"
+		   memorymaximumsize="${maxmemsize}"
+		   classpathref="classpath">
+	</javac>
+	<junit fork="yes"
+		   forkmode="perTest"
+		   maxmemory="${maxmemsize}"
+		   printsummary="on"
+		   showoutput="true"
+		   outputtoformatters="true">
+      <jvmarg value="-enableassertions"/>
+	  <classpath>
+		<pathelement location="${src.dir}"/>
+		<pathelement location="${testcases.dir}"/>
+		<pathelement location="${classes.dir}" />
+		<fileset dir="${lib.dir}" includes="**/*.jar"/>
+		<pathelement location="${jar.dir}/${projectname}.jar"/>
+		<fileset dir="${comlib.dir}" includes="**/*.jar"/>
+		<pathelement location="../jgralab/build/jar/jgralab.jar" />
+	  </classpath>
+	  <formatter type="brief"/>
+      <test name="${test.suite}"
+            todir="${testresults.dir}" />
+	</junit>
+	<echo>test finished</echo>
+  </target>
 
   <!-- unjar -->
   <!-- unpacks the libs in $lib.dir -->
@@ -345,18 +415,6 @@
 	<echo>jar finished</echo>
   </target>
 
-  <!-- run arguments -->
-  <property name="run.args"
-		    value=""/>
-	
-  <!-- run arguments -->
-  <property name="run.jvmargs"
-			value=""/>
-
-  <!-- 	project directory -->
-  <property name = "run.dir"
-		    value = "${project.dir}"/>
-
   <!-- run -->
   <!-- runs project with given arguments ${run.args} in the
        $project.dir}-->
@@ -394,44 +452,6 @@
 	</javadoc>
 	<zip destfile="${doc.dir}/${projectname}.zip" basedir="${doc.dir}/html" compress="true"/>
 	<echo>document finished</echo>
-  </target>
-
-
-  <!-- test -->
-  <!-- run the test suite specified by test.suite -->
-  <target name="test">
-	<echo>../common/build.xml test - testing sources</echo>
-	<mkdir dir="${testresults.dir}"/>
-	<mkdir dir="${classes.dir}"/>
-	<javac fork="true"
-		   srcdir="${testcases.dir}"
-           includes="${basePackagePath}test/**"
-		   destdir="${classes.dir}"
-		   memoryinitialsize="512m"
-		   memorymaximumsize="${maxmemsize}"
-		   classpathref="classpath">
-	</javac>
-	<junit fork="yes"
-		   forkmode="perTest"
-		   maxmemory="${maxmemsize}"
-		   printsummary="on"
-		   showoutput="true"
-		   outputtoformatters="true">
-      <jvmarg value="-enableassertions"/>
-	  <classpath>
-		<pathelement location="${src.dir}"/>
-		<pathelement location="${testcases.dir}"/>
-		<pathelement location="${classes.dir}" />
-		<fileset dir="${lib.dir}" includes="**/*.jar"/>
-		<pathelement location="${jar.dir}/${projectname}.jar"/>
-		<fileset dir="${comlib.dir}" includes="**/*.jar"/>
-		<pathelement location="../jgralab/build/jar/jgralab.jar" />
-	  </classpath>
-	  <formatter type="brief"/>
-      <test name="${test.suite}"
-            todir="${testresults.dir}" />
-	</junit>
-	<echo>test finished</echo>
   </target>
 
 
