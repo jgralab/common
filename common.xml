@@ -266,7 +266,7 @@
 
 	<!-- jar -->
 	<!-- makes executable jar file out of all classes in ${classes.dir} and puts jar file into ${jar.dir}-->
-	<target name="jar" depends="unjar">
+	<target name="jar" depends="compile, unjar">
 		<mkdir dir="${jar.dir}" />
 		<mkdir dir="${classes.dir}" />
 		<mkdir dir="${tmp.dir}" />
