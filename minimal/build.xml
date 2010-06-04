@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="de.uni_koblenz.minimal" basedir="." default="build">
+	
+	<property name="projectname" value="minimal" />
+	<property name="main" value="HelloWorld" />
+	<property name="schema.file" value="MinimalSchema.tg" />
+	
+	<path id="classpathExtension">
+	
+	</path>
+	
+	<import file="../common/common.xml" />
+	
+	<target name="build" depends="clean,compile" />
+	
+</project>
