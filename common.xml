@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project name="de.uni_koblenz.common" basedir="." default="build">
+
+
+	<!-- global project specific properties; if empty, they have to be overridden by specializations -->
+	<!-- the name of the project -->
+	<property name="projectname" value="" />
+
+	<!-- project's base package; if it is a project from the University of Koblenz, this property should remain as it is,
+	     it should be changed for 3rd party projects -->
+	<property name="basePackage" value="de.uni_koblenz.${projectname}" />
+
+	<!-- path of the project's base package; if it is a project from the University of Koblenz, this property should remain as it is,
+		     it should be changed for 3rd party projects (TODO is this required?)-->
+	<property name="basePackagePath" value="de/uni_koblenz/${projectname}" />
+
+	<!-- the name of the project's main class -->
+	<property name="main" value="" />
+
+	<!-- the fully qualified name of the project's main class -->
+	<property name="main.fq" value="${basePackage}.${main}" />
+
+	<!-- the location of the jgralab.jar; only change if the sourcecode of jgralab is not available (3rd party project) -->
+	<property name="jgralab.location" value="../jgralab/build/jar/jgralab.jar" />
+
+	<!-- maximum memory for forked java tasks (java, javadoc, test); override in specialization if "OutOfMemoryError"s occur -->
+	<property name="maxmemsize" value="512M" />
+
+
+	<!-- global project specific directories; they should remain as they are to ensure analogy among the projects -->
+	<!-- project directory; the base directory of the project -->
+	<property name="project.dir" value="../${projectname}" />
+
+	<!-- source directory; all source code is expected to be here -->
+	<property name="src.dir" value="${project.dir}/src" />
+
+	<!-- build directory; all generated permanent output is placed here -->
+	<property name="build.dir" value="${project.dir}/build" />
+
+	<!-- classes directory; all compiled classes will be placed here -->
+	<property name="classes.dir" value="${build.dir}/classes" />
+
+	<!-- the base directory of common files  -->
+	<property name="common.dir" value="../common" />
+
+	<!-- the directory of common libraries -->
+	<property name="comlib.dir" value="${common.dir}/lib" />
+
+	<!-- project specific library directory; all additional libraries of the project should be placed here -->
+	<property name="lib.dir" value="${project.dir}/lib" />
+
+	<!-- jar directory; the project's jar file will be placed here -->
+	<property name="jar.dir" value="${build.dir}/jar" />
+
+	<!-- documentation directory; the project's javadoc will be placed here -->
+	<property name="doc.dir" value="${build.dir}/doc" />
+
+	<!-- temporary directory; the temporary files for creating the project's jar file will be copied here (and automatically deleted) -->
+	<property name="tmp.dir" value="${build.dir}/tmp" />
+
+	<!-- test source directory; the source directory of the test cases -->
+	<property name="testcases.dir" value="${project.dir}/testit" />
+
+	<!-- the directory of the test classes (should be different from non-test classes -->
+	<property name="testclasses.dir" value="${build.dir}/testclasses" />
+
+	<!-- test result directory; the test results will be placed here -->
+	<property name="testresults.dir" value="${build.dir}/testresults" />
+
+	<!-- the global classpath -->
+	<!-- classpath; the classpath that is used for all java-tasks -->
+	<path id="classpath">
+		<!-- the compiled classes -->
+		<pathelement location="${classes.dir}" />
+
+		<!-- the project's jar file -->
+		<pathelement location="${jar.dir}/${projectname}.jar" />
+
+		<!-- all common libraries -->
+		<fileset dir="${comlib.dir}" includes="**/*.jar" />
+
+		<!-- all project specific libraries -->
+		<fileset dir="${lib.dir}" includes="**/*.jar" />
+
+		<!-- the jgralab jar file -->
+		<pathelement location="${jgralab.location}" />
+
+		<!-- a custom extension to the classpath; this can be defined in any specialization in the same way as here, 
+		     but with id "classpathExtension". This can be useful to refer to jar files of other projects that should 
+		     not be placed in the project specific library directory -->
+		<path refid="classpathExtension" />
+	</path>
+
+
+	<!-- properties for the target "compile" -->
+	<!-- includes for compiling sources -->
+	<property name="compileincludes" value="" />
+
+	<!-- excludes for compiling sources -->
+	<property name="compileexcludes" value="" />
+
+	<!--Target VM for javac-->
+	<property name="javac.targetVM" value="1.6" />
+
+	<!-- debug infos in compiled sources -->
+	<property name="debug" value="false" />
+
+
+	<!-- properties for the target "modify" -->
+	<!-- the location of the main package's source file -->
+	<property name="main.src" value="${src.dir}/${basePackagePath}/{main}.java" />
+
+
+	<!-- properties for the target "generateschema" -->
+	<!-- schema file; the absolute path to the schema file -->
+	<property name="schema.file" value="" />
+
+	<!-- the generated schema classes will be placed here -->
+	<property name="schema.location" value="${src.dir}" />
+
+	<!-- the implementation mode of the schema to generate 
+	     ATM possible values are "standard", "transaction" and "all",
+	     but this will change in the near future -->
+	<property name="schema.implementationMode" value="standard" />
+
+	<!-- TODO comment this option -->
+	<property name="schema.withoutTypes" value="false" />
+
+	<!-- TODO comment this option -->
+	<property name="schema.subtypeFlag" value="false" />
+
+	<!-- properties for the target "test" -->
+	<!-- the fully qualified name of the class containing the test suite that executes all test for the project -->
+	<property name="test.suite" value="" />
+
+
+	<!-- properties for the target "unjar" -->
+	<!-- unjar excludes -->
+	<property name="unjarexcludes" value="" />
+
+	<!-- TODO add unjar includes -->
+
+
+	<!-- properties for the target "run" -->
+	<!-- run arguments; the arguments passed to the java program -->
+	<property name="run.args" value="" />
+
+	<!-- jvm arguments; the arguments passed to the jvm when running the java program (e.g. "-ea") -->
+	<property name="run.jvmargs" value="" />
+
+	<!-- the run directory (defaults to project.dir) -->
+	<property name="run.dir" value="${project.dir}" />
+
+
+	<!-- properties for the target "document" -->
+	<!-- excludeded package names for documenting sources -->
+	<property name="documentexcludes" value="" />
+
+
+	<!-- the targets -->
+
+	<!-- build -->
+	<target name="build">
+		<echo>This is a generic build file. It does nothing if called directly. It is meant to be included in specialized build files. See documentation for details.</echo>
+	</target>
+
+	<!-- clean -->
+	<!-- deletes all classes, the jar and the temporary files -->
+	<!-- TODO add cleaning of generated schema files -->
+	<target name="clean">
+		<delete dir="${classes.dir}" />
+		<delete dir="${jar.dir}" />
+		<delete dir="${tmp.dir}" />
+	</target>
+
+	<!-- clean all -->
+	<!-- deletes all classes, the jar, the temporary files, the documentation, the testresults and all generated schema and grammar files -->
+	<target name="cleanall" depends="clean">
+		<delete dir="${doc.dir}" />
+		<delete dir="${testresults.dir}" />
+	</target>
+
+	<!-- modify (TODO check if it still works)-->
+	<!-- modifies the projects main class -->
+	<target name="modify">
+		<mkdir dir="${classes.dir}" />
+		<!-- modify build-ID -->
+		<java classname="de.uni_koblenz.ist.utilities.auto_build_id.AutoBuildID" classpathref="classpath">
+			<arg line="-m ${src.dir}/de/uni_koblenz/${projectname}/${main}.java" />
+		</java>
+		<!-- commit the changed file to svn -->
+		<java classname="org.tmatesoft.svn.cli.SVN" fork="true" classpathref="classpath" dir="${src.dir}/de/uni_koblenz/${projectname}">
+			<arg value="commit" />
+			<arg value="-m" />
+			<arg value='Released new version - automatic modification of revision number in ${main}.java.' />
+			<arg value="${main}.java" />
+		</java>
+	</target>
+
+	<!-- compile -->
+	<!-- compiles all Java sources in $src.dir and puts teh generated classes into $classes.dir-->
+	<target name="compile" depends="generateschema">
+		<mkdir dir="${classes.dir}" />
+		<javac fork="true" srcdir="${src.dir}" includes="${compileincludes}" excludes="${compileexcludes}" destdir="${classes.dir}" memoryinitialsize="512m" memorymaximumsize="${maxmemsize}" classpathref="classpath" debug="${debug}" target="${javac.targetVM}">
+		</javac>
+	</target>
+
+	<!-- checkforjgralab; sets a property to true if the jgralab.jar can be found -->
+	<target name="checkforjgralab">
+		<condition property="jgralab.jar exists">
+			<available file="${jgralab.location}" />
+		</condition>
+	</target>
+
+	<!-- builds jgralab -->
+	<target name="jgralab" depends="checkforjgralab" unless="jgralab.jar exists">
+		<echo>Building JGraLab first...</echo>
+		<ant dir="../jgralab" antfile="build.xml" inheritAll="false" />
+	</target>
+
+	<!-- activates the custom ant tasks defined in the jgralab.jar all targets (including those in specializations) using custom tasks have
+	     to depend on this target -->
+	<target name="customAntTasks" depends="jgralab">
+		<taskdef name="tgschema2java" classname="de.uni_koblenz.jgralab.utilities.ant.TgSchema2JavaTask" classpath="${jgralab.location}" />
+	</target>
+
+	<!-- generateschema -->
+	<!-- generates schmema sources out of schema ${schemafile} -->
+	<target name="generateschema" depends="customAntTasks">
+		<tgschema2java schema="${schema.file}" path="${schema.location}" implementationMode="${schema.implementationMode}" withoutTypes="${schema.withoutTypes}" subtypeFlag="${schema.subtypeFlag}" />
+	</target>
+
+
+	<!-- test -->
+	<!-- run the test suite specified by test.suite -->
+	<target name="test" depends="compile">
+		<mkdir dir="${testresults.dir}" />
+		<mkdir dir="${testclasses.dir}" />
+		<echo>Compiling test case classes...</echo>
+		<!-- TODO? replace with an antcall; extract own target "testcompile" -->
+		<javac fork="true" srcdir="${testcases.dir}" destdir="${testclasses.dir}" memoryinitialsize="512m" memorymaximumsize="${maxmemsize}" classpathref="classpath">
+		</javac>
+		<echo>Starnig the test...</echo>
+		<junit fork="yes" forkmode="perTest" maxmemory="${maxmemsize}" printsummary="on" showoutput="true" outputtoformatters="true">
+			<jvmarg value="-enableassertions" />
+			<classpath>
+				<path refid="classpath" />
+				<pathelement path="${testclasses.dir}" />
+			</classpath>
+			<formatter type="brief" />
+			<test name="${test.suite}" todir="${testresults.dir}" />
+		</junit>
+	</target>
+
+
+	<!-- unjar -->
+	<!-- unpacks the libs in $lib.dir and the ist_utilities -->
+	<target name="unjar">
+		<mkdir dir="${tmp.dir}" />
+		<unjar dest="${tmp.dir}">
+			<fileset dir="${lib.dir}" includes="**/*.jar" excludes="${unjarexcludes}" />
+			<fileset dir="${comlib.dir}/ist_utilities/" includes="**/*.jar" />
+		</unjar>
+	</target>
+
+	<!-- jar -->
+	<!-- makes executable jar file out of all classes in ${classes.dir} and puts jar file into ${jar.dir}-->
+	<target name="jar" depends="unjar">
+		<mkdir dir="${jar.dir}" />
+		<mkdir dir="${classes.dir}" />
+		<mkdir dir="${tmp.dir}" />
+
+		<!-- include classes -->
+		<jar destfile="${jar.dir}/${projectname}.jar" basedir="${classes.dir}" compress="true">
+			<manifest>
+				<attribute name="Main-Class" value="${main.fq}" />
+			</manifest>
+		</jar>
+
+		<!-- include ressources (all non-java files in ${src.dir})-->
+		<jar destfile="${jar.dir}/${projectname}.jar" basedir="${src.dir}" update="true" compress="true" filesetmanifest="skip" excludes="**/*.java" />
+
+		<!-- include temporary files, e.g. from unjar -->
+		<jar destfile="${jar.dir}/${projectname}.jar" basedir="${tmp.dir}" update="true" compress="true" filesetmanifest="skip" />
+
+		<delete dir="${tmp.dir}" />
+	</target>
+
+	<!-- sourcejar -->
+	<!-- in addition to the normal executable jar file, the target creates a second executable jar file that also includes the project's soucre files -->
+	<target name="sourcejar" depends="jar">
+		<copy file="${jar.dir}/${projectname}.jar" tofile="${jar.dir}/${projectname}.src.jar" />
+
+		<!-- include source files-->
+		<jar destfile="${jar.dir}/${projectname}.jar" basedir="${src.dir}" update="true" compress="true" filesetmanifest="skip" includes="**/*.java" />
+
+	</target>
+
+	<!-- run -->
+	<!-- runs project with given arguments ${run.args} in the
+       $project.dir}-->
+	<target name="run" depends="compile">
+		<java classname="${main.fq}" classpathref="classpath" fork="true" dir="${run.dir}">
+			<jvmarg line="${run.jvmargs}" />
+			<arg line="${run.args}" />
+		</java>
+	</target>
+
+	<!-- document -->
+	<!-- document all sources out of ${src.dir} and puts documentation into ${doc.dir}-->
+	<target name="document">
+		<delete dir="${doc.dir}/html" />
+		<mkdir dir="${doc.dir}/html" />
+		<javadoc sourcepath="${src.dir}" destdir="${doc.dir}/html" packagenames="${basePackage}.*" excludepackagenames="${documentexcludes}" access="public" maxmemory="${maxmemsize}" classpathref="classpath">
+		</javadoc>
+		<zip destfile="${doc.dir}/${projectname}.zip" basedir="${doc.dir}/html" compress="true" />
+	</target>
+
+	<!-- TODO add an improved "newproject"-target -->
+
+</project>
+
+
