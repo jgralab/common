@@ -27,6 +27,8 @@
 	<!-- maximum memory for forked java tasks (java, javadoc, test); override in specialization if "OutOfMemoryError"s occur -->
 	<property name="maxmemsize" value="512M" />
 
+	<!-- minimum memory for forked java tasks (java, javadoc, test) -->
+	<property name="minmemsize" value="256M" />
 
 	<!-- global project specific directories; they should remain as they are to ensure analogy among the projects -->
 	<!-- project directory; the base directory of the project -->
@@ -140,8 +142,11 @@
 	<property name="unjarexcludes" value="" />
 
 	<!-- TODO add unjar includes -->
-
-
+	
+	<!-- properties for the target "jar" -->
+	<!-- exclude patterns for files in ${src.dir} that, besides *.java, should not be added to the normal jar file -->
+	<property name="ressource.excludes" value="" />
+	
 	<!-- properties for the target "run" -->
 	<!-- run arguments; the arguments passed to the java program -->
 	<property name="run.args" value="" />
@@ -198,11 +203,14 @@
 		</java>
 	</target>
 
+	<target name="createClassesDir">
+		<mkdir dir="${classes.dir}" />
+	</target>
+
 	<!-- compile -->
 	<!-- compiles all Java sources in $src.dir and puts teh generated classes into $classes.dir-->
-	<target name="compile" depends="generateschema">
-		<mkdir dir="${classes.dir}" />
-		<javac fork="true" srcdir="${src.dir}" includes="${compileincludes}" excludes="${compileexcludes}" destdir="${classes.dir}" memoryinitialsize="512m" memorymaximumsize="${maxmemsize}" classpathref="classpath" debug="${debug}" target="${javac.targetVM}">
+	<target name="compile" depends="createClassesDir,generateschema">
+		<javac fork="true" srcdir="${src.dir}" includes="${compileincludes}" excludes="${compileexcludes}" destdir="${classes.dir}" memoryinitialsize="${minmemsize}" memorymaximumsize="${maxmemsize}" classpathref="classpath" debug="${debug}" target="${javac.targetVM}">
 		</javac>
 	</target>
 
@@ -279,7 +287,7 @@
 		</jar>
 
 		<!-- include ressources (all non-java files in ${src.dir})-->
-		<jar destfile="${jar.dir}/${projectname}.jar" basedir="${src.dir}" update="true" compress="true" filesetmanifest="skip" excludes="**/*.java" />
+		<jar destfile="${jar.dir}/${projectname}.jar" basedir="${src.dir}" update="true" compress="true" filesetmanifest="skip" excludes="**/*.java ${ressource.excludes}" />
 
 		<!-- include temporary files, e.g. from unjar -->
 		<jar destfile="${jar.dir}/${projectname}.jar" basedir="${tmp.dir}" update="true" compress="true" filesetmanifest="skip" />
