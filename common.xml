@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="de.uni_koblenz.common" basedir="." default="build">
+<project name="common" basedir="." default="build">
 
 
 	<!-- global project specific properties; if empty, they have to be overridden by specializations -->
@@ -79,11 +79,11 @@
 		<!-- the project's jar file -->
 		<pathelement location="${jar.dir}/${projectname}.jar" />
 
-		<!-- all common libraries -->
-		<fileset dir="${comlib.dir}" includes="**/*.jar" />
-
 		<!-- all project specific libraries -->
 		<fileset dir="${lib.dir}" includes="**/*.jar" />
+
+		<!-- all common libraries -->
+		<fileset dir="${comlib.dir}/ist_utilities" includes="*.jar" />
 
 		<!-- the jgralab jar file -->
 		<pathelement location="${jgralab.location}" />
@@ -132,6 +132,20 @@
 	<!-- TODO comment this option -->
 	<property name="schema.subtypeFlag" value="false" />
 
+
+	<!-- properties for the target "convertschema" -->
+	<!-- the absolute path to the xmi schema (if any) -->
+	<property name="xmi.schema.file" value="$" />
+
+	<!-- use from role -->
+	<property name="rsa2tg.f" value="false" />
+
+	<!-- remove unused domains -->
+	<property name="rsa2tg.u" value="false" />
+
+	<!-- use navigability -->
+	<property name="rsa2tg.n" value="false" />
+
 	<!-- properties for the target "test" -->
 	<!-- the fully qualified name of the class containing the test suite that executes all test for the project -->
 	<property name="test.suite" value="" />
@@ -142,11 +156,11 @@
 	<property name="unjarexcludes" value="" />
 
 	<!-- TODO add unjar includes -->
-	
+
 	<!-- properties for the target "jar" -->
 	<!-- exclude patterns for files in ${src.dir} that, besides *.java, should not be added to the normal jar file -->
 	<property name="ressource.excludes" value="" />
-	
+
 	<!-- properties for the target "run" -->
 	<!-- run arguments; the arguments passed to the java program -->
 	<property name="run.args" value="" />
@@ -177,13 +191,22 @@
 		<delete dir="${classes.dir}" />
 		<delete dir="${jar.dir}" />
 		<delete dir="${tmp.dir}" />
+		<delete dir="${testclasses.dir}" />
+	</target>
+
+	<!-- deletes all classes, the jar, the temporary files, the documentation, the testresults and all generated schema files -->
+	<target name="clean.generated" depends="clean,customAntTasks">
+		<delete dir="${doc.dir}" />
+		<delete dir="${testresults.dir}" />
+		<deletegeneratedschema schemaFile="${schema.file}" sourcePath="${schema.location}" />
 	</target>
 
 	<!-- clean all -->
-	<!-- deletes all classes, the jar, the temporary files, the documentation, the testresults and all generated schema and grammar files -->
-	<target name="cleanall" depends="clean">
-		<delete dir="${doc.dir}" />
-		<delete dir="${testresults.dir}" />
+	<!-- deletes all, including the schema file, if it was generated -->
+	<target name="cleanall" depends="clean.generated,deleteConvertedSchemaFile" />
+
+	<target name="deleteConvertedSchemaFile" depends="xmicheck" if="xmi exists">
+		<delete file="${schema.file}" />
 	</target>
 
 	<!-- modify (TODO check if it still works)-->
@@ -214,35 +237,52 @@
 		</javac>
 	</target>
 
-	<!-- checkforjgralab; sets a property to true if the jgralab.jar can be found -->
-	<target name="checkforjgralab">
-		<condition property="jgralab.jar exists">
-			<available file="${jgralab.location}" />
+	<!-- builds jgralab -->
+	<target name="jgralab">
+		<ant dir="../jgralab" antfile="build.xml" inheritAll="false" target="ensureJarExists" />
+	</target>
+
+	<!-- sets the property "jar exists" to true if the project's jar is present -->
+	<target name="jarcheck">
+		<condition property="jar exists">
+			<available file="${jar.dir}/${projectname}.jar" />
 		</condition>
 	</target>
 
-	<!-- builds jgralab -->
-	<target name="jgralab" depends="checkforjgralab" unless="jgralab.jar exists">
-		<echo>Building JGraLab first...</echo>
-		<ant dir="../jgralab" antfile="build.xml" inheritAll="false" />
+	<!-- calls the jar target iff the jar file does not exist yet -->
+	<target name="ensureJarExists" depends="jarcheck" unless="jar exists">
+		<antcall target="jar" />
 	</target>
 
 	<!-- activates the custom ant tasks defined in the jgralab.jar all targets (including those in specializations) using custom tasks have
 	     to depend on this target -->
 	<target name="customAntTasks" depends="jgralab">
 		<taskdef name="tgschema2java" classname="de.uni_koblenz.jgralab.utilities.ant.TgSchema2JavaTask" classpath="${jgralab.location}" />
+		<taskdef name="deletegeneratedschema" classname="de.uni_koblenz.jgralab.utilities.ant.DeleteGeneratedSchemaTask" classpath="${jgralab.location}" />
+		<taskdef name="rsa2tg" classname="de.uni_koblenz.jgralab.utilities.ant.Rsa2TgTask" classpath="${jgralab.location}" />
+	</target>
+
+	<!-- sets the property "xmi exists" to true if the xmi file is present -->
+	<target name="xmicheck">
+		<condition property="xmi exists">
+			<available file="${xmi.schema.file}" />
+		</condition>
+	</target>
+
+	<!-- Converts an xmi schema to tg if an xmi file has been specified and is available -->
+	<target name="convertschema" depends="customAntTasks,xmicheck" if="xmi exists">
+		<rsa2tg xmifile="${xmi.schema.file}" schemafile="${schema.file}" useFromRole="${rsa2tg.f}" removeUnusedDomains="${rsa2tg.u}" useNavigability="${rsa2tg.n}" />
 	</target>
 
 	<!-- generateschema -->
 	<!-- generates schmema sources out of schema ${schemafile} -->
-	<target name="generateschema" depends="customAntTasks">
-		<tgschema2java schema="${schema.file}" path="${schema.location}" implementationMode="${schema.implementationMode}" withoutTypes="${schema.withoutTypes}" subtypeFlag="${schema.subtypeFlag}" />
+	<target name="generateschema" depends="customAntTasks,convertschema">
+		<tgschema2java schemaFile="${schema.file}" sourcePath="${schema.location}" implementationMode="${schema.implementationMode}" withoutTypes="${schema.withoutTypes}" subtypeFlag="${schema.subtypeFlag}" />
 	</target>
-
 
 	<!-- test -->
 	<!-- run the test suite specified by test.suite -->
-	<target name="test" depends="compile">
+	<target name="test">
 		<mkdir dir="${testresults.dir}" />
 		<mkdir dir="${testclasses.dir}" />
 		<echo>Compiling test case classes...</echo>
@@ -322,7 +362,7 @@
 		<mkdir dir="${doc.dir}/html" />
 		<javadoc sourcepath="${src.dir}" destdir="${doc.dir}/html" packagenames="${basePackage}.*" excludepackagenames="${documentexcludes}" access="public" maxmemory="${maxmemsize}" classpathref="classpath">
 		</javadoc>
-		<zip destfile="${doc.dir}/${projectname}.zip" basedir="${doc.dir}/html" compress="true" />
+		<zip destfile="${doc.dir}/${projectname}_api.zip" basedir="${doc.dir}/html" compress="true" />
 	</target>
 
 	<!-- TODO add an improved "newproject"-target -->
