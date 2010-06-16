@@ -135,7 +135,7 @@
 
 	<!-- properties for the target "convertschema" -->
 	<!-- the absolute path to the xmi schema (if any) -->
-	<property name="xmi.schema.file" value="$" />
+	<!--property name="xmi.schema.file" value="$" /-->
 
 	<!-- use from role -->
 	<property name="rsa2tg.f" value="false" />
@@ -187,25 +187,21 @@
 	<!-- clean -->
 	<!-- deletes all classes, the jar and the temporary files -->
 	<!-- TODO add cleaning of generated schema files -->
-	<target name="clean">
+	<target name="clean" depends="customAntTasks">
 		<delete dir="${classes.dir}" />
-		<delete dir="${jar.dir}" />
 		<delete dir="${tmp.dir}" />
 		<delete dir="${testclasses.dir}" />
-	</target>
-
-	<!-- deletes all classes, the jar, the temporary files, the documentation, the testresults and all generated schema files -->
-	<target name="clean.generated" depends="clean,customAntTasks">
-		<delete dir="${doc.dir}" />
-		<delete dir="${testresults.dir}" />
 		<deletegeneratedschema schemaFile="${schema.file}" sourcePath="${schema.location}" />
 	</target>
 
-	<!-- clean all -->
-	<!-- deletes all, including the schema file, if it was generated -->
-	<target name="cleanall" depends="clean.generated,deleteConvertedSchemaFile" />
+	<!-- deletes all classes, the jar, the temporary files, the documentation, the testresults and all generated schema files -->
+	<target name="cleanall" depends="clean,deleteConvertedSchemaFile">
+		<delete dir="${jar.dir}" />
+		<delete dir="${doc.dir}" />
+		<delete dir="${testresults.dir}" />
+	</target>
 
-	<target name="deleteConvertedSchemaFile" depends="xmicheck" if="xmi exists">
+	<target name="deleteConvertedSchemaFile" if="xmi.schema.file">
 		<delete file="${schema.file}" />
 	</target>
 
@@ -262,15 +258,8 @@
 		<taskdef name="rsa2tg" classname="de.uni_koblenz.jgralab.utilities.ant.Rsa2TgTask" classpath="${jgralab.location}" />
 	</target>
 
-	<!-- sets the property "xmi exists" to true if the xmi file is present -->
-	<target name="xmicheck">
-		<condition property="xmi exists">
-			<available file="${xmi.schema.file}" />
-		</condition>
-	</target>
-
-	<!-- Converts an xmi schema to tg if an xmi file has been specified and is available -->
-	<target name="convertschema" depends="customAntTasks,xmicheck" if="xmi exists">
+	<!-- Converts an xmi schema to tg if an xmi schema file has been specified -->
+	<target name="convertschema" depends="customAntTasks" if="xmi.schema.file">
 		<rsa2tg xmifile="${xmi.schema.file}" schemafile="${schema.file}" useFromRole="${rsa2tg.f}" removeUnusedDomains="${rsa2tg.u}" useNavigability="${rsa2tg.n}" />
 	</target>
 
