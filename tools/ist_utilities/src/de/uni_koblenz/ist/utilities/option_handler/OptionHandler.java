@@ -123,6 +123,8 @@ public class OptionHandler {
 	private String argumentName;
 
 	private boolean optionalArgument;
+	
+	private CommandLineParser parser;
 
 	/**
 	 * The only constructor of this class. It sets the toolString and the
@@ -397,7 +399,7 @@ public class OptionHandler {
 	 */
 	public CommandLine parse(String[] args) {
 		try {
-			CommandLineParser parser = new GnuParser();
+			CommandLineParser parser = getParser();
 			CommandLine comLine = parser.parse(getOptions(), args);
 			if (comLine.hasOption("h")) {
 				printHelpAndExit(0);
@@ -469,6 +471,28 @@ public class OptionHandler {
 	 */
 	public void setOptionalArgument(boolean optionalArgument) {
 		this.optionalArgument = optionalArgument;
+	}
+	
+	/**
+	 * Sets the {@link CommandLineParser} that is used to parse the arguments.
+	 * 
+	 * @param parser
+	 */
+	public void setParser(CommandLineParser parser) {
+		this.parser = parser;
+	}
+	
+	/**
+	 * Returns the {@link CommandLineParser} that can be used to parse the
+	 * arguments
+	 * 
+	 * @return the {@link CommandLineParser}
+	 */
+	private CommandLineParser getParser() {
+		if (parser == null) {
+			return new GnuParser();
+		}
+		return parser;
 	}
 
 }
