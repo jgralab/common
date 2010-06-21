@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.GnuParser;
@@ -36,6 +37,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.PosixParser;
 
 // TODO handle OptionGroups properly
 /**
@@ -70,6 +72,11 @@ import org.apache.commons.cli.ParseException;
  * 
  */
 public class OptionHandler {
+
+	public static enum ParserType {
+		BASIC, GNU, POSIX;
+	}
+
 	/**
 	 * This List stores all options in addition to the field "options". This
 	 * redundancy is neccessary because Options does not implement the Interface
@@ -123,8 +130,8 @@ public class OptionHandler {
 	private String argumentName;
 
 	private boolean optionalArgument;
-	
-	private CommandLineParser parser;
+
+	private ParserType parserType;
 
 	/**
 	 * The only constructor of this class. It sets the toolString and the
@@ -143,6 +150,7 @@ public class OptionHandler {
 		requiredOptions = new HashSet<Option>();
 		requiredOptionGroups = new HashSet<OptionGroup>();
 		helpFormatter = new HelpFormatter();
+		parserType = ParserType.GNU;
 		this.toolString = toolString;
 		this.versionString = versionString;
 
@@ -472,16 +480,40 @@ public class OptionHandler {
 	public void setOptionalArgument(boolean optionalArgument) {
 		this.optionalArgument = optionalArgument;
 	}
-	
+
 	/**
-	 * Sets the {@link CommandLineParser} that is used to parse the arguments.
+	 * Makes this OptionHandler use the POSIX parser for parsing the command
+	 * line.
 	 * 
-	 * @param parser
+	 * @return this
 	 */
-	public void setParser(CommandLineParser parser) {
-		this.parser = parser;
+	public OptionHandler withPosixParser() {
+		parserType = ParserType.POSIX;
+		return this;
 	}
-	
+
+	/**
+	 * Makes this OptionHandler use the BASIC parser for parsing the command
+	 * line.
+	 * 
+	 * @return this
+	 */
+	public OptionHandler withBasicParser() {
+		parserType = ParserType.BASIC;
+		return this;
+	}
+
+	/**
+	 * Makes this OptionHandler use the GNU parser for parsing the command line
+	 * (this is the default).
+	 * 
+	 * @return this
+	 */
+	public OptionHandler withGnuParser() {
+		parserType = ParserType.GNU;
+		return this;
+	}
+
 	/**
 	 * Returns the {@link CommandLineParser} that can be used to parse the
 	 * arguments
@@ -489,10 +521,15 @@ public class OptionHandler {
 	 * @return the {@link CommandLineParser}
 	 */
 	private CommandLineParser getParser() {
-		if (parser == null) {
+		switch (parserType) {
+		case GNU:
 			return new GnuParser();
+		case POSIX:
+			return new PosixParser();
+		case BASIC:
+			return new BasicParser();
 		}
-		return parser;
+		return null;
 	}
 
 }
