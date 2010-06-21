@@ -6,12 +6,12 @@
 	<property name="main" value="HelloWorld" />
 	<property name="schema.file" value="MinimalSchema.tg" />
 	
-	<path id="classpathExtension">
-	
-	</path>
-	
 	<import file="../common/common.xml" />
 	
-	<target name="build" depends="clean,compile" />
+	<path id="classpathExtension">
+		
+	</path>
+	
+	<target name="build" depends="clean,jar" />
 	
 </project>
