@@ -340,7 +340,7 @@
 	<!-- run -->
 	<!-- runs project with given arguments ${run.args} in the
        $project.dir}-->
-	<target name="run" depends="compile">
+	<target name="run" depends="ensureJarExists">
 		<java classname="${main.fq}" classpathref="classpath" fork="true" dir="${run.dir}">
 			<jvmarg line="${run.jvmargs}" />
 			<arg line="${run.args}" />
