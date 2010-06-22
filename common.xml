@@ -116,7 +116,7 @@
 
 	<!-- properties for the target "generateschema" -->
 	<!-- schema file; the absolute path to the schema file -->
-	<property name="schema.file" value="" />
+	<!--property name="schema.file" value="" /-->
 
 	<!-- the generated schema classes will be placed here -->
 	<property name="schema.location" value="${src.dir}" />
@@ -154,6 +154,7 @@
 	<!-- properties for the target "unjar" -->
 	<!-- unjar excludes -->
 	<property name="unjarexcludes" value="" />
+	<!--property name="unjar.disabled" value="false" /-->
 
 	<!-- TODO add unjar includes -->
 
@@ -267,7 +268,7 @@
 
 	<!-- generateschema -->
 	<!-- generates schmema sources out of schema ${schemafile} -->
-	<target name="generateschema" depends="customAntTasks,convertschema">
+	<target name="generateschema" depends="customAntTasks,convertschema" if="schema.file">
 		<tgschema2java schemaFile="${schema.file}" sourcePath="${schema.location}" implementationMode="${schema.implementationMode}" withoutTypes="${schema.withoutTypes}" subtypeFlag="${schema.subtypeFlag}" />
 	</target>
 
@@ -295,7 +296,7 @@
 
 	<!-- unjar -->
 	<!-- unpacks the libs in $lib.dir and the ist_utilities -->
-	<target name="unjar">
+	<target name="unjar" unless="unjar.disabled">
 		<mkdir dir="${tmp.dir}" />
 		<unjar dest="${tmp.dir}">
 			<fileset dir="${lib.dir}" includes="**/*.jar" excludes="${unjarexcludes}" />
