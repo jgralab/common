@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project name="common" basedir="." default="build">
+<project name="common" basedir="." default="warning">
 
 
 	<!-- global project specific properties; if empty, they have to be overridden by specializations -->
@@ -179,10 +179,12 @@
 
 	<!-- the targets -->
 
-	<!-- build -->
-	<target name="build">
-		<echo>This is a generic build file. It does nothing if called directly. It is meant to be included in specialized build files. See documentation for details.</echo>
+	<target name="warning">
+		<echo>This is a generic build file and is meant to be imported into other build files.</echo>
 	</target>
+	
+	<!-- build -->
+	<target name="build" depends="jgralab,clean,compile,jar"/>
 
 	<!-- clean -->
 	<!-- deletes all classes, the jar and the temporary files -->
@@ -247,7 +249,7 @@
 
 	<!-- calls the jar target iff the jar file does not exist yet -->
 	<target name="ensureJarExists" depends="jarcheck" unless="jar exists">
-		<antcall target="jar" />
+		<antcall target="build" />
 	</target>
 
 	<!-- activates the custom ant tasks defined in the jgralab.jar all targets (including those in specializations) using custom tasks have
@@ -303,7 +305,7 @@
 
 	<!-- jar -->
 	<!-- makes executable jar file out of all classes in ${classes.dir} and puts jar file into ${jar.dir}-->
-	<target name="jar" depends="compile, unjar">
+	<target name="jar" depends="unjar">
 		<mkdir dir="${jar.dir}" />
 		<mkdir dir="${classes.dir}" />
 		<mkdir dir="${tmp.dir}" />

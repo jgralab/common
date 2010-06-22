@@ -12,6 +12,4 @@
 		
 	</path>
 	
-	<target name="build" depends="clean,jar" />
-	
 </project>
