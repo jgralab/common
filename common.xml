@@ -94,6 +94,12 @@
 		<path refid="classpathExtension" />
 	</path>
 
+	<path id="testclasspath">
+		<path refid="classpath" />
+		<pathelement path="${testclasses.dir}" />
+		<fileset dir="${comlib.dir}/junit" includes="*.jar" />
+	</path>
+
 
 	<!-- properties for the target "compile" -->
 	<!-- includes for compiling sources -->
@@ -183,9 +189,9 @@
 	<target name="warning">
 		<echo>This is a generic build file and is meant to be imported into other build files.</echo>
 	</target>
-	
+
 	<!-- build -->
-	<target name="build" depends="jgralab,clean,compile,jar"/>
+	<target name="build" depends="jgralab,clean,compile,jar" />
 
 	<!-- clean -->
 	<!-- deletes all classes, the jar and the temporary files -->
@@ -279,14 +285,13 @@
 		<mkdir dir="${testclasses.dir}" />
 		<echo>Compiling test case classes...</echo>
 		<!-- TODO? replace with an antcall; extract own target "testcompile" -->
-		<javac fork="true" srcdir="${testcases.dir}" destdir="${testclasses.dir}" memoryinitialsize="512m" memorymaximumsize="${maxmemsize}" classpathref="classpath">
+		<javac fork="true" srcdir="${testcases.dir}" destdir="${testclasses.dir}" memoryinitialsize="512m" memorymaximumsize="${maxmemsize}" classpathref="testclasspath">
 		</javac>
-		<echo>Starnig the test...</echo>
+		<echo>Starting the test...</echo>
 		<junit fork="yes" forkmode="perTest" maxmemory="${maxmemsize}" printsummary="on" showoutput="true" outputtoformatters="true">
 			<jvmarg value="-enableassertions" />
 			<classpath>
-				<path refid="classpath" />
-				<pathelement path="${testclasses.dir}" />
+				<path refid="testclasspath" />
 			</classpath>
 			<formatter type="brief" />
 			<test name="${test.suite}" todir="${testresults.dir}" />
