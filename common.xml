@@ -97,6 +97,7 @@
 	<path id="testclasspath">
 		<path refid="classpath" />
 		<pathelement path="${testclasses.dir}" />
+		<pathelement path="${testcases.dir}" />
 		<fileset dir="${comlib.dir}/junit" includes="*.jar" />
 	</path>
 
@@ -154,8 +155,9 @@
 
 	<!-- properties for the target "test" -->
 	<!-- the fully qualified name of the class containing the test suite that executes all test for the project -->
-	<property name="test.suite" value="" />
+	<!-- property name="test.suite" value="" /-->
 
+	<property name="test.formattertype" value="brief" />
 
 	<!-- properties for the target "unjar" -->
 	<!-- unjar excludes -->
@@ -182,6 +184,9 @@
 	<!-- properties for the target "document" -->
 	<!-- excludeded package names for documenting sources -->
 	<property name="documentexcludes" value="" />
+	
+	<!-- defines the visibility level of the javadoc -->
+	<property name="document.access" value="public" />
 
 
 	<!-- the targets -->
@@ -200,7 +205,7 @@
 		<delete dir="${classes.dir}" />
 		<delete dir="${tmp.dir}" />
 		<delete dir="${testclasses.dir}" />
-		<deletegeneratedschema schemaFile="${schema.file}" sourcePath="${schema.location}" />
+		<antcall target="deleteGeneratedSchemaFiles" />
 	</target>
 
 	<!-- deletes all classes, the jar, the temporary files, the documentation, the testresults and all generated schema files -->
@@ -210,6 +215,10 @@
 		<delete dir="${testresults.dir}" />
 	</target>
 
+	<target name="deleteGeneratedSchemaFiles" if="schema.file">
+		<deletegeneratedschema schemaFile="${schema.file}" sourcePath="${schema.location}" />
+	</target>
+	
 	<target name="deleteConvertedSchemaFile" if="xmi.schema.file">
 		<delete file="${schema.file}" />
 	</target>
@@ -280,7 +289,7 @@
 
 	<!-- test -->
 	<!-- run the test suite specified by test.suite -->
-	<target name="test">
+	<target name="test" if="test.suite">
 		<mkdir dir="${testresults.dir}" />
 		<mkdir dir="${testclasses.dir}" />
 		<echo>Compiling test case classes...</echo>
@@ -293,7 +302,7 @@
 			<classpath>
 				<path refid="testclasspath" />
 			</classpath>
-			<formatter type="brief" />
+			<formatter type="${test.formattertype}" />
 			<test name="${test.suite}" todir="${testresults.dir}" />
 		</junit>
 	</target>
@@ -357,7 +366,7 @@
 	<target name="document">
 		<delete dir="${doc.dir}/html" />
 		<mkdir dir="${doc.dir}/html" />
-		<javadoc sourcepath="${src.dir}" destdir="${doc.dir}/html" packagenames="${basePackage}.*" excludepackagenames="${documentexcludes}" access="public" maxmemory="${maxmemsize}" classpathref="classpath">
+		<javadoc sourcepath="${src.dir}" destdir="${doc.dir}/html" packagenames="${basePackage}.*" excludepackagenames="${documentexcludes}" access="${document.access}" maxmemory="${maxmemsize}" classpathref="classpath">
 		</javadoc>
 		<zip destfile="${doc.dir}/${projectname}_api.zip" basedir="${doc.dir}/html" compress="true" />
 	</target>
