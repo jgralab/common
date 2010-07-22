@@ -77,7 +77,10 @@
 		<pathelement location="${classes.dir}" />
 
 		<!-- the project's jar file -->
-		<pathelement location="${jar.dir}/${projectname}.jar" />
+        <!-- Tassilo: this leads to strange errors. Why the heck would you add
+             a jar to the classpath which you are currently creating in
+             addition to the classes dir? -->
+		<!--<pathelement location="${jar.dir}/${projectname}.jar" />-->
 
 		<!-- all project specific libraries -->
 		<fileset dir="${lib.dir}" includes="**/*.jar" />
