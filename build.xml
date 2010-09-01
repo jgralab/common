@@ -3,15 +3,13 @@
 <project name="ist.utilities" basedir="." default="build">
 
 	<property name="projectname" value="ist_utilities" />
-	<property name="build.dir" value="./build" />
+	<property name="build.dir" value="./ist_utilities/build" />
 	<property name="classes.dir" value="${build.dir}/classes" />
-	<property name="jar.dir" value="${build.dir}/jar" />
-	<property name="src.dir" value="./src" />
-	<property name="common.dir" value="../../" />
-	<property name="lib.dir" value="${common.dir}/lib" />
-	<property name="target.dir" value="${lib.dir}/ist_utilities" />
+	<property name="src.dir" value="./ist_utilities/src" />
+	<property name="lib.dir" value="./lib" />
+	<property name="jar.dir" value="${lib.dir}/ist_utilities" />
 	<property name="javac.targetVM" value="1.6" />
-	<property name="debug" value="lines" />
+	<!--property name="debug" value="lines" /-->
 	<property name="compileincludes" value="**" />
 	<property name="compileexcludes" value="" />
 	<property name="main" value="None" />
@@ -19,7 +17,7 @@
 	<!-- classpath -->
 	<path id="classpath">
 		<pathelement location="${classes.dir}" />
-		<fileset dir="${lib.dir}" includes="**/*.jar" />
+		<fileset dir="${lib.dir}/apache/commons/cli/" includes="**/*.jar" />
 		<pathelement location="${jar.dir}/${projectname}.jar" />
 	</path>
 
@@ -33,7 +31,10 @@
 
 	<target name="clean">
 		<delete dir="${build.dir}/classes" />
-		<delete dir="${build.dir}/jar" />
+	</target>
+
+	<target name="cleanall" depends="clean">
+		<delete dir="${jar.dir}" />
 	</target>
 
 	<target name="jar" depends="compile">
@@ -46,17 +47,16 @@
 		</jar>
 	</target>
 
-	<target name="deploy" depends="jar">
-		<copy file="${jar.dir}/${projectname}.jar" todir="${lib.dir}/ist_utilities">
-		</copy>
-		<echo>If this command fails, install svn or put the executable of &quot;svn&quot; in the PATH variable of your system.</echo>
-		
-		<exec executable="svn">
-				<arg value="ci"/>
-				<arg value="${target.dir}/${projectname}.jar"/>
-				<arg value="-m"/>
-				<arg value="&quot;Auto deploy of ist_utilities.jar&quot;"/>
-		</exec>
+	<!-- sets the property "jar exists" to true if the project's jar is present -->
+	<target name="jarcheck">
+		<condition property="jar exists">
+			<available file="${jar.dir}/${projectname}.jar" />
+		</condition>
+	</target>
+
+	<!-- calls the build target iff the jar file does not exist yet -->
+	<target name="ensureJarExists" depends="jarcheck" unless="jar exists">
+		<antcall target="build" />
 	</target>
 
 </project>

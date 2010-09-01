@@ -48,6 +48,8 @@
 
 	<!-- the directory of common libraries -->
 	<property name="comlib.dir" value="${common.dir}/lib" />
+	
+	<property name="ist_utilities.location" value="${comlib.dir}/ist_utilities/ist_utilities.jar" />
 
 	<!-- project specific library directory; all additional libraries of the project should be placed here -->
 	<property name="lib.dir" value="${project.dir}/lib" />
@@ -256,8 +258,12 @@
 	</target>
 
 	<!-- builds jgralab -->
-	<target name="jgralab">
+	<target name="jgralab" depends="ist_utilities">
 		<ant dir="../jgralab" antfile="build.xml" inheritAll="false" target="ensureJarExists" />
+	</target>
+	
+	<target name="ist_utilities">
+		<ant dir="${common.dir}" antfile="build.xml" inheritAll="false" target="ensureJarExists" />
 	</target>
 
 	<!-- sets the property "jar exists" to true if the project's jar is present -->
@@ -267,7 +273,7 @@
 		</condition>
 	</target>
 
-	<!-- calls the jar target iff the jar file does not exist yet -->
+	<!-- calls the build target iff the jar file does not exist yet -->
 	<target name="ensureJarExists" depends="jarcheck" unless="jar exists">
 		<antcall target="build" />
 	</target>
