@@ -66,7 +66,7 @@ public class LicenseHeader {
 		Option input = new Option("i", "input", true,
 				"(required): The file or directory to process.");
 		// input.setArgs(1);
-		input.setRequired(false);
+		input.setRequired(true);
 		input.setArgName("fileOrDirectory");
 		oh.addOption(input);
 
@@ -76,7 +76,7 @@ public class LicenseHeader {
 				true,
 				"(required): The file containing the licence header in the correct format. This file should be in plain text without any language specific syntax for comments.");
 		// licenceHeader.setArgs(1);
-		licenceHeader.setRequired(false);
+		licenceHeader.setRequired(true);
 		licenceHeader.setArgName("licenseFile");
 		oh.addOption(licenceHeader);
 
@@ -207,7 +207,7 @@ public class LicenseHeader {
 			String prefix, String lastLine) throws IOException {
 		if (verbose) {
 			printIndent(level);
-			System.out.println("Processing file" + toProcess.getName());
+			System.out.println("Processing file " + toProcess.getName());
 		}
 
 		List<String> outputLines = new LinkedList<String>();
@@ -234,7 +234,7 @@ public class LicenseHeader {
 			if (currentLine != null) {
 				switch (state) {
 				case BEFORE_HEADER:
-					if (currentLine.trim().startsWith(prefix.trim())) {
+					if (currentLine.trim().startsWith(firstLine.trim()) && !currentLine.trim().startsWith("/**")) {
 						state = ParseState.IN_HEADER;
 						skippedHeaders++;
 						continue;
@@ -242,11 +242,9 @@ public class LicenseHeader {
 					if (currentLine.contains("package")
 							|| currentLine.contains("import")
 							|| currentLine.contains("class")) {
-						// copy the line
-						outputLines.add(currentLine);
 						state = ParseState.AFTER_HEADERS;
-						continue;
 					}
+					outputLines.add(currentLine);
 					break;
 				case IN_HEADER:
 					if (currentLine.trim().endsWith(lastLine.trim())) {
