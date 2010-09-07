@@ -48,7 +48,7 @@
 
 	<!-- the directory of common libraries -->
 	<property name="comlib.dir" value="${common.dir}/lib" />
-	
+
 	<property name="ist_utilities.location" value="${comlib.dir}/ist_utilities/ist_utilities.jar" />
 
 	<!-- project specific library directory; all additional libraries of the project should be placed here -->
@@ -79,7 +79,7 @@
 		<pathelement location="${classes.dir}" />
 
 		<!-- the project's jar file -->
-        <!-- Tassilo: this leads to strange errors. Why the heck would you add
+		<!-- Tassilo: this leads to strange errors. Why the heck would you add
              a jar to the classpath which you are currently creating in
              addition to the classes dir? -->
 		<!--<pathelement location="${jar.dir}/${projectname}.jar" />-->
@@ -189,10 +189,13 @@
 	<!-- properties for the target "document" -->
 	<!-- excludeded package names for documenting sources -->
 	<property name="documentexcludes" value="" />
-	
+
 	<!-- defines the visibility level of the javadoc -->
 	<property name="document.access" value="public" />
 
+
+	<!-- properties for the target "addLicenseHeaders" -->
+	<!-- property name="license.file" value="" /-->
 
 	<!-- the targets -->
 
@@ -223,7 +226,7 @@
 	<target name="deleteGeneratedSchemaFiles" if="schema.file">
 		<deletegeneratedschema schemaFile="${schema.file}" sourcePath="${schema.location}" />
 	</target>
-	
+
 	<target name="deleteConvertedSchemaFile" if="xmi.schema.file">
 		<delete file="${schema.file}" />
 	</target>
@@ -253,7 +256,7 @@
 	<!-- compiles all Java sources in $src.dir and puts teh generated classes into $classes.dir-->
 	<target name="compile" depends="createClassesDir,generateschema">
 		<javac fork="true" srcdir="${src.dir}" includes="${compileincludes}" excludes="${compileexcludes}" destdir="${classes.dir}" memoryinitialsize="${minmemsize}" memorymaximumsize="${maxmemsize}" classpathref="classpath" debug="${debug}" target="${javac.targetVM}">
-			<compilerarg line="-Xlint:unchecked"/>
+			<compilerarg line="-Xlint:unchecked" />
 		</javac>
 	</target>
 
@@ -261,7 +264,7 @@
 	<target name="jgralab" depends="ist_utilities">
 		<ant dir="../jgralab" antfile="build.xml" inheritAll="false" target="ensureJarExists" />
 	</target>
-	
+
 	<target name="ist_utilities">
 		<ant dir="${common.dir}" antfile="build.xml" inheritAll="false" target="ensureJarExists" />
 	</target>
@@ -379,6 +382,16 @@
 		<javadoc sourcepath="${src.dir}" destdir="${doc.dir}/html" packagenames="${basePackage}.*" excludepackagenames="${documentexcludes}" access="${document.access}" maxmemory="${maxmemsize}" classpathref="classpath">
 		</javadoc>
 		<zip destfile="${doc.dir}/${projectname}_api.zip" basedir="${doc.dir}/html" compress="true" />
+	</target>
+
+	<!-- Adds the license header to all java source files -->
+	<target name="addLicenseHeaders" depends="ist_utilities, clean" if="license.file">
+		<java classname="de.uni_koblenz.ist.utilities.license_header.LicenseHeader" classpathref="classpath" fork="true" dir="${run.dir}">
+			<arg line="-i ${src.dir} -l ${license.file} -r" />
+		</java>
+		<java classname="de.uni_koblenz.ist.utilities.license_header.LicenseHeader" classpathref="classpath" fork="true" dir="${run.dir}">
+			<arg line="-i ${testcases.dir} -l ${license.file} -r" />
+		</java>
 	</target>
 
 	<!-- TODO add an improved "newproject"-target -->

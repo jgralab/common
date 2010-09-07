@@ -8,7 +8,6 @@ import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -46,7 +45,6 @@ public class LicenseHeader {
 	}
 
 	public static void main(String[] args) {
-		System.out.println(Arrays.toString(args));
 		CommandLine cl = processCommandLineOptions(args);
 		assert cl.hasOption('i');
 		assert cl.hasOption('l');
@@ -146,8 +144,13 @@ public class LicenseHeader {
 					+ licence.getAbsolutePath() + "\" is a directory");
 		}
 		if (input.isDirectory()) {
+			System.out.println("Adding license headers to directory "
+					+ input.getAbsolutePath()
+					+ (fullyRecursive ? " and all subdirectories."
+							: " ignoring subdirectories."));
 			processDirectory(input, 0);
 		} else {
+			System.out.println("Adding license header to file " + input.getAbsolutePath());
 			processJavaFile(input, 0, JAVA_FIRST_LINE, JAVA_PREFIX,
 					JAVA_LAST_LINE);
 		}
@@ -155,8 +158,11 @@ public class LicenseHeader {
 		System.out.println();
 		System.out.println("Summary:");
 		System.out.println("Processed " + processed + " files.");
-		System.out.println(newlyAdded + "/" + processed + " files didn't have a license header.");
-		System.out.println(replaced + "/" + processed + " files' headers were replaced by the new one.");
+		System.out.println(newlyAdded + "/" + processed
+				+ " files didn't have a license header.");
+		System.out.println(replaced + "/" + processed
+				+ " files' headers were replaced by the new one.");
+		System.out.println();
 	}
 
 	private void processDirectory(final File toProcess, int level)
@@ -234,7 +240,8 @@ public class LicenseHeader {
 			if (currentLine != null) {
 				switch (state) {
 				case BEFORE_HEADER:
-					if (currentLine.trim().startsWith(firstLine.trim()) && !currentLine.trim().startsWith("/**")) {
+					if (currentLine.trim().startsWith(firstLine.trim())
+							&& !currentLine.trim().startsWith("/**")) {
 						state = ParseState.IN_HEADER;
 						skippedHeaders++;
 						continue;
