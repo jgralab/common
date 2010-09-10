@@ -55,7 +55,7 @@ public abstract class XmlProcessor {
 		this.fileName = fileName;
 		InputStream in = new BufferedInputStream(new FileInputStream(fileName));
 		XMLInputFactory factory = XMLInputFactory.newInstance();
-		parser = factory.createXMLStreamReader(in);
+		parser = factory.createXMLStreamReader(in, "UTF-8");
 		for (int event = parser.getEventType(); event != XMLStreamConstants.END_DOCUMENT; event = parser
 				.next()) {
 			switch (event) {
