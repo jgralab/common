@@ -221,6 +221,7 @@
 		<delete dir="${jar.dir}" />
 		<delete dir="${doc.dir}" />
 		<delete dir="${testresults.dir}" />
+		<ant dir="${common.dir}" antfile="build.xml" inheritAll="false" target="cleanall" />
 	</target>
 
 	<target name="deleteGeneratedSchemaFiles" if="schema.file">
