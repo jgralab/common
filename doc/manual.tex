@@ -1,0 +1,191 @@
+\documentclass[a4paper,twoside,11pt,bibtotoc]{article}
+\include{latex_definitions}
+
+% hide topic boxes
+% \renewcommand{\topicbox}[3]{}
+
+
+\setistheader{The common ant script}
+\parindent0pt
+
+
+
+\begin{document}
+\sloppy
+
+\begin{titlepage}
+
+\makeisttitle{The common ant script \par (\version)}{Sascha Strau\ss \par
+strauss@uni-koblenz.de}
+
+
+\end{titlepage}
+
+%\cleardoublepage
+
+%\tableofcontents
+
+%\cleardoublepage
+
+\section{Introduction}
+The common ant script serves as general build file for projects depending on JGraLab.
+It provides all common features an ant script for such projects requires.
+The actual ant script for these projects (in the following called \emph{specific ant script}) is derived from the common ant script using ants import mechanism.
+In most cases, the specific ant script only needs to set several properties.
+For some projects, it requires more adjustments, but this is still less effort than an ant script, created from scratch, would demand.
+
+This document describes the properties that are supported by the common ant script and the targets that can be used in all specific ant scripts.
+It also describes how the targets from the generic ant script can be overridden and when this is feasible.
+
+\section{Properties}
+\label{sec:properties}
+This section describes general rules for properties and introduces the general properties that are not target specific.
+Target specific properties are introduced in section \ref{sec:targets}.
+
+\subsection{Overview of general properties}
+The following list gives an overview of the general properties.
+\begin{description*}
+	\item[projectname] contains the name of the project. By convention, this must be identical to the project directory and may only contain lowercase letters.\par The default value is empty, so it has to be overridden.
+	\item[basePackage] contains the name of the base package.\par The default value is \texttt{"de.uni\_koblenz.\$\{projectname\}"}.
+	\item[basePackagePath] contains the path to the base package.\par The default value is \texttt{"de/uni\_koblenz/\$\{projectname\}"}.
+	\item[main] contains the name of the main class (the class whose main method is executed, if the jar file is called directly).\par the default value is empty, so it has to be overridden.
+	\item[main.fq] contains the fully qualified name of the main class.\par The default value is \texttt{"\$\{basePackage\}.\$\{main\}"}.
+	\item[maxmemsize] contains the maximum amount of memory for tasks that use a forked VM.\par The default value is \texttt{"512M"}.
+	\item[minmemsize] contains the minimum amount of memory for tasks that use a forked VM.\par The default value is \texttt{"256M"}.
+\end{description*}	
+
+The following list shows all properties that contain directory information.
+By convention, the default values of these properties should not be overridden.
+\begin{description*}
+	\item[project.dir] contains the relative path to the project directory.\par The default value is \texttt{"../\$\{projectname\}"}.
+	\item[src.dir] contains the relative path to the source directory.\par The default value is \texttt{"\$\{project.dir\}/src"}.
+	\item[build.dir] contains the relative path to the build directory.\par The default value is \texttt{"\$\{project.dir\}/build"}.
+	\item[classes.dir] contains the relative path to the compiled java classes.\par The default value is \texttt{"\$\{build.dir\}/classes"}.
+	\item[common.dir] contains the relative path to the directory to the project \texttt{common}.\par The default value is \texttt{"../common"}.
+	\item[comlib.dir] contains the relative path to the common libraries.\par The default value is \texttt{"\$\{common.dir\}/lib"}.
+	\item[lib.dir] contains the relative path to the project specific libraries.\par The default value is \texttt{"\$\{project.dir\}/lib"}.
+	\item[jar.dir] contains the relative path to the location of the project's jar file.\par The default value is \texttt{"\$\{build.dir\}/jar"}.
+	\item[doc.dir] contains the relative path to the location of the project's javadoc files.\par The default value is \texttt{\$\{build.dir\}/doc}.
+	\item[tmp.dir] contains the relavite path to a non-existing directory that will be created, will serve as temporary directory and will be deleted during the build process.\par The default value is \texttt{"\$\{build.dir\}/tmp"}.
+	\item[testcases.dir] contains the relative path to the source files of the junit test cases.\par The default value is \texttt{"\$\{project.dir\}/testit"}.
+	\item[testclasses.dir] contains the relative path to the compiled junit test cases.\par The default value is \texttt{"\$\{build.dir\}/testclasses"}.
+	\item[testresults.dir] contains the relative path to the directory that should contain the test results.\par The default value is \texttt{"\$\{build.dir\}/testresults"}.
+\end{description*}
+
+\subsection{The location of property definitions}
+Properties in ant are comparable to constants.
+Once set, they are immutable.
+It is possible to override properties in the specific ant scripts.
+Properties for overriding default values must be defined in the specific ant scripts before the import clause of the common ant script.
+
+Properties that are used as variable in other properties have to be defined before they are used.
+This means, custom properties that use standard properties from the common ant script have to be defined after the import clause.
+So, defining properties that override default values and use other default properties is impossible.
+
+\section{Classpath}
+\label{sec:classpath}
+The common ant script provides two classpaths.
+These classpaths require the following properties.
+
+\begin{description*}
+	\item[jgralab.location] contains the location of JGraLab's jar file.\par The default value is \texttt{"../jgralab/build/jar/jgralab.jar"}.
+	\item[ist\_utilities.location] contains the location of the jar file including the IST utilities.\par The default value is \texttt{"\$\{comlib.dir\}/ist\_utilities/ist\_utilities.jar"}.
+\end{description*}
+
+The first and more important classpath is called \texttt{classpath} and contains all important libraries that are required for compiling and using the project.
+It includes all compiled java classes, all project specific libraries, the IST utilities and JGraLab.
+It also includes the path \texttt{classpathExtension} which has to be defined in the specific ant script.
+Unlike overriding property definitions, this path has to be defined after the import statement.
+If libraries from the common library directory are required, these have to be specified here.
+If no further entries are required, \texttt{classpathExtensions} has to be empty.
+
+The second classpath is called \texttt{testclasspath} and contains in addition to \texttt{classpath} the compiled test cases and junit for executing these test cases.
+This classpath can indirectly be extended through \texttt{classpathExtension}.
+
+\section{Targets}
+\label{sec:targets}
+This section describes the targets provided by the common ant task.
+%First all targets for building the project are introduced.
+%Then all targets for cleaning the projects are shown.
+%Finally all targets for additional processes are described.
+
+\subsection{Targets for compiling and generating}
+\label{sec:creating}
+Here all targets that are used for compiling source code or for generating artifacts are introduced.
+The most important target is \texttt{build}, which is also the default target for every specific ant script.
+The build target first compiles the projects JGraLab and IST utilities.
+
+\subsubsection{Targets for building required projects}
+\label{sec:required}
+All projects that use the common ant script automatically depend on JGraLab and on the IST utilities.
+The common ant script provides targets that call the ant scripts of these projects automatically.
+The target for building JGraLab is called \texttt{jgralab}.
+The target for building the IST utilities is called \texttt{ist\_utilities}.
+The jar files of these projects are only built, if they do not already exist.
+
+After these targets have been executed, the build target executes the target \texttt{clean} (see section \ref{sec:cleaning}) for removing all generated files.
+Then the target \texttt{compile} is invoked (see section \ref{sec:compile}).
+This target compiles the actual source code of the project.
+Since most projects require a custom graph schema, targets for creating the Java files, that represent this schema, have to be generated.
+
+\subsubsection*{Schema related targets}
+A schema can either be specified by exporting an RSA model to an xmi file or by providing a tg file.
+JGraLab can convert xmi files to tg files.
+In both cases, a tg file is used for generating Java source files representing the schema.
+
+The target for generating Java sources from tg files is called \texttt{generateschema}.
+It is controlled by the following parameters.
+
+\begin{description*}
+	\item[schema.file] contains the relative path to the tg file.\par By default this value is unset. Only if it is set to a value, the target \texttt{generateschema} is actually executed.
+	\item[schema.location] contains the relative path to the source directory, where the generated Java files should be stored.\par The default value is \texttt{"\$\{src.dir\}"}.
+	\item[schema.implementationMode] contains a comma separated list of implementation modes that should be generated.\par The default value is \texttt{standard}. E.g. if additional transaction support is required, it should be overridden with the value \texttt{standard,transaction}. Allowed values are (so-far) \texttt{standard}, \texttt{transaction}, \texttt{savemem} and \texttt{database}.
+	\item[schema.withoutTypes] corresponds to the flag \texttt{-w} in \texttt{TgSchema2Java}.\par The default value is \texttt{"false"}.
+	\item[schema.subtypeFlag] corresponds to the flag \texttt{-f} in \texttt{TgSchema2Java}.\par The default value is \texttt{"false"}.
+\end{description*}
+
+The target for converting an exported xmi file to tg is called \texttt{convertschema}.
+If an xmi file is specified, this target is executed first.
+It is controlled by the following parameters.
+
+\begin{description*}
+	\item[xmi.schema.file] contains the relative path to the xmi file.\par By default this value is unset. Only if it is set to a value, the target \texttt{convertschema} is actually executed.
+	\item[rsa2tg.f] corresponds to the flag \texttt{f} in \texttt{Rsa2Tg}.\par The default value is \texttt{"false"}.
+	\item[rsa2tg.u] corresponds to the flag \texttt{u} in \texttt{Rsa2Tg}.\par The default value is \texttt{"false"}.
+	\item[rsa2tg.n] corresponds to the flag \texttt{n} in \texttt{Rsa2Tg}.\par The default value is \texttt{"false"}.
+\end{description*}
+
+If the target \texttt{convertschema} is used, also the property \textbf{schema.file} has to be set.
+Otherwise the target \texttt{generateschema} would not be executed and the build would fail.
+
+After the schema files have been generated, the target \texttt{compile} can actually compile the source files.
+\subsubsection{The target \texttt{compile}}
+\label{sec:compile}
+The target \texttt{compile} is controlled by the following parameters.
+
+\begin{description*}
+	\item[compileincludes] contains a list of ant patterns that specify which source files are being included in the compile process.\par The default value is empty, which means, everything is included.
+	\item[compileexcludes] contains a list of ant patterns that specify which source files are being excluded from the compile process.\par The default value is empty, which means, nothing is excluded.
+	\item[javac.targetVm] contains the compatibility level of the class files.\par The default value is \texttt{"1.6"}.
+	\item[debug] contains information about the debug level of the compiled class files.\par The default value is \texttt{"false"}.
+	\item[debuglevel] contains a comma separated list of which debug information will be included, if \textbf{debug} is set to \texttt{"true"}.\par The default value is \texttt{"lines"}. Valid entries may contain \texttt{lines}, \texttt{vars} and \texttt{source}.
+\end{description*}
+
+
+\subsection{Targets for cleaning}
+\label{sec:cleaning}
+
+\subsection{Additional targets}
+\label{sec:additional}
+
+\section{Overriding targets}
+\label{sec:override}
+
+\clearpage
+ 
+%\addcontentsline{toc}{section}{References}
+%\bibliographystyle{geralpha}
+%\bibliographystyle{ieeetr}
+%\bibliography{references}
+
+\end{document}

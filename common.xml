@@ -54,7 +54,7 @@
 	<!-- project specific library directory; all additional libraries of the project should be placed here -->
 	<property name="lib.dir" value="${project.dir}/lib" />
 
-	<!-- jar directory; the project's jar file will be placed here -->
+	<!-- jar directory; tjar.he project's jar file will be placed here -->
 	<property name="jar.dir" value="${build.dir}/jar" />
 
 	<!-- documentation directory; the project's javadoc will be placed here -->
@@ -120,6 +120,8 @@
 	<!-- debug infos in compiled sources -->
 	<property name="debug" value="false" />
 
+	<!-- which debug infos shall be included -->
+	<property name="debuglevel" value="lines" /> 
 
 	<!-- properties for the target "modify" -->
 	<!-- the location of the main package's source file -->
@@ -256,7 +258,7 @@
 	<!-- compile -->
 	<!-- compiles all Java sources in $src.dir and puts teh generated classes into $classes.dir-->
 	<target name="compile" depends="createClassesDir,generateschema">
-		<javac fork="true" srcdir="${src.dir}" includes="${compileincludes}" excludes="${compileexcludes}" destdir="${classes.dir}" memoryinitialsize="${minmemsize}" memorymaximumsize="${maxmemsize}" classpathref="classpath" debug="${debug}" target="${javac.targetVM}">
+		<javac fork="true" srcdir="${src.dir}" includes="${compileincludes}" excludes="${compileexcludes}" destdir="${classes.dir}" memoryinitialsize="${minmemsize}" memorymaximumsize="${maxmemsize}" classpathref="classpath" debug="${debug}" debuglevel="${debuglevel}" target="${javac.targetVM}">
 			<compilerarg line="-Xlint:unchecked" />
 		</javac>
 	</target>

@@ -1,0 +1,153 @@
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{courier}
+\usepackage{palatino}
+\usepackage{geometry}
+%\usepackage{savesym}
+\usepackage{amssymb}
+%\usepackage{amsmath}
+\usepackage{oz}
+\usepackage{etex}
+\usepackage{listings}
+%\usepackage{url}
+\usepackage{setspace}
+%\usepackage{tabularx}
+%\usepackage{multirow}
+\usepackage{fancyhdr}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{fancybox}
+\usepackage{framed}
+\usepackage{enumerate}
+\usepackage{paralist}
+\usepackage{mdwlist}
+\usepackage[pdftex,plainpages=false]{hyperref}
+
+%\overlinesegment
+%\underlinesegment
+
+% Version information
+\newcommand{\version}{Version 0.1 -- \today}
+
+\newcommand{\makeisttitle}[2] % 1st argument author; 2nd argument 
+{
+\unitlength1cm
+\begin{picture}(0,1)\put(0,1){\makebox(0,0)[tl]{\includegraphics[height=14mm]{images/ist-logo-en.pdf}}}\end{picture}
+\hfill
+\begin{picture}(0,0)\put(0,1){\makebox(0,0)[tr]{\includegraphics[height=18mm]{images/uko-logo-fb4.pdf}}}\end{picture}
+\begin{center}
+\vspace*{3cm}
+{\Large #1}\\
+\vspace*{0,5cm}
+#2
+\end{center}}
+
+% special commands
+\newcommand{\rselem}[1]{\textsf{#1}}
+\newcommand{\discuss}[1]
+{
+%   \rule{\textwidth}{0.4pt}
+% 
+%   \begin{footnotesize}
+%    \textit{#1}
+%   \end{footnotesize}
+% 
+%   \rule{\textwidth}{0.4pt}
+}
+
+% layout
+\geometry{verbose, a4paper, tmargin=3.5cm, bmargin=3cm, lmargin=3cm, rmargin=2cm, headheight=2cm, headsep=1.5cm, footskip=1.5cm}
+
+\newcommand{\setindents}{
+\setlength\parskip{\medskipamount} %
+\setlength\parindent{0pt} %
+\onehalfspacing %
+}
+\setindents
+
+%\setcounter{tocdepth}{2}
+
+
+% headings
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0pt} 
+\renewcommand{\footrulewidth}{0pt}
+
+\newcommand{\setistheader}[1]{
+\chead{#1}
+\rhead{}
+\lhead{}
+}
+
+% listings
+\lstdefinelanguage{tg}{
+ morekeywords={from, to, abstract, VertexClass, EdgeClass, AggregationClass, CompositionClass, GraphClass, Schema, RecordDomain, EnumDomain, String, List, Set, role, Integer, Boolean, Double},
+ sensitive=true,
+ morecomment=[l]{//},
+ morestring=[b]",
+}
+
+\lstdefinelanguage{ebnf}{
+ morekeywords={},
+ sensitive=true,
+ string=[b][\bf\ttfamily]",
+}
+
+\lstset{language = java, numbers = left, basicstyle = \small\ttfamily, numberstyle = \tiny, columns = fixed, breaklines = true, breakatwhitespace = true, backgroundcolor = \color{LighterGray}, frame = lines, tabsize = 4}
+
+% paragraphs
+\clubpenalty = 10000
+\widowpenalty = 10000
+
+% bibtex definitions for geralpha style
+% \renewcommand{\refname}{References} 
+\newcommand{\btxandlong}{and}
+\newcommand{\Btxinlong}{in}
+\newcommand{\Btxtechreplong}{Technical report}
+\newcommand{\btxmastthesis}{master thesis}
+
+%colors for listings
+\definecolor{LightGray}{rgb}{0.8,0.8,0.8}
+\definecolor{LighterGray}{rgb}{0.9,0.9,0.9} 
+
+% the topic box command creates a labled box with content at the margin of a page.
+% Parameters: 1. topic label, 2. color, 3. content text
+\newcommand{\topicbox}[3]{%
+\marginpar{
+  \fontsize{0.4em}{0em} \textbf{#1}\\
+  \begin{tikzpicture}
+    \tikzstyle{every node}=[fill=#2!20,rounded corners, draw=#2!50, text width=1.5cm,text centered]
+    \node[] {\tiny #3};
+  \end{tikzpicture}
+}%
+}%
+
+\newcommand{\inlineboxsep}{\setlength{\fboxsep}{2pt}}
+
+
+\newenvironment{normalframe}[1][\textwidth]
+{\setlength{\fboxsep}{3mm}\begin{Sbox}\begin{minipage}{#1}}%
+{\end{minipage}\end{Sbox}\fbox{\TheSbox}}
+
+% \newenvironment{fminipage}%
+% {\begin{Sbox}\begin{minipage}}%
+% {\end{minipage}\end{Sbox}\fbox{\TheSbox}}
+
+\newenvironment{roundframe}[1][\textwidth]
+{\setlength{\fboxsep}{3mm}\begin{Sbox}\begin{minipage}{#1}}%
+{\end{minipage}\end{Sbox}\ovalbox{\cornersize{1}\TheSbox}}
+
+% hide topic boxes
+% \renewcommand{\topicbox}[3]{}
+
+% note
+\newcommand{\Note}[2][?]{%
+  \topicbox{Note from #1}{orange}{#2}%
+}
+
+% todo
+\newcommand{\todo}[2][?]{%
+  \topicbox{Todo for #1}{red}{#2}%
+}
+
