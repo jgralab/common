@@ -175,7 +175,7 @@
 
 	<!-- properties for the target "jar" -->
 	<!-- exclude patterns for files in ${src.dir} that, besides *.java, should not be added to the normal jar file -->
-	<property name="ressource.excludes" value="" />
+	<property name="resource.excludes" value="" />
 
 	<!-- properties for the target "run" -->
 	<!-- run arguments; the arguments passed to the java program -->
@@ -349,7 +349,7 @@
 		</jar>
 
 		<!-- include ressources (all non-java files in ${src.dir})-->
-		<jar destfile="${jar.dir}/${projectname}.jar" basedir="${src.dir}" update="true" compress="true" filesetmanifest="skip" excludes="**/*.java ${ressource.excludes}" />
+		<jar destfile="${jar.dir}/${projectname}.jar" basedir="${src.dir}" update="true" compress="true" filesetmanifest="skip" excludes="**/*.java ${resource.excludes}" />
 
 		<!-- include temporary files, e.g. from unjar -->
 		<jar destfile="${jar.dir}/${projectname}.jar" basedir="${tmp.dir}" update="true" compress="true" filesetmanifest="skip" />

@@ -166,10 +166,37 @@ The target \texttt{compile} is controlled by the following parameters.
 \begin{description*}
 	\item[compileincludes] contains a list of ant patterns that specify which source files are being included in the compile process.\par The default value is empty, which means, everything is included.
 	\item[compileexcludes] contains a list of ant patterns that specify which source files are being excluded from the compile process.\par The default value is empty, which means, nothing is excluded.
-	\item[javac.targetVm] contains the compatibility level of the class files.\par The default value is \texttt{"1.6"}.
+	\item[javac.targetVM] contains the compatibility level of the class files.\par The default value is \texttt{"1.6"}.
 	\item[debug] contains information about the debug level of the compiled class files.\par The default value is \texttt{"false"}.
 	\item[debuglevel] contains a comma separated list of which debug information will be included, if \textbf{debug} is set to \texttt{"true"}.\par The default value is \texttt{"lines"}. Valid entries may contain \texttt{lines}, \texttt{vars} and \texttt{source}.
 \end{description*}
+
+After the compilation of the source code is done, the build target executes the targets for creating the jar file.
+
+\subsubsection{Targets for creating the jar file}
+The common ant script is designed for creating standalone jar files.
+For achieving this, all required libraries are extracted and put into the project's jar file.
+The target \texttt{unjar} extracts all required libraries to a temporary folder (specified by \textbf{tmp.dir}).
+
+The target \texttt{unjar} by default extracts the file \texttt{ist_utilities.jar} and all project specific libraries.
+It is controlled by the following properties.
+\begin{description*}
+	\item[unjar.disabled] controls whether the target \texttt{unjar} is executed or not.\par By default this property is unset. If it is set to an arbitrary value, the target \texttt{unjar} is not executed.
+	\item[unjarexcludes] contains a comma separated list of ant patterns that specify which project specific libraries will not be contained in the project's jar file.\par The default value is empty, which means, nothing is excluded.
+\end{description*}
+
+The target \texttt{unjar} is one of the rare targets that is frequently overridden by specific ant scripts.
+Details on that can be found in section \ref{sec:override}.
+
+For actually building the output jar file, the target \texttt{jar} is used.
+It creates a jar file containing all files from the classes folder, all non-source files from the source folder (e.g. image files) and all files that were extracted from the target \texttt{unjar}.
+It can be controlled by the following properties.
+
+\begin{description*}
+	\item[resource.excludes] contains a comma separated list of ant patterns that specify which resources from the source directory will not be contained in the project's jar file.\par The default value is empty, which means, nothing is excluded.
+\end{description*}
+
+%TODO write about ensureJarExists
 
 
 \subsection{Targets for cleaning}
