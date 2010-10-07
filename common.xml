@@ -125,7 +125,7 @@
 
 	<!-- properties for the target "modify" -->
 	<!-- the location of the main package's source file -->
-	<property name="main.src" value="${src.dir}/${basePackagePath}/{main}.java" />
+	<property name="main.src" value="${src.dir}/${basePackagePath}/${main}.java" />
 
 
 	<!-- properties for the target "generateschema" -->
@@ -359,7 +359,7 @@
 
 	<!-- sourcejar -->
 	<!-- in addition to the normal executable jar file, the target creates a second executable jar file that also includes the project's soucre files -->
-	<target name="sourcejar" depends="jar">
+	<target name="sourcejar" depends="ensureJarExists">
 		<copy file="${jar.dir}/${projectname}.jar" tofile="${jar.dir}/${projectname}.src.jar" />
 
 		<!-- include source files-->
