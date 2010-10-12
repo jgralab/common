@@ -97,6 +97,18 @@ Unlike overriding property definitions, this path has to be defined after the im
 If libraries from the common library directory are required, these have to be added to \texttt{classpathExtensions}.
 If no further entries are required, \texttt{classpathExtensions} has to be empty.
 
+Listing \ref{lst:cp_add} shows an example on how common libraries should be added to the classpath.
+
+\begin{lstlisting}[caption=Adding common libraries to the classpath,label=lst:cp_add,float=!ht,language=ant]
+	<path id="classpathExtension">
+		<fileset dir="${comlib.dir}/apache/commons/cli/" includes="**/*.jar" />
+		<fileset dir="${comlib.dir}/jdom/" includes="**/*.jar" />
+	</path>
+\end{lstlisting}
+
+Please note that the jar files are not added directly to the classpath, but all jar files in the containing directory.
+This is done, because the name of jar files might change due to a more recent version.
+
 The second classpath is called \texttt{testclasspath} and contains \texttt{classpath}, the compiled test cases and Junit's jar file for executing the test cases.
 This classpath cannot be directly extended.
 
@@ -293,10 +305,109 @@ It can be controlled by the following properties.
 	\item[license.file] contains a reference to the path of the file containing the license header that will be added to all Java files.\par By default this property is unset. Only if it is set to a value, the target \texttt{addLicenseHeaders} is actually executed.
 \end{description*}
 
-\section{Customizing specific ant scripts}
+\section{Further customizations of specific ant scripts}
 \label{sec:customize}
+Section \ref{sec:properties} described how the custom ant script can be customized by overriding properties.
+Section \ref{sec:classpath} showed how the classpath can be extended.
+Both of these features are sufficient for many cases.
+However, if a project is more complex or has more complex dependencies, it is most likely required to further customize its specific ant script.
+This section shows where such customization might be required and describes the conventions that should be obeyed.
 
+\subsection{Customizing targets}
+Any specific ant script, that imports the common ant script, does not only include its source code, as section \ref{sec:properties} might indicate.
+This import act also includes an inheritance relation between the common ant script and the specific ant script.
+This particularly concerns the targets defined in the common ant script.
+
+The targets inherited from the common ant script can be overridden.
+Furthermore an analogy to the super call in Java exists.
+Also a mechanism similar to the polymorphic method call in Java can be found.
+
+The details about these features and how they can be used for customizing a specific ant script are described in the following.
+
+It can be feasible to add targets to a specific ant script.
+These targets can be used for creating callable targets that handle additional jobs which are not concerned to the build process (e.g. the target \texttt{release} in JGraLab).
+They can also be used for refining and overriding inherited targets.
+
+\subsubsection{Overriding inherited targets}
 \label{sec:override}
+A target can be overridden by just creating a target with the same name in the specific ant script.
+This has two effects.
+The obvious effect is, if the target is called directly or indirectly by dependency in the specific ant script, the overridden variant is invoked.
+The not so obvious effect is, if a target in the common ant script depends on the target that has been overridden in the specific ant script, also the overridden variant is invoked.
+This behavior is comparable to polymorphic method calls in Java and allows a very flexible way of manipulating the behavior of the specific ant script.
+
+Listing \ref{lst:common_build} shows the build target of the common ant script.
+\begin{lstlisting}[caption=Target built in the common ant script,label=lst:common_build,float=!ht,language=ant]
+	<target name="build" depends="jgralab,clean,compile,jar" />
+\end{lstlisting}
+
+Assuming the project of a specific ant script has defined a new target \texttt{pre\_compile} that should be invoked before the target \texttt{compile} is invoked.
+For achieving this, the build target can be overridden as shown in listing \ref{lst:specific_build}.
+
+\begin{lstlisting}[caption=Target built in a specific ant script,label=lst:specific_build,float=!ht,language=ant]
+	<target name="build" depends="jgralab,clean,pre_compile,compile,jar" />
+\end{lstlisting}
+
+Here the build target is overridden and only the dependency has changed.
+This solution has one problem.
+If the target \texttt{compile} is called directly, the target \texttt{pre\_compile} is not invoked.
+For this purpose, it would be feasible to let \texttt{compile} depend on \texttt{pre\_compile}.
+For achieving this, the target \texttt{compile} has to be overridden.
+However, the original target \texttt{compile} should also be invoked, but without copying its content from the common ant script.
+Ant provides a mechanism to call the targets from imported ant scripts.
+The property \texttt{name} from the root tag \texttt{project} is used as identifier.
+This is comparable to the super reference in Java.
+In the common ant script this attribute has the value \texttt{"common"}.
+
+Listing \ref{lst:compile_override} shows how the target \texttt{compile} can be overridden with using the original target.
+
+\begin{lstlisting}[caption=Overriding the target \texttt{compile},label=lst:compile_override,float=!ht,language=ant]
+	<target name="compile" depends="pre_compile,common.compile" />
+\end{lstlisting}
+
+Please note that the order of the required targets in the attribute \texttt{depends} dictates the order the targets are invoked.
+If the desired target can also be invoked after the inherited target, defining a new target can be avoided.
+This technique can be used for overriding he target \texttt{unjar} because the order of the unpacked libraries is not important.
+
+The following example assumes the common library for command line parsing (Apache commons CLI) is required in the project\footnote{which is true for all projects including a main class with command line interface}.
+For creating a standalone jar file, adding this library to the classpath, as described in section \ref{sec:classpath} is not sufficient.
+Its content has to be added to the project's jar as well.
+The common target \texttt{unjar} does not consider libraries from \texttt{classpathExtension}.
+So the target \texttt{unjar} should be extended for adding this behavior.
+
+Listing \ref{lst:unjar_override} shows how this is done.
+
+\begin{lstlisting}[caption=Overriding the target \texttt{unjar},label=lst:unjar_override,float=!ht,language=ant]
+	<target name="unjar" depends="common.unjar">
+		<unjar dest="${tmp.dir}">
+			<fileset dir="${comlib.dir}/apache/commons/cli/" includes="**/*.jar" />
+		</unjar>
+	</target>
+\end{lstlisting}
+
+The target depends on the target \texttt{unjar} from the common ant script (line 1).
+The unjar task (lines 2 - 4) unpacks all jar files that are found in the specified location into the temporary directory.
+The jar files are refered to in analogy to extending classpaths (see section \ref{classpath}.
+
+\subsubsection{Convention for target dependencies}
+\label{sec:target:conventions}
+This section shows some conventions for the dependencies of targets.
+
+The common ant script is designed to build a project, when the target \texttt{build} is called.
+The target \texttt{clean} should only clean the generated class files and schema files, but not the jar file, the test results and the documentation.
+This behavior should never be changed.
+
+All targets that are invoked by \texttt{build} should also work when invoked directly.
+However, it might be better if they do not depend on each other.
+E.g. the target \texttt{jar} does not depend on \texttt{compile}.
+Assuming a big project that requires several minutes for compilation.
+If a resource is changed (e.g. an image file), but the source code remains unchanged, it is better if the jar target only rebuilds the jar file using the class files that are already compiled instead of rebuilding the whole project.
+
+
+
+
+\subsection{Depend a project on other projects}
+\label{sec:dependency}
 
 \clearpage
  
