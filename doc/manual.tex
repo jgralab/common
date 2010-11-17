@@ -1,11 +1,13 @@
 \documentclass[a4paper,twoside,11pt,bibtotoc]{article}
+% Version information
+\newcommand{\version}{Version 0.9 -- \today}
 \include{latex_definitions}
 
 % hide topic boxes
 % \renewcommand{\topicbox}[3]{}
 
 
-\setistheader{The common ant script}
+\setistheader{The common Ant script}
 \parindent0pt
 
 
@@ -15,7 +17,7 @@
 
 \begin{titlepage}
 
-\makeisttitle{The common ant script \par (\version)}{Sascha Strau\ss \par
+\makeisttitle{The common Ant script \par (\version)}{Sascha Strau\ss \par
 strauss@uni-koblenz.de}
 
 
@@ -28,22 +30,34 @@ strauss@uni-koblenz.de}
 \cleardoublepage
 
 \section{Introduction}
-The common ant script serves as general build file for projects depending on JGraLab.
-It provides all common features an ant script for such projects requires.
-An actual ant script for such a project (in the following called \emph{specific ant script}) is derived from the common ant script using ants import mechanism.
-In most cases, the specific ant script only needs to set several properties.
-Listing \ref{lst:minimal} on page \pageref{lst:minimal} in appendix \ref{sec:appendix} shows a minimal specific ant script.
+% TODO write better motivation
+The common Ant script serves as general build file for projects depending on JGraLab.
+It replaces the old Ant script that was used before.
+Its goal is to make the creation of build files easier than before.
+
+This text targets users of JGraLab who want to create their own projects depending on JGraLab.
+Readers should be familiar with the Ant terminology.
+
+The common Ant script provides all common features an Ant script for projects depending on JGraLab requires.
+A specific Ant script for such a project is derived from the common Ant script using Ant's import mechanism.
+In most cases, the specific Ant script only needs to set some properties.
+Listing \ref{lst:minimal} on page \pageref{lst:minimal} in appendix \ref{sec:appendix} shows a minimal specific Ant script.
 
 For some projects, it requires more adjustments.
-However, these adjustments are still less complex.
+However, these adjustments are still less complex than in the old Ant script.
 
-This document describes the properties that are supported by the common ant script and the targets that can be used in all specific ant scripts.
-It also describes how specific ant scripts can be customized if it is required.
+This document describes the properties that are supported by the common Ant script and the targets that can be used in all specific Ant scripts.
+It also describes how specific Ant scripts can be customized if it is required.
+
+Section \ref{sec:properties} describes the non-target-specific properties that can be set in specific Ant scripts.
+Section \ref{sec:classpath} describes how the classpath is set in the common Ant script.
+Section \ref{sec:targets} describes the targets that are defined in the common Ant script and their properties.
+Section \ref{sec:customize} describes advanced techniques for customizing a specific Ant script.
 
 \section{Properties}
 \label{sec:properties}
 This section describes general rules for properties and introduces the general properties that are not target specific.
-Target specific properties are introduced in section \ref{sec:targets}.
+Target-specific properties are introduced in section \ref{sec:targets}.
 
 \subsection{Overview of general properties}
 The following list gives an overview of the general properties.
@@ -69,20 +83,20 @@ By convention, the default values of these properties should not be overridden.
 There are further target specific properties with directory information that can be found in section \ref{sec:targets}.
 
 \subsection{The location of property definitions}
-Properties in ant are comparable to constants.
+Properties in Ant are comparable to constants.
 Once set, they are immutable.
-However, it is possible to override properties in specific ant scripts.
-Properties for overriding default values have to be defined before the import clause for the common ant script.
+However, it is possible to override properties in specific Ant scripts.
+Properties for overriding default values have to be defined before the import clause for the common Ant script.
 
 Properties that are used as variables in other property declarations have to be defined before they are used.
-This means, custom properties, that use standard properties from the common ant script, have to be defined after the import clause.
+This means custom properties, that use standard properties from the common Ant script, have to be defined after the import clause.
 
-Please note, both rules imply that defining properties overriding default values while using other properties with default values is only possible if the used default values are explicitly set before the import clause.
-This relation is transitive, so the described scenario should be avoided.
+Please note, that these rules imply that defining properties overriding default values while using other properties with default values is only possible if the used default values are explicitly set before the import clause.
+Since this relation is transitive, the described scenario should be avoided.
 
 \section{Classpath}
 \label{sec:classpath}
-The common ant script provides two classpaths.
+The common Ant script provides two classpaths.
 These classpaths require the following properties.
 
 \begin{description*}
@@ -93,15 +107,16 @@ These classpaths require the following properties.
 \end{description*}
 
 The first and more important classpath is called \texttt{classpath} and contains all important libraries that are required for compiling and using the project.
-It includes all compiled java classes, all project specific libraries, the IST utilities and JGraLab.
-It also includes the path \texttt{classpathExtension} which has to be defined in specific ant scripts.
-Unlike overriding property definitions, this path has to be defined after the import statement.
+It includes all compiled java classes, all project-specific libraries, the IST utilities and JGraLab.
+It also includes the path \texttt{classpathExtension} which has to be defined in specific Ant scripts.
+Unlike the overriding of property definitions, this path has to be defined after the import statement.
 If libraries from the common library directory are required, these have to be added to \texttt{classpathExtensions}.
-If no further entries are required, \texttt{classpathExtensions} has to be empty.
+If no further entries are required, \texttt{classpathExtensions} may be left empty.
+However, it always has to be declared.
 
 Listing \ref{lst:cp_add} shows an example on how common libraries should be added to the classpath.
 
-\begin{lstlisting}[caption=Adding common libraries to the classpath,label=lst:cp_add,float=!ht,language=ant]
+\begin{lstlisting}[caption=Adding common libraries to the classpath,label=lst:cp_add,float=!ht,language=Ant]
 	<path id="classpathExtension">
 		<fileset dir="${comlib.dir}/apache/commons/cli/" includes="**/*.jar" />
 		<fileset dir="${comlib.dir}/jdom/" includes="**/*.jar" />
@@ -109,14 +124,15 @@ Listing \ref{lst:cp_add} shows an example on how common libraries should be adde
 \end{lstlisting}
 
 Please note that the jar files are not added directly to the classpath, but all jar files in the containing directory.
-This is done, because the name of jar files might change due to a more recent version.
+If the name of a jar file changes (e.g. due to a new version number), this method avoids the necessity to update all specific Ant scripts of projects that depend on the changed jar file.
+% This is done, because the name of jar files might change due to a more recent version.
 
-The second classpath is called \texttt{testclasspath} and contains \texttt{classpath}, the compiled test cases and Junit's jar file for executing the test cases.
+The second classpath is called \texttt{testclasspath} and contains \texttt{classpath}, the compiled test cases and JUnit's jar file for executing the test cases.
 This classpath cannot be directly extended.
 
 \section{Targets}
 \label{sec:targets}
-This section describes the targets provided by the common ant task.
+This section describes the targets provided by the common Ant task.
 %First all targets for building the project are introduced.
 %Then all targets for cleaning the projects are shown.
 %Finally all targets for additional processes are described.
@@ -124,24 +140,24 @@ This section describes the targets provided by the common ant task.
 \subsection{Targets for compiling and generating}
 \label{sec:creating}
 Here all targets that are used for compiling source code and for generating other artifacts are introduced.
-The most important target is \texttt{build}, which is also the default target for every specific ant script.
+The most important target is \texttt{build}, which is also the default target for every specific Ant script.
 The target \texttt{build} first compiles other required projects.
 
 \subsubsection{Targets for building required projects}
 \label{sec:required}
-All projects that use the common ant script automatically depend on JGraLab and on the IST utilities.
-The common ant script provides targets that call the ant scripts of these projects automatically.
+All projects that use the common Ant script automatically depend on JGraLab and on the IST utilities.
+The common Ant script provides targets that call the Ant scripts of these projects automatically.
 The target for building JGraLab is called \texttt{jgralab}.
 The target for building the IST utilities is called \texttt{ist\_utilities}.
-The jar files of these projects are only built, if they do not already exist.
+The jar files of these projects are only built if they do not already exist.
 
-After these targets have been executed, the build target executes the target \texttt{clean} (see section \ref{sec:cleaning}) for removing most generated files that might have been created by a previous run of the ant script.
+After these targets have been executed, the build target executes the target \texttt{clean} for removing most generated files that might have been created by a previous run of the Ant script (see section \ref{sec:cleaning} for details).
 Then the target \texttt{compile} is invoked (see section \ref{sec:compile}).
 This target compiles the actual source code of the project.
-Since most projects require a custom graph schema, targets for creating the Java files, that represent this schema, have to be generated.
+Since most projects require a custom graph schema, targets for creating the Java files that represent this schema have to be generated.
 
 \subsubsection{Schema related targets}
-A schema can either be specified by exporting an RSA model to an xmi file or by providing a tg file.
+A schema can be specified by either exporting an RSA model to an XWI file or by providing a TG file.
 JGraLab can convert xmi files to tg files.
 In both cases, a tg file is used for generating Java source files representing the schema.
 
@@ -156,19 +172,19 @@ It is controlled by the following parameters.
 	\item[schema.subtypeFlag] corresponds to the flag \texttt{-f} in \texttt{TgSchema2Java}.\par The default value is \texttt{"false"}.
 \end{description*}
 
-The target for converting an exported xmi file to tg is called \texttt{convertschema}.
-If an xmi file is specified, this target is executed first.
+The target for converting an exported XMI file to TG is called \texttt{convertschema}.
+If an XMI file is specified, this target is executed first.
 It is controlled by the following parameters.
 
 \begin{description*}
-	\item[xmi.schema.file] contains the relative path to the xmi file.\par By default this property is unset. Only if it is set to a value, the target \texttt{convertschema} is actually executed.
+	\item[xmi.schema.file] contains the relative path to the XMI file.\par By default this property is unset. Only if it is set to a value, the target \texttt{convertschema} is actually executed. This also requires \textbf{schema.file} to be set, because otherwise the target \texttt{generateschema} would not be executed and the build would most likely fail.
 	\item[rsa2tg.f] corresponds to the flag \texttt{f} in \texttt{Rsa2Tg}.\par The default value is \texttt{"false"}.
 	\item[rsa2tg.u] corresponds to the flag \texttt{u} in \texttt{Rsa2Tg}.\par The default value is \texttt{"false"}.
 	\item[rsa2tg.n] corresponds to the flag \texttt{n} in \texttt{Rsa2Tg}.\par The default value is \texttt{"false"}.
 \end{description*}
 
-If the target \texttt{convertschema} is used, also the property \textbf{schema.file} has to be set.
-Otherwise the target \texttt{generateschema} would not be executed and the build would most likely fail.
+%If the target \texttt{convertschema} is used, also the property \textbf{schema.file} has to be set.
+%Otherwise the target \texttt{generateschema} would not be executed and the build would most likely fail.
 
 After the schema files have been generated, the target \texttt{compile} can actually compile the source files.
 \subsubsection{The target \texttt{compile}}
@@ -176,18 +192,18 @@ After the schema files have been generated, the target \texttt{compile} can actu
 The target \texttt{compile} is controlled by the following parameters.
 
 \begin{description*}
-	\item[compileincludes] contains a list of ant patterns that specify which source files are being included in the compile process.\par The default value is empty, which means, everything is included.
-	\item[compileexcludes] contains a list of ant patterns that specify which source files are being excluded from the compile process.\par The default value is empty, which means, nothing is excluded.
+	\item[compileincludes] contains a list of Ant patterns that specify which source files are being included in the compile process.\par The default value is empty, which means everything is included.
+	\item[compileexcludes] contains a list of Ant patterns that specify which source files are being excluded from the compile process.\par The default value is empty, which means, nothing is excluded.
 	\item[javac.targetVM] contains the compatibility level of the class files.\par The default value is \texttt{"1.6"}.
-	\item[debug] contains information about the debug level of the compiled class files.\par The default value is \texttt{"false"}.
+	\item[debug] Declares if debug information should be included in the class files.\par The default value is \texttt{"false"}.
 	\item[debuglevel] contains a comma separated list of which debug information will be included, if \textbf{debug} is set to \texttt{"true"}.\par The default value is \texttt{"lines"}. Valid values may contain \texttt{lines}, \texttt{vars} and \texttt{source}.
 \end{description*}
 
 After the compilation of the source code is done, the build target executes the targets for creating the jar file.
 
 \subsubsection{Targets for creating the jar file}
-The common ant script is designed for creating standalone jar files.
-For achieving this, all required libraries are extracted and put into the project's jar file.
+The common Ant script is designed for creating standalone jar files.
+To achieve this, all required libraries are extracted and put into the project's jar file.
 The target \texttt{unjar} extracts all required libraries to a temporary folder.
 
 The target \texttt{unjar} by default extracts the file \texttt{ist\_utilities.jar} and all project specific libraries.
@@ -195,10 +211,10 @@ It is controlled by the following properties.
 \begin{description*}
 	\item[tmp.dir] contains the relative path to a non-existing directory that will be created, will serve as temporary directory and will be deleted during the build process.\par The default value is \texttt{"\$\{build.dir\}/tmp"}.
 	\item[unjar.disabled] controls whether the target \texttt{unjar} is executed or not.\par By default this property is unset. If it is set to an arbitrary value, the target \texttt{unjar} is not executed.
-	\item[unjarexcludes] contains a comma separated list of ant patterns that specify which project specific libraries will not be contained in the project's jar file.\par The default value is empty, which means, nothing is excluded.
+	\item[unjarexcludes] contains a comma separated list of Ant patterns that specify which project specific libraries will not be contained in the project's jar file.\par The default value is empty, which means, nothing is excluded.
 \end{description*}
 
-The target \texttt{unjar} is one of the rare targets that is often overridden by specific ant scripts.
+The target \texttt{unjar} is often overridden by specific Ant scripts.
 Details on that can be found in section \ref{sec:override}.
 
 For actually building the output jar file, the target \texttt{jar} is used.
@@ -208,7 +224,7 @@ It can be controlled by the following properties.
 
 \begin{description*}
 	\item[jar.dir] contains the relative path to the location of the project's jar file.\par The default value is \texttt{"\$\{build.dir\}/jar"}.
-	\item[resource.excludes] contains a comma separated list of ant patterns that specify which resources from the source directory will not be contained in the project's jar file.\par The default value is empty, which means, nothing is excluded.
+	\item[resource.excludes] contains a comma separated list of Ant patterns that specify which resources from the source directory will not be contained in the project's jar file.\par The default value is empty, which means, nothing is excluded.
 \end{description*}
 
 All other targets that are implicitly executed by the target \texttt{build} can be found in section \ref{sec:additional}.
@@ -218,15 +234,15 @@ All other targets that are implicitly executed by the target \texttt{build} can 
 This section introduces the targets that are used for removing generated artifacts.
 There are two main targets for this purpose, \texttt{clean} and \texttt{cleanall}.
 The target \texttt{clean} removes all compiled class files, all compiled test cases, all generated schema files and the temporary folder, in case it was not deleted by a failed build attempt.
-The target \texttt{cleanall} removes everything that is removed by the target \texttt{clean} and additionally removes the jar file, the javadoc, the test results and calls the target \texttt{cleanall} from the ant script that builds the IST utilities.
+The target \texttt{cleanall} removes everything that is removed by the target \texttt{clean} and additionally removes the jar file, the javadoc, the test results and calls the target \texttt{cleanall} from the Ant script that builds the IST utilities.
 The latter is done for convenience, so the IST utilities are never required to be rebuilt manually.
 
-If the building of a project fails, the first step for resolving the problem is updating the projects \texttt{common}, \texttt{jgralab}, the own project and all other projects that are required by the own project.
+If the building of a project fails, the first step for resolving the problem is updating the projects \texttt{common}, \texttt{jgralab}, the project itself and all other projects that are required by it.
 Then the target \texttt{cleanall} should be invoked for at least the own project and \texttt{jgralab}.
-Afterwards the ant script for the own project can be run normally.
+Afterwards the Ant script for the own project can be run normally.
 
 The target \texttt{clean} calls the target \texttt{deleteGeneratedSchemaFiles}, which is responsible for deleting the Java files that have been generated by the target \texttt{generateschema}.
-It is only invoked, if the property \textbf{schema.file} is set.
+It is only invoked if the property \textbf{schema.file} is set.
 %The path information is taken from the tg file using JGraLab.
 
 The target \texttt{cleanall} depends on the the target \texttt{deleteConvertedSchemaFile}, which deletes the tg file, specified by the property \textbf{schema.file}, if the property \textbf{xmi.schema.file} is set.
@@ -235,21 +251,24 @@ The target \texttt{cleanall} depends on the the target \texttt{deleteConvertedSc
 \subsection{Additional targets}
 \label{sec:additional}
 This section introduces all remaining targets.
-Most of them are not implicitly called by \texttt{build}.
+%Most of them are not implicitly called by \texttt{build}.
 
-\subsubsection{Implicitly called targets}
+\subsubsection{The target \texttt{createClassesDir}}
 The target \texttt{createClassesDir} only creates the directory for the class files specified by the property \textbf{classes.dir}.
+It is implicitly called by \texttt{build}.
 
+\subsubsection{The target \texttt{customAntTasks}}
 The target \texttt{customAntTasks} depends on the target \texttt{jgralab}.
-It ensures that JGraLab's jar file is built and defines the ant tasks \texttt{tgschema2java}, \texttt{deletegeneratedschema} and \texttt{rsa2tg}.
-These ant tasks are implemented in JGraLab.
+It ensures that JGraLab's jar file is built and defines the Ant tasks \texttt{tgschema2java}, \texttt{deletegeneratedschema} and \texttt{rsa2tg}.
+These Ant tasks are implemented in JGraLab.
 All targets that use these tasks have to depend on \texttt{customAntTasks} rather than depend directly on \texttt{jgralab}.
 This can be important when overriding targets.
+It is implicitly called by \texttt{build}.
 
 \subsubsection{The target \texttt{ensureJarExists}}
 The target \texttt{ensureJarExists} only invokes the target \texttt{build}, if the project's jar file does not exist yet.
 This is a very useful target for avoiding unnecessary build cycles.
-However, this target cannot detect updates in the source code\footnote{This is due to the main difference of \emph{ant} in comparison to \emph{make}. \emph{ant} is target oriented, where \emph{make} is file oriented.}.
+However, this target cannot detect updates in the source code.%\footnote{This is due to the main difference of \emph{Ant} in comparison to \emph{make}. \emph{Ant} is target oriented, where \emph{make} is file oriented.}.
 
 \subsubsection{The target \texttt{sourcejar}}
 The target \texttt{sourcejar} creates a second jar file, based on the normal one.
@@ -261,7 +280,7 @@ The target \texttt{document} creates the javadoc for the project.
 It can be controlled by the following properties.
 \begin{description*}
 	\item[doc.dir] contains the relative path to the location of the project's javadoc files.\par The default value is \texttt{"\$\{build.dir\}/doc"}.
-	\item[documentexcludes] contains a list of ant patterns that specify which classes are not being added to the javadoc.\par The default value is empty, which means, nothing is excluded.
+	\item[documentexcludes] contains a list of Ant patterns that specify which classes are not being added to the javadoc.\par The default value is empty, which means, nothing is excluded.
 	\item[document.access] contains the information down to which visibility level the javadoc is generated.\par The default value is \texttt{"public"}. Valid values are \texttt{"public"}, \texttt{"protected"}, \texttt{"package"} and \texttt{"private"}.
 \end{description*}
 
@@ -307,46 +326,48 @@ It can be controlled by the following properties.
 	\item[license.file] contains a reference to the path of the file containing the license header that will be added to all Java files.\par By default this property is unset. Only if it is set to a value, the target \texttt{addLicenseHeaders} is actually executed.
 \end{description*}
 
-\section{Further customizations of specific ant scripts}
+\section{Further customizations of specific Ant scripts}
 \label{sec:customize}
-Section \ref{sec:properties} described how the custom ant script can be customized by overriding properties.
+Section \ref{sec:properties} described how the custom Ant script can be customized by overriding properties.
 Section \ref{sec:classpath} showed how the classpath can be extended.
 Both of these features are sufficient for many cases.
-However, if a project is more complex or has more complex dependencies, it is most likely required to further customize its specific ant script.
+However, if a project is more complex or has more complex dependencies, it is most likely required to further customize its specific Ant script.
 This section shows where such customization might be required and describes the conventions that should be obeyed.
 
 \subsection{Customizing targets}
-Any specific ant script, that imports the common ant script, does not only include its source code as section \ref{sec:properties} might indicate.
-This import act also includes an inheritance relation between the common ant script and a specific ant script.
-This relation particularly concerns the targets defined in the common ant script.
+Any specific Ant script, that imports the common Ant script, does not only include its source code.% as section \ref{sec:properties} might indicate.
+This import operation also includes an inheritance relation between the common Ant script and a specific Ant script.
+This relation particularly concerns the targets defined in the common Ant script.
 
-The targets inherited from the common ant script can be overridden.
-Furthermore an analogy to the super call in Java exists.
-Also a mechanism, similar to the polymorphic method call in Java, can be found.
+It also incorporates a mechanism that is comparable to polymorphy in object oriented languages.
+The targets inherited from the common Ant script can be overridden.
+Also the targets defined by the common Ant script can be called.
+The details about these features and how they can be used for customizing a specific Ant script are described in the following.
 
-The details about these features and how they can be used for customizing a specific ant script are described in the following.
+%Furthermore an analogy to the super call in Java exists.
+%Also a mechanism, similar to the polymorphic method call in Java, can be found.
 
-It can be feasible to add targets to a specific ant script.
-These targets can be used for creating callable targets that handle additional jobs which are not concerned to the build process.% (e.g. the target \texttt{release} in JGraLab).
-They can also be used for overriding inherited targets.
+It can be feasible to add targets to a specific Ant script.
+These targets can be used for creating callable targets that handle additional jobs which are not concerned with the build process.% (e.g. the target \texttt{release} in JGraLab).
+%They can also be used for overriding inherited targets.
 
 \subsubsection{Overriding inherited targets}
 \label{sec:override}
-A target can be overridden by just creating a target with the same name in the specific ant script.
+A target can be overridden by just creating a target with the same name in the specific Ant script.
 This has two effects.
-The obvious effect is, if the target is called directly or indirectly by dependency in the specific ant script, the overridden variant is invoked.
-The less obvious effect is, if a target in the common ant script depends on ö target that has been overridden in a specific ant script, also the overridden variant is invoked.
-This behavior is comparable to polymorphic method calls in Java and allows a very flexible way of manipulating the behavior of a specific ant script.
+The obvious effect is, if the target is called directly or indirectly by dependency in the specific Ant script, the overridden variant is invoked.
+The less obvious effect is, if a target in the common Ant script depends on a target that has been overridden in a specific Ant script, also the overridden variant is invoked.
+This behavior is comparable to polymorphic method calls in Java and allows a very flexible way of manipulating the behavior of a specific Ant script.
 
-Listing \ref{lst:common_build} shows the build target of the common ant script.
-\begin{lstlisting}[caption=Target built in the common ant script,label=lst:common_build,float=!ht,language=ant]
+Listing \ref{lst:common_build} shows the \texttt{build} target of the common Ant script.
+\begin{lstlisting}[caption=Target build in the common Ant script,label=lst:common_build,float=!ht,language=Ant]
 	<target name="build" depends="jgralab,clean,compile,jar" />
 \end{lstlisting}
 
-Assuming the project of a specific ant script has defined a new target \texttt{pre\_compile} that should be invoked before the target \texttt{compile} is invoked.
+Assuming the project of a specific Ant script has defined a new target \texttt{pre\_compile} that should be invoked before the target \texttt{compile} is invoked.
 For achieving this, the build target can be overridden as shown in listing \ref{lst:specific_build}.
 
-\begin{lstlisting}[caption=Target built in a specific ant script,label=lst:specific_build,float=!ht,language=ant]
+\begin{lstlisting}[caption=Target build in a specific Ant script,label=lst:specific_build,float=!ht,language=Ant]
 	<target name="build" depends="jgralab,clean,pre_compile,compile,jar" />
 \end{lstlisting}
 
@@ -355,23 +376,23 @@ This solution has one problem.
 If the target \texttt{compile} is called directly, the target \texttt{pre\_compile} is not invoked.
 For this purpose, it would be feasible to let \texttt{compile} depend on \texttt{pre\_compile}.
 For achieving this, the target \texttt{compile} has to be overridden.
-However, the original target \texttt{compile} should also be invoked, but without copying its content from the common ant script.
-Ant provides a mechanism to call the targets from imported ant scripts.
+However, the original target \texttt{compile} should also be invoked, but without copying its content from the common Ant script.
+Ant provides a mechanism to call the targets from imported Ant scripts.
 The property \texttt{name} from the root tag \texttt{project} is used as identifier.
 This is comparable to the super reference in Java.
-In the common ant script this attribute has the value \texttt{"common"}.
+In the common Ant script this attribute has the value \texttt{"common"}.
 
-Listing \ref{lst:compile_override} shows how the target \texttt{compile} can be overridden with using the original target.
+Listing \ref{lst:compile_override} shows how the target \texttt{compile} can be overridden by using the original target.
 
-\begin{lstlisting}[caption=Overriding the target \texttt{compile},label=lst:compile_override,float=!ht,language=ant]
+\begin{lstlisting}[caption=Overriding the target \texttt{compile},label=lst:compile_override,float=!ht,language=Ant]
 	<target name="compile" depends="pre_compile,common.compile" />
 \end{lstlisting}
 
 Please note that the order of the required targets in the attribute \texttt{depends} dictates the order the targets are invoked.
 If the desired target can also be invoked after the inherited target, defining a new target can be avoided.
-E.g. this technique can be used for overriding the target \texttt{unjar} because the order the libraries are unpacked is not important.
+E.g., this technique can be used for overriding the target \texttt{unjar} because the order the libraries are unpacked is not important.
 
-The following example assumes the common library for command line parsing (Apache commons CLI) is required in the project\footnote{which is true for all projects including a main class with command line interface}.
+The following example assumes the common library for command line parsing (Apache commons CLI) is required in the project.%\footnote{which is true for all projects including a main class with command line interface}.
 For creating a standalone jar file, only adding this library to the classpath is not sufficient.
 Its content has to be added to the project's jar as well.
 The common target \texttt{unjar} does not consider libraries from \texttt{classpathExtension}.
@@ -379,7 +400,7 @@ So the target \texttt{unjar} should be extended for adding this behavior.
 
 Listing \ref{lst:unjar_override} shows how this is done.
 
-\begin{lstlisting}[caption=Overriding the target \texttt{unjar},label=lst:unjar_override,float=!ht,language=ant]
+\begin{lstlisting}[caption=Overriding the target \texttt{unjar},label=lst:unjar_override,float=!ht,language=Ant]
 	<target name="unjar" depends="common.unjar">
 		<unjar dest="${tmp.dir}">
 			<fileset dir="${comlib.dir}/apache/commons/cli/" includes="**/*.jar" />
@@ -387,7 +408,7 @@ Listing \ref{lst:unjar_override} shows how this is done.
 	</target>
 \end{lstlisting}
 
-The target depends on the target \texttt{unjar} from the common ant script (line 1).
+The target depends on the target \texttt{unjar} from the common Ant script (line 1).
 The unjar task (lines 2 - 4) unpacks all jar files that are found in the specified location into the temporary directory.
 The jar files are refered to in analogy to extending classpaths (see section \ref{sec:classpath}).
 
@@ -395,15 +416,15 @@ The jar files are refered to in analogy to extending classpaths (see section \re
 \label{sec:target:conventions}
 This section shows some conventions for the dependencies of targets.
 
-The common ant script is designed to build a project, when the target \texttt{build} is called.
+The common Ant script is designed to build a project, when the target \texttt{build} is called.
 The target \texttt{clean} should only clean the generated class files and schema files, but not the jar file, the test results and the documentation.
 This behavior should never be changed.
 
 All targets that are invoked by \texttt{build} should also work when invoked directly.
 However, it might be better if they do not depend on each other.
 E.g. the target \texttt{jar} does not depend on \texttt{compile}.
-Assuming a big project that requires several minutes for compilation.
-If a resource is changed (e.g. an image file), but the source code remains unchanged, it is better if the jar target only rebuilds the jar file using the class files that are already compiled instead of rebuilding the whole project.
+%Assuming a big project that requires several minutes for compilation.
+If a resource is changed (e.g. an image file), but the source code remains unchanged, it is better if the \texttt{jar} target only rebuilds the jar file using the class files that are already compiled instead of rebuilding the whole project.
 
 Targets can be split into multiple targets if a single target would be too complex.
 A prominent candidate for this is the target \texttt{compile}.
@@ -415,22 +436,22 @@ E.g. when overriding \texttt{compile}, this means the target has to depend on th
 
 \subsection{Handling multiple projects and their dependencies}
 \label{sec:dependency}
-This section introduces concepts on how to create specific ant scripts that handle the dependency relations with other projects.
-Primarily, the conventions described in this chapter concern only projects that use the common ant script.
+This section introduces concepts on how to create specific Ant scripts that handle the dependency relations with other projects.
+Primarily, the conventions described in this chapter concern only projects that use the common Ant script.
 However, it is also applicable to other projects with certain adjustments.
 
-\subsubsection{Project dependencies to other projects using the common ant script}
+\subsubsection{Project dependencies to other projects using the common Ant script}
 \label{sec:common_project_dep}
-Some projects that use the common ant script also depends on other projects using this script.
-Particularly this is true for projects that include a schema that is used by multiple projects.
+Some projects that use the common Ant script also depend on other projects using this script.
+In particular, this is true for projects that include a schema that is used by multiple projects.
 
-A project, depending on another project, has to include the required project's jar file in the classpath.
+A project depending on another project has to include the required project's jar file in the classpath.
 It also has to be able to create this jar file if it is not present.
 
-Listing \ref{lst:jgwnl} shows the complete specific ant script for the project \texttt{jgwnlclient} that depends on the project \texttt{jgwnl}.
+Listing \ref{lst:jgwnl} shows the complete specific Ant script for the project \texttt{jgwnlclient} that depends on the project \texttt{jgwnl}.
 Please note that the property \textbf{unjar.disabled} is set to \texttt{"true"} for the required project \texttt{jgwnl}.
 
-\begin{lstlisting}[caption=specific ant script of the project \texttt{jgwnlclient},label=lst:jgwnl,float=!ht,language=ant]
+\begin{lstlisting}[caption=specific Ant script of the project \texttt{jgwnlclient},label=lst:jgwnl,float=!ht,language=Ant]
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project name="jgwnlclient" basedir="." default="build">
@@ -450,7 +471,7 @@ Please note that the property \textbf{unjar.disabled} is set to \texttt{"true"} 
 	<target name="build" depends="jgwnl,clean,compile,jar" />
 
 	<target name="jgwnl">
-		<ant dir="../jgwnl" antfile="build.xml" inheritAll="false" target="ensureJarExists" />
+		<Ant dir="../jgwnl" antfile="build.xml" inheritAll="false" target="ensureJarExists" />
 	</target>
 
 	<target name="unjar" depends="common.unjar">
@@ -464,7 +485,7 @@ The path to the jar file of \texttt{jgwnl} is stored in a new property \textbf{j
 By convention, this property should always be called \textbf{requiredProjectname.location}.
 This location is added to the \texttt{classpathExtension} (line 14).
 The target \texttt{unjar} is overridden as described in section \ref{sec:override}.
-The specific ant script contains a new target \texttt{jgwnl} that builds the project \texttt{jgwnl} if its jar file does not exist yet (lines 19-21).
+The specific Ant script contains a new target \texttt{jgwnl} that builds the project \texttt{jgwnl} if its jar file does not exist yet (lines 19-21).
 This target calls the target \texttt{ensureJarExists} of the project \texttt{jgwnl}.
 By convention, this should be done for other projects in analogy.
 This ensures that the build is only invoked if the required project's jar file does not exist yet.
@@ -473,9 +494,9 @@ The target \texttt{build} is overridden and includes this target in its dependen
 If the project depends on multiple other projects, each of these projects requires a location property and a target that builds it if required.
 The target \texttt{build} has to be adjusted so that all these targets appear in the dependency list.
 
-\subsubsection{Project dependencies to other projects not using the common ant script}
+\subsubsection{Project dependencies to other projects not using the common Ant script}
 \label{sec:arbitrary_project_dep}
-For describing a dependency to a project that does not use the common ant script, the convention is similar.
+For describing a dependency to a project that does not use the common Ant script, the convention is similar.
 However, third party projects should be put into the library folder indicated by \textbf{lib.dir}.
 If this is not feasible, the conventions introduced in section \ref{sec:common_project_dep} have to be modified.
 
@@ -491,12 +512,13 @@ If the required project's jar file can be modified, it is better to implement a 
 \clearpage
 
 \appendix
-\section{A minimal specific ant script}
-Listing \ref{lst:minimal} contains a specific ant script for a minimal HelloWorld application containing a schema.
+\section{A minimal specific Ant script}
+\label{sec:appendix}
+Listing \ref{lst:minimal} contains a specific Ant script for a minimal HelloWorld application containing a schema.
 This file can be found in the directory \texttt{minimal} in the project \texttt{common}.
-It can serve as starting point for other specific ant scripts.
+It can serve as starting point for other specific Ant scripts.
 
-\begin{lstlisting}[caption=Minimal specific ant script,label=lst:minimal,float=!ht,language=ant]
+\begin{lstlisting}[caption=Minimal specific Ant script,label=lst:minimal,float=!ht,language=Ant]
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project name="de.uni_koblenz.minimal" basedir="." default="build">
@@ -520,7 +542,7 @@ The property \textbf{schema.file} is set to the tg file of a minimal schema (lin
 If no schema is required, this line can be removed.
 The \texttt{classpathExtension} for this project is empty, because no further libraries are required.
 
-When creating projects, please keep in mind to create a directory \texttt{lib}, because this is required in the classpath defined by the common ant script.
+When creating projects, please keep in mind to create a directory \texttt{lib}, because this is required in the classpath defined by the common Ant script.
 \clearpage
  
 %\addcontentsline{toc}{section}{References}
