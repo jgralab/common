@@ -177,8 +177,8 @@ It is controlled by the following parameters.
 	\item[schema.file] contains the relative path to the tg file.\par By default this property is unset. Only if it is set to a value, the target \texttt{generateschema} is actually executed.
 	\item[schema.location] contains the relative path to the source directory, where the generated Java files should be stored.\par The default value is \texttt{"\$\{src.dir\}"}.
 	\item[schema.implementationMode] contains a comma separated list of implementation modes that should be generated.\par The default value is \texttt{"standard"}. E.g. if additional transaction support is required, it should be overridden with the value \texttt{"standard,transaction"}. Valid values may contain (so-far) \texttt{standard}, \texttt{transaction}, \texttt{savemem} and \texttt{database}.
-	\item[schema.withoutTypes] corresponds to the flag \texttt{-w} in \texttt{TgSchema2Java}.\par The default value is \texttt{"false"}.
-	\item[schema.subtypeFlag] corresponds to the flag \texttt{-f} in \texttt{TgSchema2Java}.\par The default value is \texttt{"false"}.
+	\item[schema.withoutTypes] corresponds to the flag \texttt{-w} in \texttt{TgSchema2Java}. If it is set to \texttt{"true"}, type specific methods will not be created in the schema files.\par The default value is \texttt{"false"}.
+	\item[schema.subtypeFlag] corresponds to the flag \texttt{-f} in \texttt{TgSchema2Java}. If it is set to \texttt{"true"}, additional type specific methods will be created, that have a flag for deciding if subtypes should be considered (default behavior) or not. It is ignored, if \textbf{schema.withoutTypes} is set to \texttt{"true"}.\par The default value is \texttt{"false"}.
 \end{description*}
 
 The target for converting an exported XMI file to TG is called \texttt{convertschema}.
@@ -187,9 +187,9 @@ It is controlled by the following parameters.
 
 \begin{description*}
 	\item[xmi.schema.file] contains the relative path to the XMI file.\par By default this property is unset. Only if it is set to a value, the target \texttt{convertschema} is actually executed. This also requires \textbf{schema.file} to be set, because otherwise the target \texttt{generateschema} would not be executed and the build would most likely fail.
-	\item[rsa2tg.f] corresponds to the flag \texttt{f} in \texttt{Rsa2Tg}.\par The default value is \texttt{"false"}.
-	\item[rsa2tg.u] corresponds to the flag \texttt{u} in \texttt{Rsa2Tg}.\par The default value is \texttt{"false"}.
-	\item[rsa2tg.n] corresponds to the flag \texttt{n} in \texttt{Rsa2Tg}.\par The default value is \texttt{"false"}.
+	\item[rsa2tg.f] corresponds to the flag \texttt{f} in \texttt{Rsa2Tg}. If it is set to \texttt{"true"}, the name of from roles is used for creating undefined edge class names.\par The default value is \texttt{"false"}.
+	\item[rsa2tg.u] corresponds to the flag \texttt{u} in \texttt{Rsa2Tg}. if it is set to \texttt{"true"}, all unused domains will be deleted before generating the TG file.\par The default value is \texttt{"false"}.
+	\item[rsa2tg.n] corresponds to the flag \texttt{n} in \texttt{Rsa2Tg}. If it is set to \texttt{"true"}, the navigability info will be interpreted as reading direction.\par The default value is \texttt{"false"}.
 \end{description*}
 
 %If the target \texttt{convertschema} is used, also the property \textbf{schema.file} has to be set.
