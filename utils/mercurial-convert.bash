@@ -86,7 +86,8 @@ read
 # This tells the mercurial import manually where we merged from one branch into
 # another:
 #   merged_revision parent_revision_1,parent_revision_2
-cat > "${splicemap}" << SPLICEMAP
+if [[ ${projectpath} == '/jgralab' ]]; then
+    cat > "${splicemap}" << SPLICEMAP
 svn:${uuid}${projectpath}/branches/algolib@2845 svn:${uuid}${projectpath}/branches/algolib@2841,svn:${uuid}${projectpath}/trunk@2839
 svn:${uuid}${projectpath}/branches/algolib@2856 svn:${uuid}${projectpath}/branches/algolib@2855,svn:${uuid}${projectpath}/trunk@2851
 svn:${uuid}${projectpath}/branches/algolib@2861 svn:${uuid}${projectpath}/branches/algolib@2860,svn:${uuid}${projectpath}/trunk@2858
@@ -107,6 +108,7 @@ svn:${uuid}${projectpath}/branches/parallel-greql@3467 svn:${uuid}${projectpath}
 svn:${uuid}${projectpath}/branches/parallel-greql@3494 svn:${uuid}${projectpath}/branches/parallel-greql@3493,svn:${uuid}${projectpath}/trunk@3483
 svn:${uuid}${projectpath}/branches/parallel-greql@3527 svn:${uuid}${projectpath}/branches/parallel-greql@3526,svn:${uuid}${projectpath}/trunk@3524
 SPLICEMAP
+fi
 
 echo "Using this splicemap:"
 cat "${splicemap}"
