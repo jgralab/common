@@ -106,6 +106,12 @@
 		<fileset dir="${comlib.dir}/junit" includes="*.jar" />
 	</path>
 
+	<path id="ant_classpath">
+		<path refid="classpath" />
+		<fileset dir="${comlib.dir}/ist_utilities" includes="*.jar" />
+		<fileset dir="${comlib.dir}/apache/ant/" includes="**/*.jar" />
+		<fileset dir="${comlib.dir}/svnkit/" includes="**/*.jar" />
+	</path>
 
 	<!-- properties for the target "compile" -->
 	<!-- includes for compiling sources -->
@@ -176,6 +182,9 @@
 	<!-- properties for the target "jar" -->
 	<!-- exclude patterns for files in ${src.dir} that, besides *.java, should not be added to the normal jar file -->
 	<property name="resource.excludes" value="" />
+
+	<!-- location of the generated manifest file -->
+	<property name="manifest.file" value="${project.dir}/manifest" />
 
 	<!-- properties for the target "run" -->
 	<!-- run arguments; the arguments passed to the java program -->
@@ -292,6 +301,10 @@
 		<taskdef name="rsa2tg" classname="de.uni_koblenz.jgralab.utilities.ant.Rsa2TgTask" classpath="${jgralab.location}" />
 	</target>
 
+	<target name="revisionAntTasks">
+		<taskdef name="svnrevision" classname="de.uni_koblenz.ist.utilities.revision_task.RetrieveSVNRevision" classpathref="ant_classpath" />
+	</target>
+
 	<!-- Converts an xmi schema to tg if an xmi schema file has been specified -->
 	<target name="convertschema" depends="customAntTasks" if="xmi.schema.file">
 		<rsa2tg xmifile="${xmi.schema.file}" schemafile="${schema.file}" useFromRole="${rsa2tg.f}" removeUnusedDomains="${rsa2tg.u}" useNavigability="${rsa2tg.n}" />
@@ -336,19 +349,21 @@
 		</unjar>
 	</target>
 
+	<target name="create_manifest">
+		<manifest file="${manifest.file}" mode="update">
+			<attribute name="Main-Class" value="${main.fq}" />
+		</manifest>
+	</target>
+
 	<!-- jar -->
 	<!-- makes executable jar file out of all classes in ${classes.dir} and puts jar file into ${jar.dir}-->
-	<target name="jar" depends="unjar">
+	<target name="jar" depends="unjar,create_manifest">
 		<mkdir dir="${jar.dir}" />
 		<mkdir dir="${classes.dir}" />
 		<mkdir dir="${tmp.dir}" />
 
 		<!-- include classes -->
-		<jar destfile="${jar.dir}/${projectname}.jar" basedir="${classes.dir}" compress="true">
-			<manifest>
-				<attribute name="Main-Class" value="${main.fq}" />
-			</manifest>
-		</jar>
+		<jar destfile="${jar.dir}/${projectname}.jar" basedir="${classes.dir}" compress="true" manifest="${manifest.file}" />
 
 		<!-- include ressources (all non-java files in ${src.dir})-->
 		<jar destfile="${jar.dir}/${projectname}.jar" basedir="${src.dir}" update="true" compress="true" filesetmanifest="skip" excludes="**/*.java ${resource.excludes}" />
@@ -357,6 +372,7 @@
 		<jar destfile="${jar.dir}/${projectname}.jar" basedir="${tmp.dir}" update="true" compress="true" filesetmanifest="skip" />
 
 		<delete dir="${tmp.dir}" />
+		<delete file="${manifest.file}" />
 	</target>
 
 	<!-- sourcejar -->
