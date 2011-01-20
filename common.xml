@@ -302,7 +302,7 @@
 	</target>
 
 	<target name="revisionAntTasks">
-		<taskdef name="svnrevision" classname="de.uni_koblenz.ist.utilities.revision_task.RetrieveSVNRevision" classpathref="ant_classpath" />
+		<taskdef name="get_revision" classname="de.uni_koblenz.ist.utilities.revision_task.RetrieveRevision" classpathref="ant_classpath" />
 	</target>
 
 	<!-- Converts an xmi schema to tg if an xmi schema file has been specified -->
