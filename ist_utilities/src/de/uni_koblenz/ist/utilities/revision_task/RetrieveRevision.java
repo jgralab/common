@@ -54,8 +54,7 @@ public class RetrieveRevision extends Task {
 		case HG:
 			Runtime rt = Runtime.getRuntime();
 			try {
-				Process pr = rt.exec("hg summary", null, new File(
-						"../../../mercurial_test/jgralab"));
+				Process pr = rt.exec("hg summary", null, baseDir);
 				pr.waitFor();
 				BufferedReader reader = new BufferedReader(
 						new InputStreamReader(pr.getInputStream()));
