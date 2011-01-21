@@ -1,0 +1,5 @@
+
+syntax: regexp
+ist_utilities/bin
+ist_utilities/build
+lib/ist_utilities
