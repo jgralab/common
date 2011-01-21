@@ -200,6 +200,33 @@
 
       : hg commit -m "merged upstream changes"
 
+      *Alternative*: Instead of merging upstream changes and committing them
+      with some merge commit, it is also possible to do it the git-way by
+      /rebasing/ your local commits on top of the newly fetched upstream
+      changesets.  However, this edits the history which is a very dangerous
+      business.  As a rule of thumb: Rebasing is ok for commits that you have
+      not yet pushed somewhere, because that edits only parts of the history
+      that nobody knows about yet.
+
+      Ok, you've been warned.  So how do I do that?  First, enable the rebase
+      extension by putting
+
+      : [extensions]
+      : rebase =
+
+      into your ~/.hgrc.
+
+      Ok, now assume you did some changes locally and committed them.  Again,
+      before pushing, you have to integrate the changes your collegues made in
+      the meantime.  So with rebase, you can do
+
+      : hg pull --rebase
+
+      That will pull the latest upstream changesets, merge them into your local
+      repository, and /rebase/ your local changesets /on top of those new
+      pulled/ changes.  That is, your changes will come after your collegues
+      changes in the history.
+
    5. Push your changes to the upstream repository.
 
       You might want to check which commits would be sent by the pull.  To do
