@@ -147,11 +147,11 @@
       with ~hg remove <file>~.
 
       *FAQ*: How do I add a directory?  Answer: You cannot.  Mercurial doesn't
-       track directories at all.  If you add a file contained in some new
-       directory, then the directory will be added implicitly.  When you delete
-       the last file contained in some directory, then the directory will be
-       deleted implicitly, too.  If you really feel the need to have an empty
-       directory, add some ~.keep~ file.
+      track directories at all.  If you add a file contained in some new
+      directory, then the directory will be added implicitly.  When you delete
+      the last file contained in some directory, then the directory will be
+      deleted implicitly, too.  If you really feel the need to have an empty
+      directory, add some ~.keep~ file.
 
    3. Commit your changes locally.
 
@@ -187,6 +187,55 @@
       : hg push
 
       Your changes are now propagated upstreams.
+
+** Branching and Merging
+
+*** Checking For Existing Branches
+
+    To see what branches exist in the repository, use:
+
+    : hg branches
+
+    To see also branches that have been closed, use:
+
+    : hg branches --closed
+
+*** Switching to an Existing Branch
+
+    To update the working copy to the head of an existing branch, use:
+
+    : hg update <branchname>
+
+*** Creating a New Branch
+
+    To create a new branch, use:
+
+    : hg branch <branchname>
+
+    That also switches to the new branch.  Now you can start working (edit,
+    commit).
+
+    *Note*: Branches are (just like in SVN) global, and pushing by default
+     pushes all branches.  Mercurial will complain when pushing a new branch.
+     Use ~hg push --new-branch~ to tell it's ok to do so.
+
+*** Merging a Branch
+
+    To merge the changes of the branch ~feature1~ into the default branch, use:
+
+    : hg update default  # switch to the default branch
+    : hg merge feature1  # merge changes
+    
+    If there a conflicts, resolve them:
+
+    : hg resolve --list  # List all conflicting files
+
+    Fix the problems in the files listed, and mark them as resolved.
+
+    : hg resolve <file>  # Resolve file
+    : hg resolve --all   # Resolve all conflicting files
+
+    TODO: Finish me.
 
 * Footnotes
 
