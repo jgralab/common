@@ -22,7 +22,7 @@
 
    Some distributions like Debian or Ubuntu LTS ship pretty old mercurial
    versions.  So you might want to install one of the some backports
-   repository.
+   repository (e.g. "ppa:mercurial-ppa/releases").
 
    For *Eclipse*, there's HG Eclipse plugin at
    http://javaforge.com/project/HGE.
