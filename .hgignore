@@ -1,5 +1,5 @@
 
 syntax: regexp
-ist_utilities/bin
+bin
 ist_utilities/build
 lib/ist_utilities
