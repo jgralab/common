@@ -1,0 +1,193 @@
+* Mercurial for IST-Dummies
+** Installing Mercurial
+
+   The current release of Mercurial for any common operationg system can be
+   fetched at http://mercurial.selenic.com/downloads/.  That includes the
+   Windows TortoiseHG GUI.
+
+   On UNIX derivates like Linux or BSD, you might want to use your package
+   manager:
+
+   : # Debian/Ubuntu
+   : $ apt-get install mercurial
+   : # Fedora
+   : $ yum install mercurial
+   : # Gentoo
+   : $ emerge mercurial
+   : # FreeBSD
+   : $ cd /usr/ports/devel/mercurial
+   : $ make install
+   : # Solaris 11 Express
+   : $ pkg install SUNWmercurial
+
+   Some distributions like Debian or Ubuntu LTS ship pretty old mercurial
+   versions.  So you might want to install one of the some backports
+   repository.
+
+   For *Eclipse*, there's HG Eclipse plugin at
+   http://javaforge.com/project/HGE.
+
+** Getting Help
+
+   Mercurial is pretty good documented.  There's a very good guide at
+   http://mercurial.selenic.com/guide/.  Addinitonally, mercurial has an online
+   help system.
+
+   : hg help        # List all topics
+   : hg help <cmd>  # Show help for <topic>
+
+   Furthermore, the people on ~#mercurial~ on irc.freenode.net are very
+   helpful.  And there's the mailinglist that can be accessed as newsgroup via
+   Gmane (gmane.comp.version-control.mercurial.general).
+
+** Mercurial Configuration Files
+
+   Mercurial basically has 3 config files:
+
+   - /etc/mercurial/hgrc (UNIX) / C:\mercurial\mercurial.ini (Windows)
+
+     Applies to all users on that machine.  Since we all have our own
+     computers, we'll simply ignore those.
+
+   - ~/.hgrc (UNIX) / %USERPROFILE%\.hgrc or %HOME%\.hgrc (Windows)
+
+     User-specific configurations.
+
+   - <repo>/.hg/hgrc (UNIX) / <repo>\.hg\hgrc (Windows)
+
+     Repository-specific configurations.
+
+** Basic Configurations
+
+   These configurations might go into ~/.hgrc.
+
+   Optionally, you can tell mercurial who your are, like so:
+
+   : [ui]
+   : username = Tassilo Horn <horn@uni-koblenz.de>
+
+   So any commit I do will use that name and mail address in the log.  But
+   *warning*, do that only if you want to use that name/mail each and every
+   project.  If you participate in other projects using mercurial, it is
+   better to specify that on a per-repository basis in ~<repo>/.hg/hgrc~.
+
+   Now, let's tell mercurial what *editor* it should fire up for writing
+   commit messages.
+
+   : [ui]
+   : editor = emacsclient     # Use a running emacs instance
+   : # editor = vim           # Use VIM
+   : # editor = ed            # Ed is the standart text editor
+   :                          # http://www.gnu.org/fun/jokes/ed.msg.html
+
+   Next, we might want to set up *authentication*.
+
+   : [auth]
+   : uni.prefix = hg.uni-koblenz.de
+   : uni.username = horn
+   : # uni.password = XXX
+   : uni.schemes = https
+
+   ~uni~ is a freely definable prefix.  Here we say, that we want to use the
+   username horn for all repositories provided by ~hg.uni-koblenz.de~.  We can
+   specify the passwort here, too, but we don't want to do that in plain text.
+   If no password is specified, mercurial will query at every push.  With the
+   external Keyring Extension [fn:1], it is possible to save passwords in the
+   system keyring (GNOME Keyring, KWallet, ...), but how to set that up is
+   left as an exercise to the reader.
+
+   Next, we might want to activate some nice builtin *extensions*:
+
+   : [extensions]
+   : color =           # Colored diffs
+   : hgk =             # enable the hgk viewer
+
+   Finally, we tell mercurial where to find the neccessary *certificates* to
+   authenticate with the university's mercurial server.  That is not strictly
+   needed, but else you get a bunch of warnings when pulling/pushing.
+
+   : [web]
+   : cacerts = /etc/ssl/certs/ca-certificates.crt # Either that, if OpenSSL is installed,
+   : # cacerts = ~/.uni.crt                       # or point to the uni's certificate.
+
+** Getting Started: Cloning a Repository
+
+   Ok, now let's really get started.  The first thing we have to do is to clone
+   a repository, that is, we create a local repository that contains everything
+   the remote repository contains, and that we'll use for our development.
+
+   : hg clone https://hg.uni-koblenz.de/horn/hgtest
+
+   After that command finished, we end up with a directory ~hgtest~ that
+   contains the complete code and history of the mercurial project.  We can use
+   it as a test bed.  Anyone has read and pull permissions.  Feel free to use
+   it for experimenting with mercurial.
+
+** The Basic Update/Edit/Save/Publish Workflow
+
+   This is the most basic workflow, corresponding to the usual
+   update/edit/commit cycle known from SVN.
+
+   1. Update your local repository with the most recent changes from the
+      university's server.
+
+      : cd hgtest
+      : hg pull
+
+      This fetches the latest changesets from the remote repository.  But it
+      does not merge those changes into your local checkout, yet.  To do so,
+      use:
+
+      : hg update
+
+      You can do these two steps in one go by using ~hg pull -u~.
+
+   2. Edit files, add new files with ~hg add <file>~, move/rename files with
+      ~hg move <old> <new>~, copy with ~hg copy <file> <new>~, or delete files
+      with ~hg remove <file>~.
+
+      *FAQ*: How do I add a directory?  Answer: You cannot.  Mercurial doesn't
+       track directories at all.  If you add a file contained in some new
+       directory, then the directory will be added implicitly.  When you delete
+       the last file contained in some directory, then the directory will be
+       deleted implicitly, too.  If you really feel the need to have an empty
+       directory, add some ~.keep~ file.
+
+   3. Commit your changes locally.
+
+      First, let's check what we've done.
+
+      : hg status
+
+      This lists all changed and added files.  You might want to review the
+      changes you've done using:
+
+      : hg diff           # view all changes since the last commit
+      : hg diff <file>    # view only changes to <file>
+
+      If you are satisfied, commit your changes:
+
+      : hg commit
+
+      This will fire up an editor where you have to specify a commit message.
+      *Important*: It is a good convention (for ~hg log~ or the web view), if
+      all commit messages start with a one-line summary, followed by as many
+      lines as you want.
+
+
+   4. Push your changes to the upstream repository.
+
+      You might want to check which commits would be sent by the pull.  To do
+      so, use:
+
+      : hg outgoing
+
+      If that's ok, then push'em.
+
+      : hg push
+
+      Your changes are now propagated upstreams.
+
+* Footnotes
+
+  [fn:1] http://mercurial.selenic.com/wiki/KeyringExtension
