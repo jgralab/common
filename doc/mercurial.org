@@ -174,8 +174,33 @@
       all commit messages start with a one-line summary, followed by as many
       lines as you want.
 
+   4. Merge changes pushed to upstream during your work.
 
-   4. Push your changes to the upstream repository.
+      : hg pull -u
+      
+      If someone pushed some changes in the meantime, you'll get a message
+      like:
+
+      : not updating, since new heads added
+      : (run 'hg heads' to see heads, 'hg merge' to merge)
+
+      Let's do as it tells us:
+
+      : hg heads
+
+      Oh, as we can see, our current branch has two heads, because I and
+      someone else added changesets to some revision that was tip before I
+      started my work.  So now we have to merge the updstream changes into our
+      changes.
+
+      : hg merge
+
+      If there are conflicts, resolve them with ~hg resolve~ (Check ~hg help
+      resolve~).  If not, commit the merge.
+
+      : hg commit -m "merged upstream changes"
+
+   5. Push your changes to the upstream repository.
 
       You might want to check which commits would be sent by the pull.  To do
       so, use:
