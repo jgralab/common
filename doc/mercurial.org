@@ -44,16 +44,16 @@
 
    Mercurial basically has 3 config files:
 
-   - /etc/mercurial/hgrc (UNIX) / C:\mercurial\mercurial.ini (Windows)
+   - /etc/mercurial/hgrc (UNIX) / C:/mercurial/mercurial.ini (Windows)
 
      Applies to all users on that machine.  Since we all have our own
      computers, we'll simply ignore those.
 
-   - ~/.hgrc (UNIX) / %USERPROFILE%\.hgrc or %HOME%\.hgrc (Windows)
+   - ~/.hgrc (UNIX) / %USERPROFILE%/.hgrc or %HOME%/.hgrc (Windows)
 
      User-specific configurations.
 
-   - <repo>/.hg/hgrc (UNIX) / <repo>\.hg\hgrc (Windows)
+   - <repo>/.hg/hgrc (UNIX and Windows)
 
      Repository-specific configurations.
 
@@ -177,7 +177,7 @@
    4. Merge changes pushed to upstream during your work.
 
       : hg pull -u
-      
+
       If someone pushed some changes in the meantime, you'll get a message
       like:
 
@@ -218,7 +218,7 @@
 
       Ok, now assume you did some changes locally and committed them.  Again,
       before pushing, you have to integrate the changes your collegues made in
-      the meantime.  So with rebase, you can do
+      the meantime.  So with rebase, you can do:
 
       : hg pull --rebase
 
@@ -242,53 +242,102 @@
 
 ** Branching and Merging
 
-*** Checking For Existing Branches
+   A good overview of the different branching concepts in mercurial can be
+   found at
+   http://stevelosh.com/blog/2009/08/a-guide-to-branching-in-mercurial/.
 
-    To see what branches exist in the repository, use:
+*** Named Branches
+**** Checking For Existing Branches
 
-    : hg branches
+     To see what branches exist in the repository, use:
 
-    To see also branches that have been closed, use:
+     : hg branches
 
-    : hg branches --closed
+     To see also branches that have been closed, use:
 
-*** Switching to an Existing Branch
+     : hg branches --closed
 
-    To update the working copy to the head of an existing branch, use:
+**** Switching to an Existing Branch
 
-    : hg update <branchname>
+     To update the working copy to the head of an existing branch, use:
 
-*** Creating a New Branch
+     : hg update <branchname>
 
-    To create a new branch, use:
+**** Creating a New Branch
 
-    : hg branch <branchname>
+     To create a new branch, use:
 
-    That also switches to the new branch.  Now you can start working (edit,
-    commit).
+     : hg branch <branchname>
 
-    *Note*: Branches are (just like in SVN) global, and pushing by default
+     That also switches to the new branch.  Now you can start working (edit,
+     commit).
+
+     *Note*: Branches are (just like in SVN) global, and pushing by default
      pushes all branches.  Mercurial will complain when pushing a new branch.
      Use ~hg push --new-branch~ to tell it's ok to do so.
 
-*** Merging a Branch
+**** Merging a Branch
 
-    To merge the changes of the branch ~feature1~ into the default branch, use:
+     To merge the changes of the branch ~feature1~ into the default branch, use:
 
-    : hg update default  # switch to the default branch
-    : hg merge feature1  # merge changes
-    
-    If there a conflicts, resolve them:
+     : hg update default  # switch to the default branch
+     : hg merge feature1  # merge changes
 
-    : hg resolve --list  # List all conflicting files
+     If there a conflicts, resolve them:
 
-    Fix the problems in the files listed, and mark them as resolved.
+     : hg resolve --list  # List all conflicting files
 
-    : hg resolve -m <file>  # Resolve file
-    : hg resolve --all   # Resolve all conflicting files
+     Fix the problems in the files listed, and mark them as resolved.
 
-    TODO: Finish me.
+     : hg resolve -m <file>  # Resolve file
+     : hg resolve --all      # Resolve all conflicting files
+
+     Now commit your resolution changes with
+
+     : hg commit -m "Merged branch feature1"
+
+     and you are done.
+
+**** Closing a Branch
+
+     Once a branch has been merged back to ~default~, you can close it (or you
+     close it before merging).  That's done with
+
+     : hg up ~feature1~
+     : hg commit --close-branch -m "closing feature1 branch"
+
+     After that, the branch won't be listed in ~hg branches~.
+
+*** Anonymous Branches Using Clones
+
+    Say, you want to implement some experimental feature where you are not too
+    sure that it's useful.  You think, that you are through with your
+    implementation in one or two days, so you don't want to create a new named
+    branch for that short period.
+
+    In that situation, you can simply clone your original repository, implement
+    your stuff on top of ~default~, and once you've done, merge the ~default~
+    branch from the feature clone back to the ~default~ branch of your original
+    repository.
+
+    : hg clone jgralab jgralab-exp   # create a feature clone
+    : # work on jgralab-exp...
+    : cd jgralab                     # back to original repository
+    : hg pull ../jgralab-exp         # pull the experimental features
+    : hg merge                       # merge them in the current branch
+
+    *Note*: One annoyance with feature clones and Eclipse is that an Eclipse
+    project must have a unique name.  That means, that you cannot have both
+    ~jgralab~ and ~jgralab-exp~ in your workspace.  As a workaround on UNIX,
+    you could use a symlink that either points to ~jgralab~ or ~jgralab-exp~,
+    so you can switch the feature clone by switching the symlink followed by a
+    refresh in Eclipse.
+
+    *Note*: Feature clone is basically a synonym of /fork/, which is the term
+    more commonly used in the git community.  For example, when you fork a
+    project on github.com, you basically create a feature clone of that
+    repository.
 
 * Footnotes
 
-  [fn:1] http://mercurial.selenic.com/wiki/KeyringExtension
+[fn:1] http://mercurial.selenic.com/wiki/KeyringExtension
