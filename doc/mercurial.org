@@ -90,7 +90,7 @@
 
    ~uni~ is a freely definable prefix.  Here we say, that we want to use the
    username horn for all repositories provided by ~hg.uni-koblenz.de~.  We can
-   specify the passwort here, too, but we don't want to do that in plain text.
+   specify the password here, too, but we don't want to do that in plain text.
    If no password is specified, mercurial will query at every push.  With the
    external Keyring Extension [fn:1], it is possible to save passwords in the
    system keyring (GNOME Keyring, KWallet, ...), but how to set that up is
@@ -284,7 +284,7 @@
 
     Fix the problems in the files listed, and mark them as resolved.
 
-    : hg resolve <file>  # Resolve file
+    : hg resolve -m <file>  # Resolve file
     : hg resolve --all   # Resolve all conflicting files
 
     TODO: Finish me.
