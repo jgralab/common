@@ -75,10 +75,10 @@
    commit messages.
 
    : [ui]
-   : editor = emacsclient     # Use a running emacs instance
-   : # editor = vim           # Use VIM
-   : # editor = ed            # Ed is the standart text editor
-   :                          # http://www.gnu.org/fun/jokes/ed.msg.html
+   : editor = emacsclient # Use a running emacs instance
+   : # editor = vim       # Use VIM
+   : # editor = ed        # Ed is the standart text editor
+   :                      # http://www.gnu.org/fun/jokes/ed.msg.html
 
    Next, we might want to set up *authentication*.
 
@@ -107,8 +107,20 @@
    needed, but else you get a bunch of warnings when pulling/pushing.
 
    : [web]
-   : cacerts = /etc/ssl/certs/ca-certificates.crt # Either that, if OpenSSL is installed,
-   : # cacerts = ~/.uni.crt                       # or point to the uni's certificate.
+   ; # Either that, if OpenSSL is installed,...
+   : cacerts = /etc/ssl/certs/ca-certificates.crt
+   : # or point to the uni's certificate.
+   : # cacerts = ~/.uni.crt
+
+** Keyring Authentication
+
+   If you don't want to save your password as clear-text in your ~$HOME/.hgrc~,
+   but you also don't want to type in your password each time you pull or push,
+   then give the excellent keyring extension a try.  That will save you
+   password encrypted in your system's keyring (GNOME Keyring, KWallet,
+   OSXKeyChain, several Windows keyrings)
+
+   It's documented just fine at http://pypi.python.org/pypi/mercurial_keyring.
 
 ** Getting Started: Cloning a Repository
 
@@ -162,8 +174,8 @@
       This lists all changed and added files.  You might want to review the
       changes you've done using:
 
-      : hg diff           # view all changes since the last commit
-      : hg diff <file>    # view only changes to <file>
+      : hg diff        # view all changes since the last commit
+      : hg diff <file> # view only changes to <file>
 
       If you are satisfied, commit your changes:
 
@@ -320,11 +332,11 @@
     branch from the feature clone back to the ~default~ branch of your original
     repository.
 
-    : hg clone jgralab jgralab-exp   # create a feature clone
+    : hg clone jgralab jgralab-exp # create a feature clone
     : # work on jgralab-exp...
-    : cd jgralab                     # back to original repository
-    : hg pull ../jgralab-exp         # pull the experimental features
-    : hg merge                       # merge them in the current branch
+    : cd jgralab                   # back to original repository
+    : hg pull ../jgralab-exp       # pull the experimental features
+    : hg merge                     # merge them in the current branch
 
     *Note*: One annoyance with feature clones and Eclipse is that an Eclipse
     project must have a unique name.  That means, that you cannot have both
