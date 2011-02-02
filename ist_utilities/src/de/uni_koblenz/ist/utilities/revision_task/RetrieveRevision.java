@@ -72,6 +72,7 @@ public class RetrieveRevision extends Task {
 					}
 				}
 			} catch (Exception e) {
+				e.printStackTrace();
 				throw new BuildException(e);
 			}
 			break;
