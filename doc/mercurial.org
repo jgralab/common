@@ -107,10 +107,15 @@
    needed, but else you get a bunch of warnings when pulling/pushing.
 
    : [web]
-   ; # Either that, if OpenSSL is installed,...
+   : # Either that, if OpenSSL is installed,...
    : cacerts = /etc/ssl/certs/ca-certificates.crt
    : # or point to the uni's certificate.
    : # cacerts = ~/.uni.crt
+
+   Since version 1.7.4, you also have to configure the server's fingerprint.
+
+   : [hostfingerprints]
+   : hg.uni-koblenz.de = 55:ab:d3:a1:04:95:45:14:0c:b0:6f:f3:35:0d:2c:fd:28:ef:5f:44
 
 ** Keyring Authentication
 
@@ -207,8 +212,8 @@
 
       : hg merge
 
-      If there are conflicts, resolve them with ~hg resolve~ (Check ~hg help
-      resolve~).  If not, commit the merge.
+      If there are conflicts, resolve them with ~hg resolve~ (Check ~hg help~
+      ~resolve~).  If not, commit the merge.
 
       : hg commit -m "merged upstream changes"
 
