@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.Task;
 import org.tmatesoft.svn.core.SVNException;
 import org.tmatesoft.svn.core.wc.SVNClientManager;
@@ -48,7 +47,8 @@ public class RetrieveRevision extends Task {
 				long revision = info.getRevision().getNumber();
 				revisionString = Long.toString(revision);
 			} catch (SVNException e) {
-				throw new BuildException(e);
+				System.err.print("Error: ");
+				System.err.println(e.getMessage());
 			}
 			break;
 		case HG:
@@ -72,8 +72,8 @@ public class RetrieveRevision extends Task {
 					}
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
-				throw new BuildException(e);
+				System.err.print("Error: ");
+				System.err.println(e.getMessage());
 			}
 			break;
 		case NONE:
