@@ -184,7 +184,9 @@
 	<property name="resource.excludes" value="" />
 
 	<!-- location of the generated manifest file -->
-	<property name="manifest.file" value="${project.dir}/manifest" />
+	<!--property name="keep_manifest" value="false" /-->
+	<property name="manifest.dir" value="${project.dir}/META-INF/" />
+	<property name="manifest.file" value="${manifest.dir}/MANIFEST.MF" />
 
 	<!-- properties for the target "run" -->
 	<!-- run arguments; the arguments passed to the java program -->
@@ -350,6 +352,7 @@
 	</target>
 
 	<target name="create_manifest">
+		<mkdir dir="${manifest.dir}" />
 		<manifest file="${manifest.file}" mode="update">
 			<attribute name="Main-Class" value="${main.fq}" />
 		</manifest>
@@ -372,7 +375,11 @@
 		<jar destfile="${jar.dir}/${projectname}.jar" basedir="${tmp.dir}" update="true" compress="true" filesetmanifest="skip" />
 
 		<delete dir="${tmp.dir}" />
-		<delete file="${manifest.file}" />
+		<antcall target="delete_manifest" inheritall="true" />
+	</target>
+
+	<target name="delete_manifest" unless="keep_manifest">
+		<delete dir="${manifest.dir}" />
 	</target>
 
 	<!-- sourcejar -->
