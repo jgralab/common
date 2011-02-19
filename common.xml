@@ -420,6 +420,9 @@
 		<java classname="de.uni_koblenz.ist.utilities.license_header.LicenseHeader" classpathref="classpath" fork="true" dir="${run.dir}">
 			<arg line="-i ${testcases.dir} -l ${license.file} -r" />
 		</java>
+		<java classname="de.uni_koblenz.ist.utilities.license_header.LicenseHeader" classpathref="classpath" fork="true" dir="${run.dir}">
+			<arg line="-i ${project.dir} -l ${license.file}" />
+		</java>
 	</target>
 
 	<!-- TODO add an improved "newproject"-target -->

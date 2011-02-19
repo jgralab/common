@@ -1,7 +1,7 @@
-<!--This build.xml only works if called from within common/ist_utilities. 
-    It fails if called from within eclipse. -->
-<project name="ist.utilities" basedir="." default="build">
+<?xml version="1.0" encoding="UTF-8"?>
 
+
+<project name="ist.utilities" basedir="." default="build">
 	<property name="projectname" value="ist_utilities" />
 	<property name="build.dir" value="./ist_utilities/build" />
 	<property name="classes.dir" value="${build.dir}/classes" />

@@ -18,10 +18,16 @@ import de.uni_koblenz.ist.utilities.option_handler.OptionHandler;
 
 public class LicenseHeader {
 
+	private static final String XML_ENCODING_PREFIX = "<?xml";
 	private static final String INDENT = "    ";
 	private static final String JAVA_FIRST_LINE = "/*";
 	private static final String JAVA_PREFIX = " * ";
 	private static final String JAVA_LAST_LINE = " */";
+
+	private static final String XML_START = "<!-- ";
+	private static final String XML_END = " -->";
+
+	private static final String TG_PREFIX = "// ";
 
 	private static enum ParseState {
 		/**
@@ -113,6 +119,10 @@ public class LicenseHeader {
 	private int newlyAdded;
 	private int replaced;
 
+	private List<String> javaHeaderLines;
+	private List<String> xmlHeaderLines;
+	private List<String> tgHeaderLines;
+
 	public LicenseHeader(String input, String licence, boolean fullyRecursive,
 			boolean verbose) {
 		super();
@@ -150,7 +160,8 @@ public class LicenseHeader {
 							: " ignoring subdirectories."));
 			processDirectory(input, 0);
 		} else {
-			System.out.println("Adding license header to file " + input.getAbsolutePath());
+			System.out.println("Adding license header to file "
+					+ input.getAbsolutePath());
 			processJavaFile(input, 0, JAVA_FIRST_LINE, JAVA_PREFIX,
 					JAVA_LAST_LINE);
 		}
@@ -187,6 +198,26 @@ public class LicenseHeader {
 			}
 		});
 
+		File[] xmlFilesToProcess = toProcess.listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name) {
+				String lowerCaseName = name.toLowerCase();
+				return dir.getAbsolutePath()
+						.equals(toProcess.getAbsolutePath())
+						&& (lowerCaseName.endsWith(".xml") || lowerCaseName
+								.endsWith(".xmi"));
+			}
+		});
+
+		File[] tgFilesToProcess = toProcess.listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name) {
+				return dir.getAbsolutePath()
+						.equals(toProcess.getAbsolutePath())
+						&& name.toLowerCase().endsWith(".tg");
+			}
+		});
+
 		if (fullyRecursive) {
 			for (File currentSubdirectory : directories) {
 				if (verbose) {
@@ -207,6 +238,185 @@ public class LicenseHeader {
 			processJavaFile(currentJavaFile, level, JAVA_FIRST_LINE,
 					JAVA_PREFIX, JAVA_LAST_LINE);
 		}
+
+		for (File currentXMLFile : xmlFilesToProcess) {
+			processXMLFile(currentXMLFile, level, 72);
+		}
+
+		for (File currentTGFile : tgFilesToProcess) {
+			processTGFile(currentTGFile, level);
+		}
+	}
+
+	private void processXMLFile(File toProcess, int level, int length)
+			throws FileNotFoundException, IOException {
+		if (verbose) {
+			printIndent(level);
+			System.out.println("Processing file " + toProcess.getName());
+		}
+
+		if (xmlHeaderLines == null) {
+			cacheXMLHeader(length);
+		}
+
+		List<String> outputLines = new LinkedList<String>();
+
+		// now open the current input file
+		BufferedReader reader = new BufferedReader(new FileReader(toProcess));
+		ParseState state = ParseState.BEFORE_HEADER;
+		int skippedLines = 0;
+		String currentLine = null;
+		do {
+			currentLine = reader.readLine();
+			if (currentLine != null) {
+				String trimmedLine = currentLine.trim();
+				switch (state) {
+				case BEFORE_HEADER:
+					if (trimmedLine.length() == 0) {
+						// ignore empty lines in the beginning
+						skippedLines++;
+						continue;
+					}
+					if (trimmedLine.startsWith(XML_START.trim())) {
+						// ignore comments in the beginning
+						state = trimmedLine.endsWith(XML_END.trim()) ? ParseState.BEFORE_HEADER
+								: ParseState.IN_HEADER;
+						skippedLines++;
+						continue;
+					}
+					if (trimmedLine.toLowerCase().startsWith(
+							XML_ENCODING_PREFIX)) {
+						// preserve xml version and encoding settings
+						outputLines.add(currentLine);
+						continue;
+					}
+
+					// now only the root element is possible
+					assert (trimmedLine.startsWith("<"));
+					state = ParseState.AFTER_HEADERS;
+					outputLines.add(currentLine);
+					break;
+				case IN_HEADER:
+					skippedLines++;
+					if (trimmedLine.endsWith(XML_END.trim())) {
+						state = ParseState.BEFORE_HEADER;
+					}
+					break;
+				case AFTER_HEADERS:
+					// normal case, just copy
+					outputLines.add(currentLine);
+					break;
+				}
+			}
+		} while (currentLine != null);
+		if (skippedLines > 0) {
+			if (verbose) {
+				printIndent(level + 1);
+				System.out.println("Skipped " + skippedLines
+						+ " lines and replaced "
+						+ (skippedLines == 1 ? "it" : "them")
+						+ " with new header.");
+			}
+			replaced++;
+		} else {
+			if (verbose) {
+				printIndent(level + 1);
+				System.out.println("Added header.");
+			}
+			newlyAdded++;
+		}
+
+		PrintWriter writer = new PrintWriter(toProcess);
+		String firstLine = outputLines.get(0);
+		if (firstLine.trim().startsWith(XML_ENCODING_PREFIX)) {
+			writer.println(firstLine);
+			outputLines.remove(0);
+		}
+		for (String currentOutputLine : xmlHeaderLines) {
+			writer.println(currentOutputLine);
+		}
+		for (String currentOutputLine : outputLines) {
+			writer.println(currentOutputLine);
+		}
+		writer.flush();
+		writer.close();
+	}
+
+	private void processTGFile(File toProcess, int level)
+			throws FileNotFoundException, IOException {
+		if (verbose) {
+			printIndent(level);
+			System.out.println("Processing file " + toProcess.getName());
+		}
+
+		if (xmlHeaderLines == null) {
+			cacheTGHeader();
+		}
+
+		List<String> outputLines = new LinkedList<String>();
+
+		// now open the current input file
+		BufferedReader reader = new BufferedReader(new FileReader(toProcess));
+		ParseState state = ParseState.IN_HEADER;
+		int skippedLines = 0;
+		String currentLine = null;
+
+		do {
+			currentLine = reader.readLine();
+			if (currentLine != null) {
+				String trimmedLine = currentLine.trim();
+				switch (state) {
+				case IN_HEADER:
+					if (trimmedLine.length() == 0) {
+						// ignore empty lines in the beginning
+						skippedLines++;
+						continue;
+					}
+					if (trimmedLine.startsWith(TG_PREFIX)) {
+						if (currentLine.contains("Version :")) {
+							state = ParseState.AFTER_HEADERS;
+							outputLines.add(currentLine);
+						}
+						skippedLines++;
+						continue;
+					}
+					assert(trimmedLine.startsWith("TGraph2"));
+					state = ParseState.AFTER_HEADERS;
+					outputLines.add(currentLine);
+					break;
+				case AFTER_HEADERS:
+					// normal case, just copy
+					outputLines.add(currentLine);
+					break;
+				}
+			}
+		} while (currentLine != null);
+		if (skippedLines > 0) {
+			if (verbose) {
+				printIndent(level + 1);
+				System.out.println("Skipped " + skippedLines
+						+ " lines and replaced "
+						+ (skippedLines == 1 ? "it" : "them")
+						+ " with new header.");
+			}
+			replaced++;
+		} else {
+			if (verbose) {
+				printIndent(level + 1);
+				System.out.println("Added header.");
+			}
+			newlyAdded++;
+		}
+		
+		PrintWriter writer = new PrintWriter(toProcess);
+		for (String currentOutputLine : tgHeaderLines) {
+			writer.println(currentOutputLine);
+		}
+		for (String currentOutputLine : outputLines) {
+			writer.println(currentOutputLine);
+		}
+		writer.flush();
+		writer.close();
 	}
 
 	private void processJavaFile(File toProcess, int level, String firstLine,
@@ -216,25 +426,17 @@ public class LicenseHeader {
 			System.out.println("Processing file " + toProcess.getName());
 		}
 
+		if (javaHeaderLines == null) {
+			cacheJavaHeader(firstLine, prefix, lastLine);
+		}
+
 		List<String> outputLines = new LinkedList<String>();
 
-		// add header to outputLines
-		BufferedReader reader = new BufferedReader(new FileReader(licence));
-		outputLines.add(firstLine);
-		String currentLine = null;
-		do {
-			currentLine = reader.readLine();
-			if (currentLine != null) {
-				outputLines.add(prefix + currentLine);
-			}
-		} while (currentLine != null);
-		outputLines.add(lastLine);
-
-		reader.close();
 		// now open the current input file
-		reader = new BufferedReader(new FileReader(toProcess));
+		BufferedReader reader = new BufferedReader(new FileReader(toProcess));
 		ParseState state = ParseState.BEFORE_HEADER;
 		int skippedHeaders = 0;
+		String currentLine = null;
 		do {
 			currentLine = reader.readLine();
 			if (currentLine != null) {
@@ -283,11 +485,84 @@ public class LicenseHeader {
 		}
 
 		PrintWriter writer = new PrintWriter(toProcess);
+		for (String currentOutputLine : javaHeaderLines) {
+			writer.println(currentOutputLine);
+		}
 		for (String currentOutputLine : outputLines) {
 			writer.println(currentOutputLine);
 		}
 		writer.flush();
 		writer.close();
 
+	}
+
+	private void cacheJavaHeader(String firstLine, String prefix,
+			String lastLine) throws FileNotFoundException, IOException {
+		if (verbose) {
+			System.out.println("Caching license header for Java...");
+		}
+		javaHeaderLines = new LinkedList<String>();
+
+		// add header to outputLines
+		BufferedReader reader = new BufferedReader(new FileReader(licence));
+		javaHeaderLines.add(firstLine);
+		String currentLine = null;
+		do {
+			currentLine = reader.readLine();
+			if (currentLine != null) {
+				javaHeaderLines.add(prefix + currentLine);
+			}
+		} while (currentLine != null);
+		javaHeaderLines.add(lastLine);
+
+		reader.close();
+	}
+
+	private void cacheXMLHeader(int length) throws FileNotFoundException,
+			IOException {
+		if (verbose) {
+			System.out.println("Caching license header for XML...");
+		}
+		xmlHeaderLines = new LinkedList<String>();
+		BufferedReader reader = new BufferedReader(new FileReader(licence));
+		String currentLine = "";
+
+		do {
+			currentLine = reader.readLine();
+			if (currentLine != null) {
+				xmlHeaderLines.add(createXMLHeaderLine(length, currentLine));
+			}
+		} while (currentLine != null);
+		xmlHeaderLines.add("");
+	}
+
+	private String createXMLHeaderLine(int length, String content) {
+		StringBuilder out = new StringBuilder();
+		out.append(XML_START);
+		out.append(content);
+		int space = length - content.length();
+		for (int i = 0; i < space; i++) {
+			out.append(" ");
+		}
+		out.append(XML_END);
+
+		return out.toString();
+	}
+
+	private void cacheTGHeader() throws FileNotFoundException, IOException {
+		if (verbose) {
+			System.out.println("Caching license header for TG...");
+		}
+		tgHeaderLines = new LinkedList<String>();
+		BufferedReader reader = new BufferedReader(new FileReader(licence));
+		String currentLine = "";
+
+		do {
+			currentLine = reader.readLine();
+			if (currentLine != null) {
+				tgHeaderLines.add(TG_PREFIX + currentLine);
+			}
+		} while (currentLine != null);
+		tgHeaderLines.add("");
 	}
 }
