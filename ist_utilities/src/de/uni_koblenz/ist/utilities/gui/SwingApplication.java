@@ -315,4 +315,8 @@ public abstract class SwingApplication extends JFrame {
 			SwingUtilities.invokeLater(r);
 		}
 	}
+
+	public StatusBar getStatusBar() {
+		return statusBar;
+	}
 }

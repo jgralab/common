@@ -1,6 +1,5 @@
 package de.uni_koblenz.ist.utilities.gui;
 
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -15,11 +14,9 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoundedRangeModel;
 import javax.swing.DefaultBoundedRangeModel;
 import javax.swing.JPanel;
-import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -142,12 +139,10 @@ public class DrawingPanel extends JPanel {
 
 		};
 		addMouseMotionListener(mouseMotionListener);
-		setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-		setBackground(Color.LIGHT_GRAY);
 	}
 
 	@Override
-	public void paintComponent(Graphics g) {
+	public void paint(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g.create();
 		Dimension size = getSize();
 		Insets i = getInsets();
@@ -207,8 +202,12 @@ public class DrawingPanel extends JPanel {
 			return;
 		}
 		origin.setLocation(0, 0);
-		double sc = Math.min(getWidth() / boundingBox.getWidth(), getHeight()
-				/ boundingBox.getHeight());
+		Dimension size = getSize();
+		Insets i = getInsets();
+		size.width -= i.left + i.right;
+		size.height -= i.top + i.bottom;
+		double sc = Math.min(size.getWidth() / boundingBox.getWidth(),
+				size.getHeight() / boundingBox.getHeight());
 		zoomLevelModel.setValue(scaleToZoom(sc));
 	}
 
@@ -220,7 +219,7 @@ public class DrawingPanel extends JPanel {
 		return Math.max(
 				ZOOM_MIN,
 				Math.min(ZOOM_MAX,
-						(int) (Math.round(Math.log10(sc * 100.0) * 40.0))));
+						(int) (Math.floor(Math.log10(sc * 100.0) * 40.0))));
 	}
 
 	public void center() {
