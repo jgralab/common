@@ -1,35 +1,29 @@
 package de.uni_koblenz.ist.utilities.gui;
 
-import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
-import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
-import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import javax.swing.BoundedRangeModel;
 import javax.swing.DefaultBoundedRangeModel;
-import javax.swing.JPanel;
+import javax.swing.JComponent;
+import javax.swing.UIManager;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-public class DrawingPanel extends JPanel {
+public class DrawingPanel extends JComponent {
 	private static final long serialVersionUID = 1L;
 
-	private MouseMotionListener mouseMotionListener;
 	private RenderingHints antialiasOn;
-	private Point2D.Double origin;
-	private Point2D.Double offset;
-	private Point2D.Double mouseDownOrigin;
 	private BoundedRangeModel zoomLevelModel;
 	private Rectangle2D boundingBox;
+	private Dimension preferredSize;
 
 	public BoundedRangeModel getZoomLevelModel() {
 		return zoomLevelModel;
@@ -38,28 +32,21 @@ public class DrawingPanel extends JPanel {
 	private double scale;
 	private double pixelPerUnit;
 
-	private Point mouseDownPoint;
-	private boolean mouseIsDown;
-	private Point mouseUpPoint;
-
-	private long lastRepaint;
-
 	public static final int ZOOM_MAX = 160;
 	public static final int ZOOM_INIT = 80;
 	public static final int ZOOM_MIN = 0;
 	public static final int CONTINUOUS_DRAG_DELAY = 20;
 
-	// 1: y grows from top to bottom
-	// -1 = y grows from bottom to top
-	private int my;
+	private boolean positiveYAxis;
 
-	// true: origin is in center of window
-	// false: origin is top left or bottom left
-	private boolean originInCenter;
+	// true: drawing is in centered
+	// false: origin is top left (posititiveYAxis) or bottom left
+	// (!positiveYAxis)
+	private boolean centerDrawing;
 
-	public DrawingPanel(boolean originInCenter, boolean positiveYAxis) {
-		this.originInCenter = originInCenter;
-		my = positiveYAxis ? 1 : -1;
+	public DrawingPanel(boolean centerDrawing, boolean positiveYAxis) {
+		this.centerDrawing = centerDrawing;
+		this.positiveYAxis = positiveYAxis;
 		pixelPerUnit = 1.0;
 
 		// antialiasOff = new RenderingHints(RenderingHints.KEY_ANTIALIASING,
@@ -70,10 +57,6 @@ public class DrawingPanel extends JPanel {
 		antialiasOn.put(RenderingHints.KEY_RENDERING,
 				RenderingHints.VALUE_RENDER_QUALITY);
 
-		origin = new Point2D.Double();
-		offset = new Point2D.Double();
-		mouseDownOrigin = new Point2D.Double();
-
 		zoomLevelModel = new DefaultBoundedRangeModel(ZOOM_INIT, 0, ZOOM_MIN,
 				ZOOM_MAX);
 		scale = 1.0;
@@ -81,68 +64,24 @@ public class DrawingPanel extends JPanel {
 		zoomLevelModel.addChangeListener(new ChangeListener() {
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				scale = zoomToScale(zoomLevelModel.getValue());
-				if (isVisible()) {
-					repaint();
-				}
+				setScale(zoomToScale(zoomLevelModel.getValue()));
 			}
 		});
-
-		addMouseListener(new MouseAdapter() {
-			private Cursor savedCursor;
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-				if (e.getButton() == MouseEvent.BUTTON1) {
-					mouseDownPoint = e.getPoint();
-					mouseDownOrigin.setLocation(origin);
-					mouseIsDown = true;
-					savedCursor = getCursor();
-					setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-				}
+		addMouseMotionListener(new MouseMotionListener() {
+			public void mouseMoved(MouseEvent e) {
 			}
 
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				if (e.getButton() == MouseEvent.BUTTON1) {
-					mouseUpPoint = e.getPoint();
-					mouseIsDown = false;
-					double dx = (mouseUpPoint.x - mouseDownPoint.x)
-							/ pixelPerUnit / scale;
-					double dy = (mouseUpPoint.y - mouseDownPoint.y)
-							/ pixelPerUnit / scale;
-					origin.setLocation(mouseDownOrigin.x + dx,
-							mouseDownOrigin.y + my * dy);
-					setCursor(savedCursor);
-					repaint();
-				}
-			}
-		});
-
-		mouseMotionListener = new MouseMotionAdapter() {
-			@Override
 			public void mouseDragged(MouseEvent e) {
-				if (mouseIsDown) {
-					long now = System.currentTimeMillis();
-					if (now - lastRepaint >= CONTINUOUS_DRAG_DELAY) {
-						Point p = e.getPoint();
-						double dx = (p.x - mouseDownPoint.x) / pixelPerUnit
-								/ scale;
-						double dy = (p.y - mouseDownPoint.y) / pixelPerUnit
-								/ scale;
-						origin.setLocation(mouseDownOrigin.x + dx,
-								mouseDownOrigin.y + my * dy);
-						repaint();
-					}
-				}
+				// The user is dragging us, so scroll!
+				Rectangle r = new Rectangle(e.getX(), e.getY(), 1, 1);
+				scrollRectToVisible(r);
 			}
-
-		};
-		addMouseMotionListener(mouseMotionListener);
+		});
+		setBackground(UIManager.getColor("Panel.background"));
 	}
 
 	@Override
-	public void paint(Graphics g) {
+	protected void paintComponent(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g.create();
 		Dimension size = getSize();
 		Insets i = getInsets();
@@ -150,24 +89,24 @@ public class DrawingPanel extends JPanel {
 		size.width -= i.left + i.right;
 		size.height -= i.top + i.bottom;
 		g2.translate(i.left, i.top);
-		g2.setClip(0, 0, size.width, size.height);
+		Rectangle b = new Rectangle(0, 0, size.width, size.height);
+		Rectangle r = g2.getClipBounds();
+		g2.setClip(r != null ? b.intersection(r) : b);
+
 		g2.fillRect(0, 0, size.width, size.height);
-		if (originInCenter) {
-			g2.translate(size.width / 2, size.height / 2);
+		if (centerDrawing) {
+			g2.translate(size.width / 2.0, size.height / 2.0);
 		} else {
-			if (my == 1) {
-				g2.translate(0, 0);
-			} else {
-				g2.translate(0, size.height);
-			}
+			g2.translate(0, positiveYAxis ? 0 : size.height);
 		}
-
-		g2.scale(scale * pixelPerUnit, my * scale * pixelPerUnit);
-		g2.translate(origin.x + offset.x, origin.y + offset.y);
+		g2.scale(scale * pixelPerUnit, (positiveYAxis ? scale : -scale)
+				* pixelPerUnit);
+		if (centerDrawing) {
+			g2.translate(-boundingBox.getWidth() / 2,
+					-boundingBox.getHeight() / 2);
+		}
 		g2.setRenderingHints(antialiasOn);
-
 		paintContent(g2);
-		lastRepaint = System.currentTimeMillis();
 	}
 
 	protected void paintContent(Graphics2D g2) {
@@ -181,33 +120,51 @@ public class DrawingPanel extends JPanel {
 		this.pixelPerUnit = pixelPerUnit;
 	}
 
-	public Point2D.Double getOffset() {
-		return offset;
-	}
-
-	public void setOffset(Point2D.Double offset) {
-		this.offset = offset;
-	}
-
 	public Rectangle2D getBoundingBox() {
 		return boundingBox;
 	}
 
 	public void setBoundingBox(Rectangle2D bbx) {
 		this.boundingBox = bbx;
+		calculatePreferredSize();
 	}
 
-	public void zoomToFit() {
+	private void calculatePreferredSize() {
+		if (boundingBox == null) {
+			throw new IllegalStateException("Bounding box has not been set");
+		}
+		preferredSize = new Dimension((int) Math.round(boundingBox.getWidth()
+				* scale), (int) Math.round(boundingBox.getHeight() * scale));
+		if (isVisible()) {
+			revalidate();
+			repaint();
+		}
+	}
+
+	@Override
+	public Dimension getPreferredSize() {
+		if (boundingBox == null) {
+			throw new IllegalStateException("Bounding box has not been set");
+		}
+		assert preferredSize != null;
+		return preferredSize;
+	}
+
+	@Override
+	public void setPreferredSize(Dimension preferredSize) {
+		throw new UnsupportedOperationException(
+				"Preferred size is computed from boundingbox and scale");
+	}
+
+	public void zoomToFit(Dimension size) {
 		if (boundingBox == null) {
 			return;
 		}
-		origin.setLocation(0, 0);
-		Dimension size = getSize();
 		Insets i = getInsets();
-		size.width -= i.left + i.right;
-		size.height -= i.top + i.bottom;
-		double sc = Math.min(size.getWidth() / boundingBox.getWidth(),
-				size.getHeight() / boundingBox.getHeight());
+		int w = size.width - i.left - i.right;
+		int h = size.height - i.top - i.bottom;
+		double sc = Math.min(w / boundingBox.getWidth(),
+				h / boundingBox.getHeight());
 		zoomLevelModel.setValue(scaleToZoom(sc));
 	}
 
@@ -215,18 +172,15 @@ public class DrawingPanel extends JPanel {
 		return Math.pow(10.0, z / 40.0) / 100.0;
 	}
 
+	private void setScale(double scale) {
+		this.scale = scale;
+		calculatePreferredSize();
+	}
+
 	private int scaleToZoom(double sc) {
 		return Math.max(
 				ZOOM_MIN,
 				Math.min(ZOOM_MAX,
 						(int) (Math.floor(Math.log10(sc * 100.0) * 40.0))));
-	}
-
-	public void center() {
-		origin.setLocation(0, 0);
-		zoomLevelModel.setValue(ZOOM_INIT);
-		if (isVisible()) {
-			repaint();
-		}
 	}
 }
