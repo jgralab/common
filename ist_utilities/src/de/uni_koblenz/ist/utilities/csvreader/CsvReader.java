@@ -28,9 +28,10 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
-import java.util.Vector;
 import java.util.regex.Pattern;
 
 /**
@@ -69,7 +70,7 @@ public class CsvReader {
 	 * file contains a headline with field names.
 	 */
 	public static final int WITH_FIELDNAMES = 1;
-	
+
 	private static final Pattern commentLine = Pattern.compile("^\\s*#.*$");
 
 	/**
@@ -80,12 +81,12 @@ public class CsvReader {
 	/**
 	 * Vector of Strings taken from first line of input
 	 */
-	private Vector<String> fieldNames;
+	private ArrayList<String> fieldNames;
 
 	/**
 	 * contains data field of most recent readRecord call
 	 */
-	private Vector<String> currentRecord;
+	private ArrayList<String> currentRecord;
 
 	/**
 	 * input field separators
@@ -96,6 +97,11 @@ public class CsvReader {
 	 * field separator quote character
 	 */
 	private String quote;
+
+	/**
+	 * string delimiter character
+	 */
+	private char stringDelimiter = '"';
 
 	/**
 	 * indicates if qouting is wanted
@@ -163,7 +169,7 @@ public class CsvReader {
 		reader = new LineNumberReader(in);
 		this.separators = separators;
 		this.quote = quote;
-		currentRecord = new Vector<String>();
+		currentRecord = new ArrayList<String>();
 		quoting = !quote.equals(""); // switch on quoting if requested
 		if (withFieldNames == WITH_FIELDNAMES) {
 			readFieldNames();
@@ -186,7 +192,7 @@ public class CsvReader {
 	 */
 	public void readFieldNames() throws IOException {
 		if (readRecord()) {
-			fieldNames = new Vector<String>(currentRecord);
+			fieldNames = new ArrayList<String>(currentRecord);
 		}
 	}
 
@@ -203,13 +209,15 @@ public class CsvReader {
 		String line = reader.readLine(); // read one line or throw IOException
 		// System.out.println(System.currentTimeMillis() + " " + line);
 		if (line == null) {
-			if (logger != null)
+			if (logger != null) {
 				logger.close();
+			}
 			logger = null;
 			return false;
 		}
-		if (logger != null)
+		if (logger != null) {
 			logger.println(line);
+		}
 
 		if (commentLine.matcher(line).matches()) {
 			// if comment, try again
@@ -222,7 +230,8 @@ public class CsvReader {
 		// separators and quote character are also returned as tokens
 		StringTokenizer st = new StringTokenizer(line, separators + quote, true);
 
-		String field = ""; // temporary for one input field
+		StringBuilder field = new StringBuilder(); // temporary for one input
+													// field
 
 		while (st.hasMoreTokens()) {
 			String s = st.nextToken();
@@ -235,20 +244,35 @@ public class CsvReader {
 			if (quoting && s.equals(quote)) {
 				if (st.hasMoreTokens()) {
 					s = st.nextToken();
-					field = field + s;
+					field.append(s);
 				}
 			} else if (separators.indexOf(s) >= 0) {
-				currentRecord.add(field.trim());
-				field = "";
+				currentRecord.add(removeStringDelimiters(field));
+				field = new StringBuilder();
 			} else {
-				field = field + s;
+				field.append(s);
 			}
 		}
 
 		// add last field (could be the only one if the line contains no
 		// seperators nor quotes)
-		currentRecord.add(field.trim());
+		currentRecord.add(removeStringDelimiters(field));
 		return true;
+	}
+
+	public String removeStringDelimiters(StringBuilder field) {
+		String val = field.toString().trim();
+		if (val.length() > 0) {
+			if (val.charAt(0) == stringDelimiter) {
+				val = val.substring(1);
+			}
+			if (val.length() > 0) {
+				if (val.charAt(val.length() - 1) == stringDelimiter) {
+					val = val.substring(0, val.length() - 1);
+				}
+			}
+		}
+		return val;
 	}
 
 	/**
@@ -271,7 +295,7 @@ public class CsvReader {
 			throw new NoSuchElementException("unknown field name: \"" + name
 					+ "\"");
 		}
-		return (String) currentRecord.elementAt(index);
+		return currentRecord.get(index);
 	}
 
 	/**
@@ -283,7 +307,7 @@ public class CsvReader {
 	 * @see #getFieldByName(String)
 	 */
 	public String getFieldAt(int index) {
-		return (String) currentRecord.elementAt(index);
+		return currentRecord.get(index);
 	}
 
 	/**
@@ -296,10 +320,19 @@ public class CsvReader {
 	}
 
 	/**
+	 * Returns the current record.
+	 * 
+	 * @return the current record
+	 */
+	public List<String> getCurrentRecord() {
+		return new ArrayList<String>(currentRecord);
+	}
+
+	/**
 	 * @return a Vector of Strings with field names, possibly null if field
 	 *         names were not read
 	 */
-	public Vector<String> getFieldNames() {
+	public List<String> getFieldNames() {
 		return fieldNames;
 	}
 

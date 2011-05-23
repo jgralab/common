@@ -29,6 +29,7 @@ public abstract class SwingApplication extends JFrame {
 	public static boolean RUNS_ON_MAC_OS_X = System.getProperty("os.name")
 			.toLowerCase().startsWith("mac os x");
 
+	protected JMenu fileMenu;
 	protected Action fileNewAction;
 	protected Action fileOpenAction;
 	protected Action fileSaveAction;
@@ -37,12 +38,21 @@ public abstract class SwingApplication extends JFrame {
 	protected Action filePrintAction;
 	protected Action fileExitAction;
 
+	protected JMenu editMenu;
+	protected Action editUndoAction;
+	protected Action editRedoAction;
+	protected Action editCopyAction;
+	protected Action editCutAction;
+	protected Action editPasteAction;
+
+	protected JMenu helpMenu;
 	protected Action helpAboutAction;
 
 	private boolean modified;
 	private JMenuBar menuBar;
 	private JPanel contentPanel;
 	private StatusBar statusBar;
+	protected int menuEventMask;
 
 	public SwingApplication(String title) {
 		super(title);
@@ -62,17 +72,16 @@ public abstract class SwingApplication extends JFrame {
 			System.setProperty("apple.laf.useScreenMenuBar", "true");
 		}
 
-		final int menuEventMask = Toolkit.getDefaultToolkit()
-				.getMenuShortcutKeyMask();
+		menuEventMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
 
-		createActions(menuEventMask);
+		createActions();
 		setJMenuBar(createMenuBar());
 		contentPanel = new JPanel();
 		contentPanel.setLayout(new BorderLayout());
-		Component content = createContent();
-		contentPanel.add(content, BorderLayout.CENTER);
 		statusBar = createStatusBar();
 		contentPanel.add(statusBar, BorderLayout.SOUTH);
+		Component content = createContent();
+		contentPanel.add(content, BorderLayout.CENTER);
 
 		getContentPane().add(contentPanel);
 		updateActions();
@@ -85,7 +94,11 @@ public abstract class SwingApplication extends JFrame {
 		pack();
 	}
 
-	protected void createActions(final int menuEventMask) {
+	public int getMenuEventMask() {
+		return menuEventMask;
+	}
+
+	protected void createActions() {
 		fileNewAction = new AbstractAction("New ...") {
 			{
 				putValue(AbstractAction.ACCELERATOR_KEY,
@@ -165,6 +178,62 @@ public abstract class SwingApplication extends JFrame {
 			}
 		};
 
+		editUndoAction = new AbstractAction("Undo") {
+			{
+				putValue(AbstractAction.ACCELERATOR_KEY,
+						KeyStroke.getKeyStroke(KeyEvent.VK_Z, menuEventMask));
+			}
+
+			public void actionPerformed(ActionEvent e) {
+				editUndo();
+			}
+		};
+
+		editRedoAction = new AbstractAction("Redo") {
+			{
+				putValue(AbstractAction.ACCELERATOR_KEY,
+						KeyStroke.getKeyStroke(KeyEvent.VK_Z,
+								KeyEvent.SHIFT_DOWN_MASK | menuEventMask));
+			}
+
+			public void actionPerformed(ActionEvent e) {
+				editRedo();
+			}
+		};
+
+		editCutAction = new AbstractAction("Cut") {
+			{
+				putValue(AbstractAction.ACCELERATOR_KEY,
+						KeyStroke.getKeyStroke(KeyEvent.VK_X, menuEventMask));
+			}
+
+			public void actionPerformed(ActionEvent e) {
+				editCut();
+			}
+		};
+
+		editCopyAction = new AbstractAction("Copy") {
+			{
+				putValue(AbstractAction.ACCELERATOR_KEY,
+						KeyStroke.getKeyStroke(KeyEvent.VK_C, menuEventMask));
+			}
+
+			public void actionPerformed(ActionEvent e) {
+				editCopy();
+			}
+		};
+
+		editPasteAction = new AbstractAction("Paste") {
+			{
+				putValue(AbstractAction.ACCELERATOR_KEY,
+						KeyStroke.getKeyStroke(KeyEvent.VK_V, menuEventMask));
+			}
+
+			public void actionPerformed(ActionEvent e) {
+				editPaste();
+			}
+		};
+
 		helpAboutAction = new AbstractAction("About " + getTitle() + " ...") {
 			public void actionPerformed(ActionEvent e) {
 				helpAbout();
@@ -173,8 +242,7 @@ public abstract class SwingApplication extends JFrame {
 	}
 
 	protected JMenuBar createMenuBar() {
-		menuBar = new JMenuBar();
-		JMenu fileMenu = new JMenu("File");
+		fileMenu = new JMenu("File");
 		fileMenu.add(fileNewAction);
 		fileMenu.add(fileOpenAction);
 		fileMenu.addSeparator();
@@ -198,9 +266,16 @@ public abstract class SwingApplication extends JFrame {
 			fileMenu.addSeparator();
 			fileMenu.add(fileExitAction);
 		}
-		menuBar.add(fileMenu);
 
-		JMenu helpMenu = new JMenu("Help");
+		editMenu = new JMenu("Edit");
+		editMenu.add(editUndoAction);
+		editMenu.add(editRedoAction);
+		editMenu.addSeparator();
+		editMenu.add(editCutAction);
+		editMenu.add(editCopyAction);
+		editMenu.add(editPasteAction);
+
+		helpMenu = new JMenu("Help");
 		// System.out.println(helpMenu);
 		if (RUNS_ON_MAC_OS_X) {
 			try {
@@ -216,6 +291,10 @@ public abstract class SwingApplication extends JFrame {
 		} else {
 			helpMenu.add(helpAboutAction);
 		}
+
+		menuBar = new JMenuBar();
+		menuBar.add(fileMenu);
+		menuBar.add(editMenu);
 		menuBar.add(helpMenu);
 		// helpMenu.putClientProperty(JComponent., value)
 		return menuBar;
@@ -245,8 +324,8 @@ public abstract class SwingApplication extends JFrame {
 
 	}
 
-	protected void fileSaveAs() {
-
+	protected boolean fileSaveAs() {
+		return false;
 	}
 
 	protected void fileClose() {
@@ -254,6 +333,26 @@ public abstract class SwingApplication extends JFrame {
 	}
 
 	protected void filePrint() {
+
+	}
+
+	protected void editUndo() {
+
+	}
+
+	protected void editRedo() {
+
+	}
+
+	protected void editCut() {
+
+	}
+
+	protected void editCopy() {
+
+	}
+
+	protected void editPaste() {
 
 	}
 
