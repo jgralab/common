@@ -50,6 +50,7 @@ public abstract class SwingApplication extends JFrame {
 
 	private boolean modified;
 	private JMenuBar menuBar;
+	private JPanel toolBar;
 	private JPanel contentPanel;
 	private StatusBar statusBar;
 	protected int menuEventMask;
@@ -78,6 +79,8 @@ public abstract class SwingApplication extends JFrame {
 		setJMenuBar(createMenuBar());
 		contentPanel = new JPanel();
 		contentPanel.setLayout(new BorderLayout());
+		toolBar = createToolBar();
+		contentPanel.add(toolBar, BorderLayout.NORTH);
 		statusBar = createStatusBar();
 		contentPanel.add(statusBar, BorderLayout.SOUTH);
 		Component content = createContent();
@@ -92,6 +95,12 @@ public abstract class SwingApplication extends JFrame {
 			}
 		});
 		pack();
+	}
+
+	protected JPanel createToolBar() {
+		JPanel result = RUNS_ON_MAC_OS_X ? new UnifiedToolbarPanel()
+				: new JPanel();
+		return result;
 	}
 
 	public int getMenuEventMask() {

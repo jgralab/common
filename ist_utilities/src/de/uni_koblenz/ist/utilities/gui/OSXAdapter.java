@@ -57,10 +57,13 @@ Copyright � 2003-2007 Apple, Inc., All Rights Reserved
 
 package de.uni_koblenz.ist.utilities.gui;
 
+import java.awt.Image;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+
+import javax.swing.ImageIcon;
 
 public class OSXAdapter implements InvocationHandler {
 
@@ -69,6 +72,7 @@ public class OSXAdapter implements InvocationHandler {
 	protected String proxySignature;
 
 	static Object macOSXApplication;
+	static Class<?> applicationClass;
 
 	// Pass this method an Object and Method equipped to perform application
 	// shutdown logic
@@ -93,8 +97,8 @@ public class OSXAdapter implements InvocationHandler {
 			Method enableAboutMethod = macOSXApplication.getClass()
 					.getDeclaredMethod("setEnabledAboutMenu",
 							new Class[] { boolean.class });
-			enableAboutMethod.invoke(macOSXApplication, new Object[] { Boolean
-					.valueOf(enableAboutMenu) });
+			enableAboutMethod.invoke(macOSXApplication,
+					new Object[] { Boolean.valueOf(enableAboutMenu) });
 		} catch (Exception ex) {
 			System.err.println("OSXAdapter could not access the About Menu");
 			ex.printStackTrace();
@@ -117,8 +121,8 @@ public class OSXAdapter implements InvocationHandler {
 			Method enablePrefsMethod = macOSXApplication.getClass()
 					.getDeclaredMethod("setEnabledPreferencesMenu",
 							new Class[] { boolean.class });
-			enablePrefsMethod.invoke(macOSXApplication, new Object[] { Boolean
-					.valueOf(enablePrefsMenu) });
+			enablePrefsMethod.invoke(macOSXApplication,
+					new Object[] { Boolean.valueOf(enablePrefsMenu) });
 		} catch (Exception ex) {
 			System.err.println("OSXAdapter could not access the About Menu");
 			ex.printStackTrace();
@@ -134,6 +138,7 @@ public class OSXAdapter implements InvocationHandler {
 		setHandler(new OSXAdapter("handleOpenFile", target, fileHandler) {
 			// Override OSXAdapter.callTarget to send information on the
 			// file to be opened
+			@Override
 			public boolean callTarget(Object appleEvent) {
 				if (appleEvent != null) {
 					try {
@@ -157,12 +162,7 @@ public class OSXAdapter implements InvocationHandler {
 	// as an ApplicationListener
 	public static void setHandler(OSXAdapter adapter) {
 		try {
-			Class<?> applicationClass = Class
-					.forName("com.apple.eawt.Application");
-			if (macOSXApplication == null) {
-				macOSXApplication = applicationClass.getConstructor(
-						(Class[]) null).newInstance((Object[]) null);
-			}
+			getApplicationInstance();
 			Class<?> applicationListenerClass = Class
 					.forName("com.apple.eawt.ApplicationListener");
 			Method addListenerMethod = applicationClass.getDeclaredMethod(
@@ -170,8 +170,8 @@ public class OSXAdapter implements InvocationHandler {
 					new Class[] { applicationListenerClass });
 			// Create a proxy object around this handler that can be
 			// reflectively added as an Apple ApplicationListener
-			Object osxAdapterProxy = Proxy.newProxyInstance(OSXAdapter.class
-					.getClassLoader(),
+			Object osxAdapterProxy = Proxy.newProxyInstance(
+					OSXAdapter.class.getClassLoader(),
 					new Class[] { applicationListenerClass }, adapter);
 			addListenerMethod.invoke(macOSXApplication,
 					new Object[] { osxAdapterProxy });
@@ -184,6 +184,16 @@ public class OSXAdapter implements InvocationHandler {
 									// eawt.Application methods
 			System.err.println("Mac OS X Adapter could not talk to EAWT:");
 			ex.printStackTrace();
+		}
+	}
+
+	public static void getApplicationInstance() throws ClassNotFoundException,
+			InstantiationException, IllegalAccessException,
+			InvocationTargetException, NoSuchMethodException {
+		applicationClass = Class.forName("com.apple.eawt.Application");
+		if (macOSXApplication == null) {
+			macOSXApplication = applicationClass.getConstructor((Class[]) null)
+					.newInstance((Object[]) null);
 		}
 	}
 
@@ -240,14 +250,33 @@ public class OSXAdapter implements InvocationHandler {
 				Method setHandledMethod = event.getClass().getDeclaredMethod(
 						"setHandled", new Class[] { boolean.class });
 				// If the target method returns a boolean, use that as a hint
-				setHandledMethod.invoke(event, new Object[] { Boolean
-						.valueOf(handled) });
+				setHandledMethod.invoke(event,
+						new Object[] { Boolean.valueOf(handled) });
 			} catch (Exception ex) {
 				System.err
 						.println("OSXAdapter was unable to handle an ApplicationEvent: "
 								+ event);
 				ex.printStackTrace();
 			}
+		}
+	}
+
+	public static void setDockIcon(ImageIcon icon) {
+		try {
+			getApplicationInstance();
+			Method setIconMethod = applicationClass.getDeclaredMethod(
+					"setDockIconImage", new Class[] { Image.class });
+			setIconMethod.invoke(macOSXApplication,
+					new Object[] { icon.getImage() });
+		} catch (ClassNotFoundException cnfe) {
+			System.err
+					.println("This version of Mac OS X does not support the Apple EAWT.  No dock icon was set ("
+							+ cnfe + ")");
+		} catch (Exception ex) { // Likely a NoSuchMethodException or an
+			// IllegalAccessException loading/invoking
+			// eawt.Application methods
+			System.err.println("Mac OS X Adapter could not talk to EAWT:");
+			ex.printStackTrace();
 		}
 	}
 }
