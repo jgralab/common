@@ -183,4 +183,12 @@ public class DrawingPanel extends JComponent {
 				Math.min(ZOOM_MAX,
 						(int) (Math.floor(Math.log10(sc * 100.0) * 40.0))));
 	}
+
+	public void zoomIn() {
+		zoomLevelModel.setValue(zoomLevelModel.getValue() + 10);
+	}
+
+	public void zoomOut() {
+		zoomLevelModel.setValue(zoomLevelModel.getValue() - 10);
+	}
 }
