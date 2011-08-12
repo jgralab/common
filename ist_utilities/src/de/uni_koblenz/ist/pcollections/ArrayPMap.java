@@ -75,21 +75,25 @@ public final class ArrayPMap<K, V> implements PMap<K, V>,
 		return (i >= 0) ? values.get(i) : null;
 	}
 
+	@Deprecated
 	@Override
 	public V put(K key, V value) {
 		throw new UnsupportedOperationException();
 	}
 
+	@Deprecated
 	@Override
 	public V remove(Object key) {
 		throw new UnsupportedOperationException();
 	}
 
+	@Deprecated
 	@Override
 	public void putAll(Map<? extends K, ? extends V> m) {
 		throw new UnsupportedOperationException();
 	}
 
+	@Deprecated
 	@Override
 	public void clear() {
 		throw new UnsupportedOperationException();
@@ -146,6 +150,7 @@ public final class ArrayPMap<K, V> implements PMap<K, V>,
 		}
 	}
 
+	@Deprecated
 	@Override
 	public ArrayPMap<K, V> plusAll(Map<? extends K, ? extends V> arg0) {
 		throw new UnsupportedOperationException();

@@ -90,31 +90,37 @@ public final class ArrayPSet<E> implements PSet<E>, Serializable {
 		return contains(e) ? minus(e) : this;
 	}
 
+	@Deprecated
 	@Override
 	public boolean add(E o) {
 		throw new UnsupportedOperationException();
 	}
 
+	@Deprecated
 	@Override
 	public boolean remove(Object o) {
 		throw new UnsupportedOperationException();
 	}
 
+	@Deprecated
 	@Override
 	public boolean addAll(Collection<? extends E> c) {
 		throw new UnsupportedOperationException();
 	}
 
+	@Deprecated
 	@Override
 	public boolean removeAll(Collection<?> c) {
 		throw new UnsupportedOperationException();
 	}
 
+	@Deprecated
 	@Override
 	public boolean retainAll(Collection<?> c) {
 		throw new UnsupportedOperationException();
 	}
 
+	@Deprecated
 	@Override
 	public void clear() {
 		throw new UnsupportedOperationException();

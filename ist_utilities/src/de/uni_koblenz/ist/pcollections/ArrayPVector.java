@@ -70,51 +70,61 @@ public final class ArrayPVector<E> implements PVector<E>, Serializable {
 		return (ArrayPVector<T>) empty;
 	}
 
+	@Deprecated
 	@Override
 	public void add(int arg0, E arg1) {
 		throw new UnsupportedOperationException();
 	}
 
+	@Deprecated
 	@Override
 	public boolean addAll(int arg0, Collection<? extends E> arg1) {
 		throw new UnsupportedOperationException();
 	}
 
+	@Deprecated
 	@Override
 	public E remove(int arg0) {
 		throw new UnsupportedOperationException();
 	}
 
+	@Deprecated
 	@Override
 	public E set(int arg0, E arg1) {
 		throw new UnsupportedOperationException();
 	}
 
+	@Deprecated
 	@Override
 	public boolean add(E arg0) {
 		throw new UnsupportedOperationException();
 	}
 
+	@Deprecated
 	@Override
 	public boolean addAll(Collection<? extends E> arg0) {
 		throw new UnsupportedOperationException();
 	}
 
+	@Deprecated
 	@Override
 	public void clear() {
 		throw new UnsupportedOperationException();
 	}
 
+	@Deprecated
 	@Override
 	public boolean remove(Object arg0) {
 		throw new UnsupportedOperationException();
 	}
 
+	@Deprecated
 	@Override
 	public boolean removeAll(Collection<?> arg0) {
 		throw new UnsupportedOperationException();
 	}
 
+	@Deprecated
 	@Override
 	public boolean retainAll(Collection<?> arg0) {
 		throw new UnsupportedOperationException();
@@ -286,7 +296,7 @@ public final class ArrayPVector<E> implements PVector<E>, Serializable {
 	@Override
 	public ArrayPVector<E> plus(int i, E e) {
 		// insert e at index i
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("Not yet implemented");
 	}
 
 	@SuppressWarnings("unchecked")
@@ -324,7 +334,7 @@ public final class ArrayPVector<E> implements PVector<E>, Serializable {
 	@Override
 	public ArrayPVector<E> plusAll(int i, Collection<? extends E> l) {
 		// insert l at index i
-		throw new UnsupportedOperationException();
+		throw new UnsupportedOperationException("Not yet implemented");
 	}
 
 	@Override
