@@ -142,6 +142,9 @@ public final class ArrayPVector<E> implements PVector<E>, Serializable {
 
 	@Override
 	public boolean contains(Object o) {
+		if (o == null) {
+			return false;
+		}
 		for (int i = 0; i < count; i++) {
 			if (value[offset + i].equals(o)) {
 				return true;
@@ -196,6 +199,9 @@ public final class ArrayPVector<E> implements PVector<E>, Serializable {
 
 	@Override
 	public int indexOf(Object o) {
+		if (o == null) {
+			return -1;
+		}
 		for (int i = 0; i < count; ++i) {
 			if (value[offset + i].equals(o)) {
 				return i;
@@ -206,6 +212,9 @@ public final class ArrayPVector<E> implements PVector<E>, Serializable {
 
 	@Override
 	public int lastIndexOf(Object o) {
+		if (o == null) {
+			return -1;
+		}
 		for (int i = count - 1; i >= 0; --i) {
 			if (value[offset + i].equals(o)) {
 				return i;
@@ -226,6 +235,9 @@ public final class ArrayPVector<E> implements PVector<E>, Serializable {
 
 	@Override
 	public PVector<E> minus(Object o) {
+		if (o == null) {
+			return this;
+		}
 		int i = indexOf(o);
 		return i < 0 ? this : minus(i);
 	}
@@ -269,6 +281,10 @@ public final class ArrayPVector<E> implements PVector<E>, Serializable {
 
 	@Override
 	public PVector<E> plus(E e) {
+		if (e == null) {
+			throw new IllegalArgumentException(
+					"Can't add null to an ArrayPVector");
+		}
 		if (sublist || count == 0 || offset + count + 1 > value.length) {
 			if (count == 0) {
 				// this is empty
@@ -313,6 +329,10 @@ public final class ArrayPVector<E> implements PVector<E>, Serializable {
 			// l fits into the remaining space
 			int i = count;
 			for (E e : l) {
+				if (e == null) {
+					throw new IllegalArgumentException(
+							"Can't add null to an ArrayPVector");
+				}
 				value[i++] = e;
 			}
 			sublist = true;
@@ -325,6 +345,10 @@ public final class ArrayPVector<E> implements PVector<E>, Serializable {
 			}
 			int i = count;
 			for (E e : l) {
+				if (e == null) {
+					throw new IllegalArgumentException(
+							"Can't add null to an ArrayPVector");
+				}
 				val[i++] = e;
 			}
 			return new ArrayPVector<E>(val, 0, i);
@@ -357,6 +381,10 @@ public final class ArrayPVector<E> implements PVector<E>, Serializable {
 
 	@Override
 	public ArrayPVector<E> with(int i, E e) {
+		if (e == null) {
+			throw new IllegalArgumentException(
+					"Can't set an element to null in an ArrayPVector");
+		}
 		if (get(i).equals(e)) {
 			return this;
 		}
