@@ -1,4 +1,4 @@
-package de.uni_koblenz.ist.pcollections;
+package org.pcollections;
 
 import java.io.Serializable;
 import java.util.AbstractMap.SimpleImmutableEntry;
@@ -7,20 +7,30 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.pcollections.PMap;
-import org.pcollections.PSet;
-import org.pcollections.PVector;
-
+/**
+ * ArrayPMap is a PMap implementation based on ArrayPSet (for keys) and
+ * ArrayPVector (for values). ArrayPMap preserves insertion order on iteration.
+ * Also, memory consumption is low compared to the other PMap implementations,
+ * but at the price of O(n^2) effort for the equals method (when comparing to
+ * another ArrayPMap).
+ * 
+ * This implementation is not thread safe.
+ * 
+ * @author ist@uni-koblenz.de
+ * 
+ * @param <K>
+ * @param <V>
+ */
 public final class ArrayPMap<K, V> implements PMap<K, V>,
 		Iterable<SimpleImmutableEntry<K, V>>, Serializable {
 	private static final long serialVersionUID = -7101801297307300984L;
 
 	private ArrayPSet<K> keys;
-	private PVector<V> values;
+	private ArrayPVector<V> values;
 
 	private ArrayPMap(PSet<K> keys, PVector<V> values) {
 		this.keys = (ArrayPSet<K>) keys;
-		this.values = values;
+		this.values = (ArrayPVector<V>) values;
 	}
 
 	@Override
@@ -30,15 +40,27 @@ public final class ArrayPMap<K, V> implements PMap<K, V>,
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == this) {
+		if (obj == null) {
+			return false;
+		} else if (obj == this) {
 			return true;
 		}
-		if (obj instanceof ArrayPMap) {
-			@SuppressWarnings("unchecked")
-			ArrayPMap<? extends K, ? extends V> o = (ArrayPMap<? extends K, ? extends V>) obj;
-			return o.keys.equals(keys) && o.values.equals(values);
+		@SuppressWarnings("unchecked")
+		Map<? extends K, ? extends V> o = (Map<? extends K, ? extends V>) obj;
+		if (o.size() != keys.size()) {
+			return false;
 		}
-		return false;
+		Iterator<V> vi = values.iterator();
+		for (K key : keys) {
+			V val = vi.next();
+			// This test is sufficient since this maps values are guaranteed
+			// to be not null. We don't have to additionally check whether the
+			// other map contains the key.
+			if (!val.equals(o.get(key))) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private static ArrayPMap<?, ?> empty = new ArrayPMap<Object, Object>(

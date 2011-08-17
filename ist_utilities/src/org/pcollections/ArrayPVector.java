@@ -1,14 +1,29 @@
-package de.uni_koblenz.ist.pcollections;
+package org.pcollections;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
-import org.pcollections.PVector;
-
+/**
+ * ArrayPVector is a PVector implementation based on arrays. This implementation
+ * is biased for low memory consumption in cases where really many PVectors are
+ * used. Instances share the same storage array as much as possible.
+ * 
+ * Also, the plus() operation is approximately O(1). Array copying only occurs
+ * upon dynamic growth when the storage array has no more unused elements, or
+ * when the ArrayPVector uses a sub-array of a different instance.
+ * 
+ * This implementation is not thread safe.
+ * 
+ * @author ist@uni-koblenz.de
+ * 
+ * @param <E>
+ *            the element type
+ */
 public final class ArrayPVector<E> implements PVector<E>, Serializable {
 	private static final long serialVersionUID = -3381080251584514162L;
 
@@ -36,22 +51,39 @@ public final class ArrayPVector<E> implements PVector<E>, Serializable {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == this) {
+		if (obj == null) {
+			return false;
+		} else if (obj == this) {
 			return true;
 		}
-		if (obj != null) {
+		if (obj instanceof ArrayPVector) {
+			// use efficient iteration
 			@SuppressWarnings("unchecked")
 			ArrayPVector<? extends E> o = (ArrayPVector<? extends E>) obj;
-			if (count == o.count) {
-				for (int i = 0; i < count; ++i) {
-					if (!value[offset + i].equals(o.value[o.offset + i])) {
-						return false;
-					}
-				}
-				return true;
+			if (count != o.count) {
+				return false;
 			}
+			for (int i = 0; i < count; ++i) {
+				if (!value[offset + i].equals(o.value[o.offset + i])) {
+					return false;
+				}
+			}
+			return true;
+		} else {
+			// use list iteration
+			@SuppressWarnings("unchecked")
+			List<? extends E> o = (List<? extends E>) obj;
+			if (o.size() != count) {
+				return false;
+			}
+			int i = 0;
+			for (E item : o) {
+				if (!value[offset + i].equals(item)) {
+					return false;
+				}
+			}
+			return true;
 		}
-		return false;
 	}
 
 	@Override

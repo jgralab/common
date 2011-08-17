@@ -1,14 +1,24 @@
-package de.uni_koblenz.ist.pcollections;
+package org.pcollections;
 
 import java.io.Serializable;
 import java.lang.ref.SoftReference;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
-import org.pcollections.PSet;
-import org.pcollections.PVector;
-
+/**
+ * ArrayPSet is a PSet implementation based on an ArrayPVector. ArrayPSet
+ * preserves the insertion order upon iteration. When the size gets above
+ * SIZELIMIT elements, a cached ordinary HashSet is used to guarantee an
+ * efficient containment test.
+ * 
+ * This implementation is not thread safe.
+ * 
+ * @author ist@uni-koblenz.de
+ * 
+ * @param <E>
+ */
 public final class ArrayPSet<E> implements PSet<E>, Serializable {
 	private static final long serialVersionUID = 5643294766821496614L;
 
@@ -47,15 +57,22 @@ public final class ArrayPSet<E> implements PSet<E>, Serializable {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == this) {
+		if (obj == null) {
+			return false;
+		} else if (obj == this) {
 			return true;
 		}
-		if (obj != null) {
-			@SuppressWarnings("unchecked")
-			ArrayPSet<? extends E> o = (ArrayPSet<? extends E>) obj;
-			return o.entries.equals(entries);
+		@SuppressWarnings("unchecked")
+		Set<? extends E> o = (Set<? extends E>) obj;
+		if (o.size() != entries.size()) {
+			return false;
 		}
-		return false;
+		for (E item : o) {
+			if (!contains(item)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@Override
