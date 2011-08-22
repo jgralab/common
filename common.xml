@@ -248,13 +248,14 @@
 
 	<!-- modify (TODO check if it still works)-->
 	<!-- modifies the projects main class -->
+	<!--
 	<target name="modify">
 		<mkdir dir="${classes.dir}" />
-		<!-- modify build-ID -->
+		<!- - modify build-ID - ->
 		<java classname="de.uni_koblenz.ist.utilities.auto_build_id.AutoBuildID" classpathref="classpath">
 			<arg line="-m ${src.dir}/de/uni_koblenz/${projectname}/${main}.java" />
 		</java>
-		<!-- commit the changed file to svn -->
+		<!- - commit the changed file to svn - ->
 		<java classname="org.tmatesoft.svn.cli.SVN" fork="true" classpathref="classpath" dir="${src.dir}/de/uni_koblenz/${projectname}">
 			<arg value="commit" />
 			<arg value="-m" />
@@ -262,7 +263,8 @@
 			<arg value="${main}.java" />
 		</java>
 	</target>
-
+	-->
+	
 	<target name="createClassesDir">
 		<mkdir dir="${classes.dir}" />
 	</target>
