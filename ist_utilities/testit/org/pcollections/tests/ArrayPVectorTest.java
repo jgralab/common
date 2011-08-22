@@ -222,6 +222,24 @@ public class ArrayPVectorTest {
 	}
 
 	@Test
+	public void testMinusAllCollectionOfQextendsE() {
+
+		PVector<String> w = ArrayPVector.empty();
+		w = w.plus("a").plus("a").plus("b").plus("d").plus("x");
+
+		PVector<String> v = u.plusAll(u);
+		assertEquals(8, v.size());
+
+		v = v.minusAll(w);
+
+		assertEquals(4, v.size());
+		assertEquals("c", v.get(0));
+		assertEquals("b", v.get(1));
+		assertEquals("c", v.get(2));
+		assertEquals("d", v.get(3));
+	}
+
+	@Test
 	public void testSubList() {
 		PVector<String> v = ArrayPVector.empty();
 		v = v.plus("x");
@@ -261,6 +279,14 @@ public class ArrayPVectorTest {
 	@Test(expected = IndexOutOfBoundsException.class)
 	public void testSubList2() {
 		u = u.subList(3, 2);
+	}
+
+	@Test
+	public void testToArray() {
+		String[] v = { "a", "b", "c", "d" };
+		String[] w = {};
+		w = u.toArray(w);
+		assertTrue(Arrays.equals(v, w));
 	}
 
 	@Test
