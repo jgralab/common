@@ -16,7 +16,7 @@ public class ArrayPVectorTest {
 	private PVector<String> u;
 
 	@Before
-	public void init() {
+	public void testInit() {
 		u = ArrayPVector.empty();
 		u = u.plus("a").plus("b").plus("c").plus("d");
 	}
@@ -26,6 +26,7 @@ public class ArrayPVectorTest {
 		PVector<String> v = ArrayPVector.empty();
 		assertEquals(0, v.size());
 		assertTrue(v.isEmpty());
+		assertFalse(u.isEmpty());
 	}
 
 	@Test
@@ -291,7 +292,7 @@ public class ArrayPVectorTest {
 	}
 
 	@Test
-	public void hashCodeTest() {
+	public void testHashCode() {
 		assertEquals(0, ArrayPVector.empty().hashCode());
 		PVector<String> other = ArrayPVector.empty();
 		other = other.plus("a").plus("b").plus("c").plus("d");

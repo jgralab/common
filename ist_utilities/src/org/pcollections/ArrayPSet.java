@@ -104,7 +104,7 @@ public final class ArrayPSet<E> implements PSet<E>, Serializable {
 
 	@Override
 	public PSet<E> minus(Object e) {
-		return contains(e) ? minus(e) : this;
+		return contains(e) ? new ArrayPSet<E>(entries.minus(e)) : this;
 	}
 
 	@Deprecated
