@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Iterator;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.pcollections.ArrayPSet;
@@ -86,7 +88,35 @@ public class ArrayPSetTest {
 	}
 
 	@Test
-	public void hashCodeTest() {
+	public void testIterator() {
+		PSet<String> e = ArrayPSet.empty();
+		Iterator<String> i = e.iterator();
+		assertFalse(i.hasNext());
+		i = u.iterator();
+		assertTrue(i.hasNext());
+		assertEquals("a", i.next());
+		assertTrue(i.hasNext());
+		assertEquals("b", i.next());
+		assertTrue(i.hasNext());
+		assertEquals("c", i.next());
+		assertTrue(i.hasNext());
+		assertEquals("d", i.next());
+		assertFalse(i.hasNext());
+	}
+
+	@Test(expected = UnsupportedOperationException.class)
+	public void testIterator1() {
+		Iterator<String> i = u.iterator();
+		i.remove();
+	}
+
+	@Test
+	public void testHashCode() {
 		assertEquals(0, ArrayPSet.empty().hashCode());
+		PSet<String> other = ArrayPSet.empty();
+		other = other.plus("a").plus("b").plus("c").plus("d");
+		assertTrue(u.equals(other));
+		assertTrue(other.equals(u));
+		assertEquals(u.hashCode(), other.hashCode());
 	}
 }
