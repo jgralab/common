@@ -391,7 +391,7 @@
 		<copy file="${jar.dir}/${projectname}.jar" tofile="${jar.dir}/${projectname}.src.jar" />
 
 		<!-- include source files-->
-		<jar destfile="${jar.dir}/${projectname}.jar" basedir="${src.dir}" update="true" compress="true" filesetmanifest="skip" includes="**/*.java" />
+		<jar destfile="${jar.dir}/${projectname}.src.jar" basedir="${src.dir}" update="true" compress="true" filesetmanifest="skip" />
 
 	</target>
 
