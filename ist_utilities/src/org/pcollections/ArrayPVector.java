@@ -195,6 +195,7 @@ public final class ArrayPVector<E> implements PVector<E>, Serializable {
 		return Arrays.copyOfRange(value, offset, offset + count);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <T> T[] toArray(T[] a) {
 		if (a.length >= count) {
@@ -204,10 +205,8 @@ public final class ArrayPVector<E> implements PVector<E>, Serializable {
 			}
 			return a;
 		} else {
-			@SuppressWarnings("unchecked")
-			T[] result = (T[]) new Object[count];
-			System.arraycopy(value, offset, result, 0, count);
-			return result;
+			return (T[]) Arrays.copyOfRange(value, offset, offset + count,
+					a.getClass());
 		}
 	}
 

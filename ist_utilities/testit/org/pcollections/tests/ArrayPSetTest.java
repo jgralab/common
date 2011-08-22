@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
 import org.junit.Before;
@@ -27,6 +28,7 @@ public class ArrayPSetTest {
 		PSet<String> v = ArrayPSet.empty();
 		assertEquals(0, v.size());
 		assertTrue(v.isEmpty());
+		assertFalse(v.plus("a").isEmpty());
 		assertFalse(u.isEmpty());
 	}
 
@@ -85,6 +87,63 @@ public class ArrayPSetTest {
 		v = v.minus("d");
 		assertEquals(3, v.size());
 		assertFalse(v.contains("d"));
+	}
+
+	@Test
+	public void testMinus() {
+		assertEquals(4, u.size());
+		PSet<String> v = u.minus("x");
+		assertEquals(u, v);
+		v = v.minus("b");
+		assertTrue(u.contains("b"));
+		assertFalse(v.contains("b"));
+		assertEquals(4, u.size());
+		assertEquals(3, v.size());
+		v = v.minus("a");
+		assertFalse(v.contains("a"));
+		assertEquals(2, v.size());
+		v = v.minus("d");
+		assertFalse(v.contains("d"));
+		assertEquals(1, v.size());
+		v = v.minus("c");
+		assertFalse(v.contains("c"));
+		assertEquals(0, v.size());
+		assertTrue(v.equals(ArrayPSet.empty()));
+	}
+
+	@Test
+	public void testPlusAll() {
+		PSet<String> v = ArrayPSet.empty();
+		v = v.plus("a").plus("x").plus("y");
+		u = u.plusAll(v);
+		assertEquals(6, u.size());
+		assertTrue(u.contains("a"));
+		assertTrue(u.contains("b"));
+		assertTrue(u.contains("c"));
+		assertTrue(u.contains("d"));
+		assertTrue(u.contains("x"));
+		assertTrue(u.contains("y"));
+	}
+
+	@Test
+	public void testToArray() {
+		String[] v = { "a", "b", "c", "d" };
+		String[] w = {};
+		w = u.toArray(w);
+		assertTrue(Arrays.equals(v, w));
+	}
+
+	@Test
+	public void testMinusAll() {
+		PSet<String> v = ArrayPSet.empty();
+		v = v.plus("a").plus("c").plus("y");
+		u = u.minusAll(v);
+		assertEquals(2, u.size());
+		assertFalse(u.contains("a"));
+		assertTrue(u.contains("b"));
+		assertFalse(u.contains("c"));
+		assertTrue(u.contains("d"));
+		assertFalse(u.contains("y"));
 	}
 
 	@Test
