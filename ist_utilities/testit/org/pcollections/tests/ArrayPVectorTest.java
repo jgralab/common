@@ -289,4 +289,9 @@ public class ArrayPVectorTest {
 	public void testWith1() {
 		u = u.with(4, "x");
 	}
+
+	@Test
+	public void hashCodeTest() {
+		assertEquals(0, ArrayPVector.empty().hashCode());
+	}
 }
