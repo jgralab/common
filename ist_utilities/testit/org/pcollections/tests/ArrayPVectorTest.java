@@ -293,5 +293,10 @@ public class ArrayPVectorTest {
 	@Test
 	public void hashCodeTest() {
 		assertEquals(0, ArrayPVector.empty().hashCode());
+		PVector<String> other = ArrayPVector.empty();
+		other = other.plus("a").plus("b").plus("c").plus("d");
+		assertTrue(u.equals(other));
+		assertTrue(other.equals(u));
+		assertEquals(u.hashCode(), other.hashCode());
 	}
 }

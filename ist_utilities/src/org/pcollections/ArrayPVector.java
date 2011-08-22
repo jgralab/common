@@ -90,8 +90,8 @@ public final class ArrayPVector<E> implements PVector<E>, Serializable {
 	public int hashCode() {
 		if (hashCode == 0 && count > 0) {
 			hashCode = offset ^ count;
-			for (E e : value) {
-				hashCode ^= e.hashCode();
+			for (int i = 0; i < count; ++i) {
+				hashCode ^= value[offset + i].hashCode();
 			}
 		}
 		return hashCode;
