@@ -25,11 +25,12 @@ public class ArrayPSetTest {
 
 	@Test
 	public void testEmpty() {
+		assertFalse(u.isEmpty());
+
 		PSet<String> v = ArrayPSet.empty();
 		assertEquals(0, v.size());
 		assertTrue(v.isEmpty());
 		assertFalse(v.plus("a").isEmpty());
-		assertFalse(u.isEmpty());
 	}
 
 	@Test
