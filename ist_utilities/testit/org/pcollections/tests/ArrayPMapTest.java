@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.Iterator;
@@ -24,7 +25,7 @@ public class ArrayPMapTest {
 	}
 
 	@Test
-	public void testEmpty() {
+	public void testIsEmpty() {
 		assertTrue(e.isEmpty());
 		assertFalse(e.plus("a", 1).isEmpty());
 		assertFalse(u.isEmpty());
@@ -118,7 +119,47 @@ public class ArrayPMapTest {
 	}
 
 	@Test
+	public void testMinusAll() {
+		fail("Test not yet implemented");
+	}
+
+	@Test
+	public void testContainsKey() {
+		fail("Test not yet implemented");
+	}
+
+	@Test
+	public void testContainsValue() {
+		fail("Test not yet implemented");
+	}
+
+	@Test
+	public void testKeySet() {
+		fail("Test not yet implemented");
+	}
+
+	@Test
+	public void testValues() {
+		fail("Test not yet implemented");
+	}
+
+	@Test
+	public void testEntrySet() {
+		fail("Test not yet implemented");
+	}
+
+	@Test
+	public void testEquals() {
+		fail("Test not yet implemented");
+	}
+
+	@Test
 	public void testHashCode() {
 		assertEquals(0, ArrayPMap.empty().hashCode());
+		PMap<String, Integer> v = e;
+		v = v.plus("a", 1).plus("b", 2).plus("c", 3).plus("d", 4);
+		assertEquals(u, v);
+		assertEquals(v, u);
+		assertEquals(u.hashCode(), v.hashCode());
 	}
 }

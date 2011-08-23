@@ -3,6 +3,7 @@ package org.pcollections.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,10 +23,11 @@ public class ArrayPVectorTest {
 	}
 
 	@Test
-	public void testEmpty() {
+	public void testIsEmpty() {
 		PVector<String> v = ArrayPVector.empty();
 		assertEquals(0, v.size());
 		assertTrue(v.isEmpty());
+		assertFalse(v.plus("a").isEmpty());
 		assertFalse(u.isEmpty());
 	}
 
@@ -44,20 +46,27 @@ public class ArrayPVectorTest {
 	}
 
 	@Test
-	public void testIsEmpty() {
-		PVector<String> v = ArrayPVector.empty();
-		assertTrue(v.isEmpty());
-		v = v.plus("a");
-		assertFalse(v.isEmpty());
-	}
-
-	@Test
 	public void testContains() {
 		assertFalse(u.contains("x"));
 		assertTrue(u.contains("a"));
 		assertTrue(u.contains("b"));
 		assertTrue(u.contains("c"));
 		assertTrue(u.contains("d"));
+	}
+
+	@Test
+	public void testContainsAll() {
+		fail("Test not yet implemented");
+	}
+
+	@Test
+	public void testEquals() {
+		fail("Test not yet implemented");
+	}
+
+	@Test
+	public void testIterator() {
+		fail("Test not yet implemented");
 	}
 
 	@Test
@@ -222,6 +231,11 @@ public class ArrayPVectorTest {
 	}
 
 	@Test
+	public void testPlusAllIntCollectionOfQextendsE() {
+		fail("Test not yet implemented");
+	}
+
+	@Test
 	public void testMinusAllCollectionOfQextendsE() {
 
 		PVector<String> w = ArrayPVector.empty();
@@ -286,6 +300,13 @@ public class ArrayPVectorTest {
 		String[] v = { "a", "b", "c", "d" };
 		String[] w = {};
 		w = u.toArray(w);
+		assertTrue(Arrays.equals(v, w));
+	}
+
+	@Test
+	public void testToArray1() {
+		String[] v = { "a", "b", "c", "d" };
+		Object[] w = u.toArray();
 		assertTrue(Arrays.equals(v, w));
 	}
 
