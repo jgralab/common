@@ -1,47 +1,71 @@
 package org.pcollections.tests;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import junit.framework.TestCase;
+
 import org.pcollections.ArrayPSet;
-import org.pcollections.ArrayPVector;
+import org.pcollections.HashTreePSet;
 import org.pcollections.PSet;
 import org.pcollections.PVector;
 
-public class ArrayPSetTest {
-	private PSet<String> u;
+public class ArrayPSetTest extends TestCase {
+	private PSet<String> e = ArrayPSet.empty();
+	private PSet<String> u = e.plus("a").plus("b").plus("c").plus("d");
 
-	@Before
-	public void testInit() {
-		u = ArrayPSet.empty();
-		u = u.plus("a").plus("b").plus("c").plus("d");
+	public ArrayPSetTest() {
 	}
 
-	@Test
+	public ArrayPSetTest(String name) {
+		super(name);
+	}
+
 	public void testIsEmpty() {
 		assertFalse(u.isEmpty());
-
+		assertTrue(e.isEmpty());
 		PSet<String> v = ArrayPSet.empty();
 		assertEquals(0, v.size());
 		assertTrue(v.isEmpty());
 		assertFalse(v.plus("a").isEmpty());
 	}
 
-	@Test
 	public void testEquals() {
-		fail("Test not yet implemented");
+		HashSet<String> v = new HashSet<String>();
+		assertTrue(e.equals(v));
+		assertTrue(v.equals(e));
+		v.add("a");
+		v.add("b");
+		v.add("c");
+		v.add("d");
+		assertTrue(v.equals(u));
+		assertTrue(u.equals(v));
+		assertFalse(u.equals(null));
+		v.remove("b");
+		assertFalse(v.equals(u));
+		assertFalse(u.equals(v));
+
+		PSet<String> w = HashTreePSet.empty();
+		w = w.plus("a").plus("b").plus("c").plus("d");
+		assertTrue(u.equals(w));
+		assertTrue(w.equals(u));
+		w = w.minus("a");
+		assertFalse(u.equals(w));
+		assertFalse(w.equals(u));
+
+		w = e.plus("a").plus("b").plus("c").plus("d");
+		assertTrue(u.equals(w));
+		assertTrue(w.equals(u));
+		w = w.minus("a");
+		assertFalse(u.equals(w));
+		assertFalse(w.equals(u));
 	}
 
-	@Test
 	public void testSize() {
-		PVector<String> v = ArrayPVector.empty();
+		PSet<String> v = e;
 		assertEquals(0, v.size());
 		v = v.plus("a");
 		assertEquals(1, v.size());
@@ -53,8 +77,8 @@ public class ArrayPSetTest {
 		assertEquals(4, v.size());
 	}
 
-	@Test
 	public void testContains() {
+		assertFalse(e.contains("x"));
 		assertFalse(u.contains("x"));
 		assertTrue(u.contains("a"));
 		assertTrue(u.contains("b"));
@@ -62,12 +86,22 @@ public class ArrayPSetTest {
 		assertTrue(u.contains("d"));
 	}
 
-	@Test
 	public void testContainsAll() {
-		fail("Test not yet implemented");
+		List<String> l = new ArrayList<String>();
+		assertTrue(e.containsAll(l));
+		assertTrue(u.containsAll(l));
+		l.add("a");
+		assertFalse(e.containsAll(l));
+		l.add("b");
+		l.add("c");
+		assertTrue(u.containsAll(l));
+		l.add("x");
+		assertFalse(u.containsAll(l));
+		l.add("d");
+		l.remove("x");
+		assertTrue(u.containsAll(l));
 	}
 
-	@Test
 	public void testMinusObject() {
 		PSet<String> v = ArrayPSet.empty();
 		v = v.plus("x");
@@ -93,7 +127,6 @@ public class ArrayPSetTest {
 		assertFalse(v.contains("d"));
 	}
 
-	@Test
 	public void testMinus() {
 		assertEquals(4, u.size());
 		PSet<String> v = u.minus("x");
@@ -115,7 +148,6 @@ public class ArrayPSetTest {
 		assertTrue(v.equals(ArrayPSet.empty()));
 	}
 
-	@Test
 	public void testPlusAll() {
 		PSet<String> v = ArrayPSet.empty();
 		v = v.plus("a").plus("x").plus("y");
@@ -129,7 +161,6 @@ public class ArrayPSetTest {
 		assertTrue(u.contains("y"));
 	}
 
-	@Test
 	public void testToArray() {
 		String[] v = { "a", "b", "c", "d" };
 		String[] w = {};
@@ -137,19 +168,23 @@ public class ArrayPSetTest {
 		assertTrue(Arrays.equals(v, w));
 	}
 
-	@Test
 	public void testToArray1() {
 		String[] v = { "a", "b", "c", "d" };
 		Object[] w = u.toArray();
 		assertTrue(Arrays.equals(v, w));
 	}
 
-	@Test
 	public void testToPVector() {
-		fail("Test not yet implemented");
+		PVector<String> v = ((ArrayPSet<String>) e).toPVector();
+		assertTrue(v.isEmpty());
+		v = ((ArrayPSet<String>) u).toPVector();
+		assertEquals(4, v.size());
+		assertEquals("a", v.get(0));
+		assertEquals("b", v.get(1));
+		assertEquals("c", v.get(2));
+		assertEquals("d", v.get(3));
 	}
 
-	@Test
 	public void testMinusAll() {
 		PSet<String> v = ArrayPSet.empty();
 		v = v.plus("a").plus("c").plus("y");
@@ -162,9 +197,7 @@ public class ArrayPSetTest {
 		assertFalse(u.contains("y"));
 	}
 
-	@Test
 	public void testIterator() {
-		PSet<String> e = ArrayPSet.empty();
 		Iterator<String> i = e.iterator();
 		assertFalse(i.hasNext());
 		i = u.iterator();
@@ -179,19 +212,35 @@ public class ArrayPSetTest {
 		assertFalse(i.hasNext());
 	}
 
-	@Test(expected = UnsupportedOperationException.class)
 	public void testIterator1() {
-		Iterator<String> i = u.iterator();
-		i.remove();
+		try {
+			Iterator<String> i = u.iterator();
+			i.remove();
+			fail();
+		} catch (UnsupportedOperationException e) {
+			// exception is expected
+		}
 	}
 
-	@Test
 	public void testHashCode() {
 		assertEquals(0, ArrayPSet.empty().hashCode());
 		PSet<String> other = ArrayPSet.empty();
 		other = other.plus("a").plus("b").plus("c").plus("d");
-		assertTrue(u.equals(other));
-		assertTrue(other.equals(u));
+		assertEquals(u, other);
+		assertEquals(other, u);
 		assertEquals(u.hashCode(), other.hashCode());
+
+		HashSet<String> v = new HashSet<String>();
+		assertEquals(e, v);
+		assertEquals(v, e);
+		assertEquals(v.hashCode(), e.hashCode());
+
+		v.add("a");
+		v.add("b");
+		v.add("c");
+		v.add("d");
+		assertEquals(v, u);
+		assertEquals(u, v);
+		assertEquals(v.hashCode(), u.hashCode());
 	}
 }

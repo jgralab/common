@@ -27,6 +27,7 @@ public final class ArrayPMap<K, V> implements PMap<K, V>,
 
 	private ArrayPSet<K> keys;
 	private ArrayPVector<V> values;
+	private int hashCode = 0;
 
 	private ArrayPMap(PSet<K> keys, PVector<V> values) {
 		this.keys = (ArrayPSet<K>) keys;
@@ -35,7 +36,12 @@ public final class ArrayPMap<K, V> implements PMap<K, V>,
 
 	@Override
 	public int hashCode() {
-		return keys.hashCode() ^ values.hashCode();
+		if (hashCode == 0 && size() > 0) {
+			for (Map.Entry<K, V> entry : entrySet()) {
+				hashCode += entry.hashCode();
+			}
+		}
+		return hashCode;
 	}
 
 	@Override

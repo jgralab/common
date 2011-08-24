@@ -25,6 +25,7 @@ public final class ArrayPSet<E> implements PSet<E>, Serializable {
 	private static final int SIZELIMIT = 10;
 	transient private SoftReference<HashSet<E>> entrySet;
 	private PVector<E> entries;
+	private int hashCode;
 
 	private ArrayPSet(PVector<E> entries) {
 		this.entries = entries;
@@ -52,7 +53,12 @@ public final class ArrayPSet<E> implements PSet<E>, Serializable {
 
 	@Override
 	public int hashCode() {
-		return entries.hashCode();
+		if (hashCode == 0 && size() > 0) {
+			for (E item : entries) {
+				hashCode += item.hashCode();
+			}
+		}
+		return hashCode;
 	}
 
 	@Override
@@ -63,11 +69,11 @@ public final class ArrayPSet<E> implements PSet<E>, Serializable {
 			return true;
 		}
 		@SuppressWarnings("unchecked")
-		Set<? extends E> o = (Set<? extends E>) obj;
-		if (o.size() != entries.size()) {
+		Set<? extends E> other = (Set<? extends E>) obj;
+		if (other.size() != entries.size()) {
 			return false;
 		}
-		for (E item : o) {
+		for (E item : other) {
 			if (!contains(item)) {
 				return false;
 			}

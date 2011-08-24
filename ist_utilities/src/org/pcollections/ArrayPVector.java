@@ -59,12 +59,12 @@ public final class ArrayPVector<E> implements PVector<E>, Serializable {
 		if (obj instanceof ArrayPVector) {
 			// use efficient iteration
 			@SuppressWarnings("unchecked")
-			ArrayPVector<? extends E> o = (ArrayPVector<? extends E>) obj;
-			if (count != o.count) {
+			ArrayPVector<? extends E> other = (ArrayPVector<? extends E>) obj;
+			if (count != other.count) {
 				return false;
 			}
 			for (int i = 0; i < count; ++i) {
-				if (!value[offset + i].equals(o.value[o.offset + i])) {
+				if (!value[offset + i].equals(other.value[other.offset + i])) {
 					return false;
 				}
 			}
@@ -72,13 +72,13 @@ public final class ArrayPVector<E> implements PVector<E>, Serializable {
 		} else {
 			// use list iteration
 			@SuppressWarnings("unchecked")
-			List<? extends E> o = (List<? extends E>) obj;
-			if (o.size() != count) {
+			List<? extends E> other = (List<? extends E>) obj;
+			if (other.size() != count) {
 				return false;
 			}
 			int i = 0;
-			for (E item : o) {
-				if (!value[offset + i].equals(item)) {
+			for (E item : other) {
+				if (!value[offset + i++].equals(item)) {
 					return false;
 				}
 			}
@@ -88,10 +88,10 @@ public final class ArrayPVector<E> implements PVector<E>, Serializable {
 
 	@Override
 	public int hashCode() {
-		if (hashCode == 0 && count > 0) {
-			hashCode = offset ^ count;
+		if (hashCode == 0) {
+			hashCode = 1;
 			for (int i = 0; i < count; ++i) {
-				hashCode ^= value[offset + i].hashCode();
+				hashCode = 31 * hashCode + value[offset + i].hashCode();
 			}
 		}
 		return hashCode;
@@ -387,9 +387,28 @@ public final class ArrayPVector<E> implements PVector<E>, Serializable {
 	}
 
 	@Override
-	public ArrayPVector<E> plusAll(int i, Collection<? extends E> l) {
-		// insert l at index i
-		throw new UnsupportedOperationException("Not yet implemented");
+	public ArrayPVector<E> plusAll(int idx, Collection<? extends E> l) {
+		// insert l at (i.e. before) index i
+		if (idx < 0 || idx > count) {
+			throw new IndexOutOfBoundsException();
+		}
+		if (l.isEmpty()) {
+			return this;
+		}
+		int n = count + l.size();
+		@SuppressWarnings("unchecked")
+		E[] val = (E[]) new Object[n];
+		if (idx > 0) {
+			System.arraycopy(value, 0, val, 0, idx);
+		}
+		int i = idx;
+		for (E item : l) {
+			val[i++] = item;
+		}
+		if (idx < count) {
+			System.arraycopy(value, idx, val, n - count + idx, count - idx);
+		}
+		return new ArrayPVector<E>(val, 0, n);
 	}
 
 	@Override
