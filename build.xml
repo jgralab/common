@@ -27,7 +27,7 @@
 
 	<target name="compile">
 		<mkdir dir="${classes.dir}" />
-		<javac fork="true" srcdir="${src.dir}" includes="${compileincludes}" excludes="${compileexcludes}" destdir="${classes.dir}" memoryinitialsize="512m" memorymaximumsize="512m" classpathref="classpath" debug="${debug}" target="${javac.targetVM}">
+		<javac fork="true" srcdir="${src.dir}" includes="${compileincludes}" excludes="${compileexcludes}" destdir="${classes.dir}" memoryinitialsize="512m" memorymaximumsize="512m" classpathref="classpath" debug="${debug}" target="${javac.targetVM}" includeantruntime="false">
 		</javac>
 	</target>
 

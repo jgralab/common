@@ -4,8 +4,8 @@
 
 
 	<!-- global project specific properties; if empty, they have to be overridden by specializations -->
-	<!-- the name of the project -->
-	<property name="projectname" value="" />
+	<!-- the name of the project - MUST BE CHANGED, THIS VALUE "common" IS ONLY THERE TO AVOID WARNINGS! -->
+	<property name="projectname" value="common" />
 
 	<!-- project's base package; if it is a project from the University of Koblenz, this property should remain as it is,
 	     it should be changed for 3rd party projects -->
@@ -98,6 +98,8 @@
 		     not be placed in the project specific library directory -->
 		<path refid="classpathExtension" />
 	</path>
+
+	<path id="classpathExtension" />
 
 	<path id="testclasspath">
 		<path refid="classpath" />
