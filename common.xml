@@ -108,11 +108,9 @@
 
 	<path id="ant_classpath">
 		<path refid="classpath" />
-		<fileset dir="${comlib.dir}/ist_utilities" includes="*.jar" />
-		<fileset dir="${comlib.dir}/pcollections" includes="*.jar" />
-		<fileset dir="${comlib.dir}/apache/ant/" includes="**/*.jar" />
-		<fileset dir="${comlib.dir}/svnkit/" includes="**/*.jar" />
+		<fileset dir="${comlib.dir}/" includes="**/*.jar" />
 	</path>
+
 
 	<!-- properties for the target "compile" -->
 	<!-- includes for compiling sources -->
