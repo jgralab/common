@@ -26,7 +26,6 @@ package de.uni_koblenz.ist.utilities.csvreader;
 
 import java.io.IOException;
 import java.io.LineNumberReader;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,8 +57,6 @@ import java.util.regex.Pattern;
  * @author riediger
  */
 public class CsvReader {
-	private PrintWriter logger;
-
 	/**
 	 * Constant for the constructor to indicate that no headline is contained in
 	 * the CSV file.
@@ -206,58 +203,58 @@ public class CsvReader {
 	 *             throws one
 	 */
 	public boolean readRecord() throws IOException {
-		String line = reader.readLine(); // read one line or throw IOException
-		// System.out.println(System.currentTimeMillis() + " " + line);
-		if (line == null) {
-			if (logger != null) {
-				logger.close();
+		while (true) {
+			String line = reader.readLine(); // read one line or throw
+												// IOException
+			// System.out.println(System.currentTimeMillis() + " " + line);
+			if (line == null) {
+				return false;
 			}
-			logger = null;
-			return false;
-		}
-		if (logger != null) {
-			logger.println(line);
-		}
 
-		if (commentLine.matcher(line).matches()) {
-			// if comment, try again
-			return readRecord();
-		}
-		// not EOF, so create a new result record
-		currentRecord.clear();
+			if (commentLine.matcher(line).matches()) {
+				// if comment, try again
+				continue;
+			}
+			// not EOF, so create a new result record
+			currentRecord.clear();
 
-		// take line apart into tokens
-		// separators and quote character are also returned as tokens
-		StringTokenizer st = new StringTokenizer(line, separators + quote, true);
+			// take line apart into tokens
+			// separators and quote character are also returned as tokens
+			StringTokenizer st = new StringTokenizer(line, separators + quote,
+					true);
 
-		StringBuilder field = new StringBuilder(); // temporary for one input
-													// field
+			StringBuilder field = new StringBuilder(); // temporary for one
+														// input
+														// field
 
-		while (st.hasMoreTokens()) {
-			String s = st.nextToken();
+			while (st.hasMoreTokens()) {
+				String s = st.nextToken();
 
-			// each token is one of three kinds:
-			// 1) the quote character, then the next token is handled as 3) if
-			// one exists
-			// 2) a separator, then the field is added to the output record
-			// 3) an ordinary token, then it is appended to the current field
-			if (quoting && s.equals(quote)) {
-				if (st.hasMoreTokens()) {
-					s = st.nextToken();
+				// each token is one of three kinds:
+				// 1) the quote character, then the next token is handled as 3)
+				// if
+				// one exists
+				// 2) a separator, then the field is added to the output record
+				// 3) an ordinary token, then it is appended to the current
+				// field
+				if (quoting && s.equals(quote)) {
+					if (st.hasMoreTokens()) {
+						s = st.nextToken();
+						field.append(s);
+					}
+				} else if (separators.indexOf(s) >= 0) {
+					currentRecord.add(removeStringDelimiters(field));
+					field = new StringBuilder();
+				} else {
 					field.append(s);
 				}
-			} else if (separators.indexOf(s) >= 0) {
-				currentRecord.add(removeStringDelimiters(field));
-				field = new StringBuilder();
-			} else {
-				field.append(s);
 			}
-		}
 
-		// add last field (could be the only one if the line contains no
-		// seperators nor quotes)
-		currentRecord.add(removeStringDelimiters(field));
-		return true;
+			// add last field (could be the only one if the line contains no
+			// seperators nor quotes)
+			currentRecord.add(removeStringDelimiters(field));
+			return true;
+		}
 	}
 
 	public String removeStringDelimiters(StringBuilder field) {

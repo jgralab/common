@@ -7,18 +7,23 @@ import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FilenameFilter;
 import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.filechooser.FileFilter;
 
 @SuppressWarnings("serial")
 public abstract class SwingApplication extends JFrame {
@@ -426,5 +431,95 @@ public abstract class SwingApplication extends JFrame {
 
 	public StatusBar getStatusBar() {
 		return statusBar;
+	}
+
+	public static class FileDialog {
+		private File lastDir;
+		private String appName;
+
+		public FileDialog(String appName) {
+			this.appName = appName;
+		}
+
+		public File showFileOpenDialog(JFrame parent, final String title,
+				final String extension, final String documentName) {
+			File selectedFile = null;
+			if (RUNS_ON_MAC_OS_X) {
+				java.awt.FileDialog fd = new java.awt.FileDialog(parent, title,
+						java.awt.FileDialog.LOAD);
+				fd.setFilenameFilter(new FilenameFilter() {
+					@Override
+					public boolean accept(File dir, String name) {
+						File f = new File(dir, name);
+						return f.canRead() && name.endsWith(extension);
+					}
+				});
+				fd.setModal(true);
+				fd.setVisible(true);
+				if (fd.getFile() != null) {
+					String name = fd.getDirectory() + fd.getFile();
+					selectedFile = new File(name);
+				}
+			} else {
+				JFileChooser jfc = new JFileChooser(lastDir);
+				jfc.setDialogTitle(title);
+				jfc.setFileFilter(new FileFilter() {
+
+					@Override
+					public String getDescription() {
+						return documentName;
+					}
+
+					@Override
+					public boolean accept(File f) {
+						return f.isDirectory() || f.canRead() && f.isFile()
+								&& f.getAbsolutePath().endsWith(extension);
+					}
+				});
+				if (jfc.showOpenDialog(parent) == JFileChooser.APPROVE_OPTION) {
+					File f = jfc.getSelectedFile();
+					if (f.isFile()) {
+						selectedFile = f;
+					}
+				}
+				lastDir = jfc.getCurrentDirectory();
+			}
+			return selectedFile;
+		}
+
+		public File showFileSaveAsDialog(JFrame parent, final String title,
+				final String extension, File oldFile) {
+			java.awt.FileDialog fd = new java.awt.FileDialog(parent, title,
+					java.awt.FileDialog.SAVE);
+			fd.setFilenameFilter(new FilenameFilter() {
+				@Override
+				public boolean accept(File dir, String name) {
+					File f = new File(dir, name);
+					return f.canRead() && f.canWrite()
+							&& name.endsWith(extension);
+				}
+			});
+			fd.setModal(true);
+			fd.setVisible(true);
+			if (fd.getFile() != null) {
+				String name = fd.getDirectory() + fd.getFile();
+				if (!name.endsWith(extension)) {
+					name += extension;
+				}
+				File f = new File(name);
+				System.out.println(f);
+				if (f.exists()) {
+					if (JOptionPane.showConfirmDialog(parent,
+							"File " + f.getName() + " exists. Overwrite?",
+							appName, JOptionPane.YES_NO_CANCEL_OPTION,
+							JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+						return f;
+					}
+				} else if (!f.exists() && f.getParentFile().canWrite()) {
+					return f;
+				}
+			}
+			return null;
+		}
 	}
 }
