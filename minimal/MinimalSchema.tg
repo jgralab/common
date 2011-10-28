@@ -1,5 +1,0 @@
-TGraph 2;
-Schema de.uni_koblenz.minimal.schema.MinimalSchema;
-GraphClass MinimalGraph;
-VertexClass Node {label: String};
-EdgeClass Link from Node (0,*) role source to Node (0,*) role target;
