@@ -55,7 +55,7 @@ public abstract class SwingApplication extends JFrame {
 
 	private boolean modified;
 	private JMenuBar menuBar;
-	private JPanel toolBar;
+	protected JPanel toolBar;
 	private JPanel contentPanel;
 	private StatusBar statusBar;
 	protected int menuEventMask;

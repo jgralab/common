@@ -288,10 +288,6 @@
 		<taskdef name="rsa2tg" classname="de.uni_koblenz.jgralab.utilities.ant.Rsa2TgTask" classpath="${jgralab.location}" />
 	</target>
 
-	<target name="revisionAntTasks">
-		<taskdef name="get_revision" classname="de.uni_koblenz.ist.utilities.revision_task.RetrieveRevision" classpathref="ant_classpath" />
-	</target>
-
 	<!-- Converts an xmi schema to tg if an xmi schema file has been specified -->
 	<target name="convertschema" depends="customAntTasks" if="xmi.schema.file">
 		<rsa2tg xmifile="${xmi.schema.file}" schemafile="${schema.file}" useFromRole="${rsa2tg.f}" removeUnusedDomains="${rsa2tg.u}" useNavigability="${rsa2tg.n}" />
