@@ -108,12 +108,6 @@
 		<fileset dir="${comlib.dir}/junit" includes="*.jar" />
 	</path>
 
-	<path id="ant_classpath">
-		<path refid="classpath" />
-		<fileset dir="${comlib.dir}/" includes="**/*.jar" />
-	</path>
-
-
 	<!-- properties for the target "compile" -->
 	<!-- includes for compiling sources -->
 	<property name="compileincludes" value="" />
