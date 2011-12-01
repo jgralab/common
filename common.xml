@@ -326,16 +326,9 @@
 		</unjar>
 	</target>
 
-	<target name="create_manifest">
-		<mkdir dir="${manifest.dir}" />
-		<manifest file="${manifest.file}" mode="update">
-			<attribute name="Main-Class" value="${main.fq}" />
-		</manifest>
-	</target>
-
 	<!-- jar -->
 	<!-- makes executable jar file out of all classes in ${classes.dir} and puts jar file into ${jar.dir}-->
-	<target name="jar" depends="unjar,create_manifest">
+	<target name="jar" depends="unjar">
 		<mkdir dir="${jar.dir}" />
 		<mkdir dir="${classes.dir}" />
 		<mkdir dir="${tmp.dir}" />
@@ -350,11 +343,6 @@
 		<jar destfile="${jar.dir}/${projectname}.jar" basedir="${tmp.dir}" update="true" compress="true" filesetmanifest="skip" />
 
 		<delete dir="${tmp.dir}" />
-		<antcall target="delete_manifest" inheritall="true" />
-	</target>
-
-	<target name="delete_manifest" unless="keep_manifest">
-		<delete dir="${manifest.dir}" />
 	</target>
 
 	<!-- sourcejar -->
