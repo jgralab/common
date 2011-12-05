@@ -248,7 +248,8 @@
 			excludes="${compileexcludes}" destdir="${classes.dir}"
 			memoryinitialsize="${minmemsize}" memorymaximumsize="${maxmemsize}" 
 			classpathref="classpath" includeantruntime="false"
-			debug="${debug}" debuglevel="${debuglevel}" target="${javac.targetVM}">
+			debug="${debug}" debuglevel="${debuglevel}"
+			source="${javac.targetVM}" target="${javac.targetVM}">
 			<compilerarg line="-Xlint:unchecked" />
 		</javac>
 	</target>
