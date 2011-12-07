@@ -176,7 +176,7 @@
 	<property name="resource.excludes" value="" />
 
 	<!-- location of the generated manifest file -->
-	<!--property name="keep_manifest" value="false" /-->
+	<!--property name="manifest_static" value="false" /-->
 	<property name="manifest.dir" value="${project.dir}/META-INF/" />
 	<property name="manifest.file" value="${manifest.dir}/MANIFEST.MF" />
 
@@ -210,7 +210,7 @@
 
 	<!-- build -->
 	<target name="build" depends="jgralab,clean,compile,jar" />
-
+	
 	<!-- clean -->
 	<!-- deletes all classes, the jar and the temporary files -->
 	<!-- TODO add cleaning of generated schema files -->
@@ -326,10 +326,17 @@
 			<fileset dir="${comlib.dir}/ist_utilities/" includes="**/*.jar" />
 		</unjar>
 	</target>
+	
+	<target name="create_manifest" unless="manifest.static">
+		<mkdir dir="${manifest.dir}" />
+		<manifest file="${manifest.file}">
+			<attribute name="Main-Class" value="${main.fq}" />
+		</manifest>
+	</target>
 
 	<!-- jar -->
 	<!-- makes executable jar file out of all classes in ${classes.dir} and puts jar file into ${jar.dir}-->
-	<target name="jar" depends="unjar">
+	<target name="jar" depends="unjar,create_manifest">
 		<mkdir dir="${jar.dir}" />
 		<mkdir dir="${classes.dir}" />
 		<mkdir dir="${tmp.dir}" />
@@ -344,6 +351,11 @@
 		<jar destfile="${jar.dir}/${projectname}.jar" basedir="${tmp.dir}" update="true" compress="true" filesetmanifest="skip" />
 
 		<delete dir="${tmp.dir}" />
+		<antcall target="delete_manifest" />
+	</target>
+	
+	<target name="delete_manifest" unless="manifest.static">
+		<delete dir="${manifest.dir}" />
 	</target>
 
 	<!-- sourcejar -->
