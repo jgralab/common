@@ -323,6 +323,11 @@
 				<exclude name="META-INF/**" />
 			</patternset>
 		</unjar>
+		<taskdef name="preserve-meta" classname="de.uni_koblenz.jgralab.utilities.ant.PreserveOtherMetaInfo" classpathref="classpath" />
+		<preserve-meta metaDir="${tmp.dir}/META-INF/">
+			<fileset dir="${lib.dir}" includes="**/*.jar" excludes="${unjarexcludes}" />
+			<fileset dir="${comlib.dir}/ist_utilities/" includes="**/*.jar" />
+		</preserve-meta>
 	</target>
 
 	<target name="create_manifest" unless="manifest.static">
