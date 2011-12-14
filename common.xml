@@ -210,7 +210,7 @@
 
 	<!-- build -->
 	<target name="build" depends="jgralab,clean,compile,jar" />
-	
+
 	<!-- clean -->
 	<!-- deletes all classes, the jar and the temporary files -->
 	<!-- TODO add cleaning of generated schema files -->
@@ -236,7 +236,7 @@
 	<target name="deleteConvertedSchemaFile" if="xmi.schema.file">
 		<delete file="${schema.file}" />
 	</target>
-	
+
 	<target name="createClassesDir">
 		<mkdir dir="${classes.dir}" />
 	</target>
@@ -244,12 +244,7 @@
 	<!-- compile -->
 	<!-- compiles all Java sources in $src.dir and puts teh generated classes into $classes.dir-->
 	<target name="compile" depends="createClassesDir,generateschema">
-		<javac fork="true" srcdir="${src.dir}" includes="${compileincludes}" 
-			excludes="${compileexcludes}" destdir="${classes.dir}"
-			memoryinitialsize="${minmemsize}" memorymaximumsize="${maxmemsize}" 
-			classpathref="classpath" includeantruntime="false"
-			debug="${debug}" debuglevel="${debuglevel}"
-			source="${javac.targetVM}" target="${javac.targetVM}">
+		<javac fork="true" srcdir="${src.dir}" includes="${compileincludes}" excludes="${compileexcludes}" destdir="${classes.dir}" memoryinitialsize="${minmemsize}" memorymaximumsize="${maxmemsize}" classpathref="classpath" includeantruntime="false" debug="${debug}" debuglevel="${debuglevel}" source="${javac.targetVM}" target="${javac.targetVM}">
 			<compilerarg line="-Xlint:unchecked" />
 		</javac>
 	</target>
@@ -324,9 +319,12 @@
 		<unjar dest="${tmp.dir}">
 			<fileset dir="${lib.dir}" includes="**/*.jar" excludes="${unjarexcludes}" />
 			<fileset dir="${comlib.dir}/ist_utilities/" includes="**/*.jar" />
+			<patternset>
+				<exclude name="META-INF/**" />
+			</patternset>
 		</unjar>
 	</target>
-	
+
 	<target name="create_manifest" unless="manifest.static">
 		<mkdir dir="${manifest.dir}" />
 		<manifest file="${manifest.file}">
@@ -353,7 +351,7 @@
 		<delete dir="${tmp.dir}" />
 		<antcall target="delete_manifest" />
 	</target>
-	
+
 	<target name="delete_manifest" unless="manifest.static">
 		<delete dir="${manifest.dir}" />
 	</target>
