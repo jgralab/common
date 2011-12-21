@@ -316,18 +316,18 @@
 	<!-- unpacks the libs in $lib.dir and the ist_utilities -->
 	<target name="unjar" unless="unjar.disabled">
 		<mkdir dir="${tmp.dir}" />
-		<unjar dest="${tmp.dir}">
+		<!--unjar dest="${tmp.dir}">
 			<fileset dir="${lib.dir}" includes="**/*.jar" excludes="${unjarexcludes}" />
 			<fileset dir="${comlib.dir}/ist_utilities/" includes="**/*.jar" />
 			<patternset>
 				<exclude name="META-INF/**" />
 			</patternset>
-		</unjar>
-		<taskdef name="preserve-meta" classname="de.uni_koblenz.jgralab.utilities.ant.PreserveOtherMetaInfo" classpathref="classpath" />
-		<preserve-meta metaDir="${tmp.dir}/META-INF/">
+		</unjar-->
+		<taskdef name="unjar_mp" classname="de.uni_koblenz.jgralab.utilities.ant.MetaDataPreservingUnjar" classpathref="classpath" />
+		<unjar_mp dest="${tmp.dir}/">
 			<fileset dir="${lib.dir}" includes="**/*.jar" excludes="${unjarexcludes}" />
 			<fileset dir="${comlib.dir}/ist_utilities/" includes="**/*.jar" />
-		</preserve-meta>
+		</unjar_mp>
 	</target>
 
 	<target name="create_manifest" unless="manifest.static">
@@ -336,6 +336,8 @@
 			<attribute name="Main-Class" value="${main.fq}" />
 		</manifest>
 	</target>
+	
+	<!-- TODO create target merge_manifest -->
 
 	<!-- jar -->
 	<!-- makes executable jar file out of all classes in ${classes.dir} and puts jar file into ${jar.dir}-->
