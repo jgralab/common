@@ -179,6 +179,7 @@
 	<!--property name="manifest_static" value="false" /-->
 	<property name="manifest.dir" value="${project.dir}/META-INF/" />
 	<property name="manifest.file" value="${manifest.dir}/MANIFEST.MF" />
+	<property name="manifest.tmp.file" value="${build.dir}/MANIFEST.MF" />
 
 	<!-- properties for the target "run" -->
 	<!-- run arguments; the arguments passed to the java program -->
@@ -337,24 +338,30 @@
 		</manifest>
 	</target>
 	
+	<target name="merge_manifest" >
+		<copy file="${manifest.file}" tofile="${manifest.tmp.file}" />
+		<taskdef name="merge_manifest" classname="de.uni_koblenz.jgralab.utilities.ant.MergeManifest" classpathref="classpath" />
+		<merge_manifest dest="${tmp.dir}" manifest="${manifest.tmp.file}" />
+	</target>
+	
 	<!-- TODO create target merge_manifest -->
 
 	<!-- jar -->
 	<!-- makes executable jar file out of all classes in ${classes.dir} and puts jar file into ${jar.dir}-->
-	<target name="jar" depends="unjar,create_manifest">
+	<target name="jar" depends="unjar,create_manifest,merge_manifest">
 		<mkdir dir="${jar.dir}" />
 		<mkdir dir="${classes.dir}" />
 		<mkdir dir="${tmp.dir}" />
 
 		<!-- include classes -->
-		<jar destfile="${jar.dir}/${projectname}.jar" basedir="${classes.dir}" compress="true" manifest="${manifest.file}" />
+		<jar destfile="${jar.dir}/${projectname}.jar" basedir="${classes.dir}" compress="true" manifest="${manifest.tmp.file}" />
 
 		<!-- include ressources (all non-java files in ${src.dir})-->
 		<jar destfile="${jar.dir}/${projectname}.jar" basedir="${src.dir}" update="true" compress="true" filesetmanifest="skip" excludes="**/*.java ${resource.excludes}" />
 
 		<!-- include temporary files, e.g. from unjar -->
 		<jar destfile="${jar.dir}/${projectname}.jar" basedir="${tmp.dir}" update="true" compress="true" filesetmanifest="skip" />
-
+		<delete file="${manifest.tmp.file}"/>
 		<delete dir="${tmp.dir}" />
 		<antcall target="delete_manifest" />
 	</target>
