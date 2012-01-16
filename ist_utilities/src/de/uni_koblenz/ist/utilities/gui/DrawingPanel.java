@@ -112,6 +112,7 @@ public class DrawingPanel extends JComponent {
 		double x = p.x;
 		double y = p.y;
 		Insets i = getInsets();
+
 		Dimension size = getSize();
 		size.width -= i.left + i.right;
 		size.height -= i.top + i.bottom;
