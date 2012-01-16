@@ -4,10 +4,9 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 import java.awt.geom.Rectangle2D;
 
 import javax.swing.BoundedRangeModel;
@@ -67,16 +66,16 @@ public class DrawingPanel extends JComponent {
 				setScale(zoomToScale(zoomLevelModel.getValue()));
 			}
 		});
-		addMouseMotionListener(new MouseMotionListener() {
-			public void mouseMoved(MouseEvent e) {
-			}
-
-			public void mouseDragged(MouseEvent e) {
-				// The user is dragging us, so scroll!
-				Rectangle r = new Rectangle(e.getX(), e.getY(), 1, 1);
-				scrollRectToVisible(r);
-			}
-		});
+		// addMouseMotionListener(new MouseMotionListener() {
+		// public void mouseMoved(MouseEvent e) {
+		// }
+		//
+		// public void mouseDragged(MouseEvent e) {
+		// // The user is dragging us, so scroll!
+		// Rectangle r = new Rectangle(e.getX(), e.getY(), 1, 1);
+		// scrollRectToVisible(r);
+		// }
+		// });
 		setBackground(UIManager.getColor("Panel.background"));
 	}
 
@@ -109,6 +108,35 @@ public class DrawingPanel extends JComponent {
 		paintContent(g2);
 	}
 
+	public Point screenToModel(Point p) {
+		double x = p.x;
+		double y = p.y;
+		Insets i = getInsets();
+		Dimension size = getSize();
+		size.width -= i.left + i.right;
+		size.height -= i.top + i.bottom;
+
+		x -= i.top;
+		y -= i.top;
+
+		if (centerDrawing) {
+			x -= size.width / 2.0;
+			y -= size.height / 2.0;
+		} else {
+			y -= positiveYAxis ? 0 : size.height;
+		}
+
+		x /= scale * pixelPerUnit;
+		y /= (positiveYAxis ? scale : -scale) * pixelPerUnit;
+
+		if (centerDrawing) {
+			x -= -boundingBox.getWidth() / 2;
+			y -= -boundingBox.getHeight() / 2;
+		}
+
+		return new Point((int) x, (int) y);
+	}
+
 	protected void paintContent(Graphics2D g2) {
 	}
 
@@ -125,7 +153,7 @@ public class DrawingPanel extends JComponent {
 	}
 
 	public void setBoundingBox(Rectangle2D bbx) {
-		this.boundingBox = bbx;
+		boundingBox = bbx;
 		calculatePreferredSize();
 	}
 
