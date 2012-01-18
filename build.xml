@@ -45,6 +45,11 @@
 		<jar destfile="${jar.dir}/${projectname}.jar" basedir="${classes.dir}" compress="true">
 			<manifest>
 				<attribute name="Main-Class" value="de.uni_koblenz.${projectname}.${main}" />
+				<section name="de/uni_koblenz/ist/utilities/">
+					<attribute name="Implementation-Title" value ="IST Utilities"/>
+					<attribute name="Implementation-Version" value="1.2" />
+					<attribute name="Implementation-Vendor" value="University of Koblenz, Institute for Software Technology" />
+				</section>
 			</manifest>
 		</jar>
 	</target>
