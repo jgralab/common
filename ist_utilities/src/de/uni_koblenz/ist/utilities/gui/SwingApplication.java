@@ -10,6 +10,8 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.lang.reflect.InvocationTargetException;
+import java.text.MessageFormat;
+import java.util.ResourceBundle;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -60,8 +62,14 @@ public abstract class SwingApplication extends JFrame {
 	private StatusBar statusBar;
 	protected int menuEventMask;
 
-	public SwingApplication(String title) {
-		super(title);
+	protected ResourceBundle messages;
+
+	public SwingApplication(ResourceBundle messages, String titleKey) {
+		super(messages.getString(titleKey));
+	}
+
+	public String getString(String key) {
+
 	}
 
 	public void initializeApplication() {
@@ -113,7 +121,7 @@ public abstract class SwingApplication extends JFrame {
 	}
 
 	protected void createActions() {
-		fileNewAction = new AbstractAction("New ...") {
+		fileNewAction = new AbstractAction(messages.getString("SwingApplication.Action.File.New")"New ...") {
 			{
 				putValue(AbstractAction.ACCELERATOR_KEY,
 						KeyStroke.getKeyStroke(KeyEvent.VK_N, menuEventMask));
@@ -248,7 +256,8 @@ public abstract class SwingApplication extends JFrame {
 			}
 		};
 
-		helpAboutAction = new AbstractAction("About " + getTitle() + " ...") {
+		helpAboutAction = new AbstractAction(MessageFormat.format(
+				"About {0} ...", getTitle())) {
 			public void actionPerformed(ActionEvent e) {
 				helpAbout();
 			}
@@ -510,8 +519,9 @@ public abstract class SwingApplication extends JFrame {
 				System.out.println(f);
 				if (f.exists()) {
 					if (JOptionPane.showConfirmDialog(parent,
-							"File " + f.getName() + " exists. Overwrite?",
-							appName, JOptionPane.YES_NO_CANCEL_OPTION,
+							MessageFormat.format("File {0} exists. Overwrite?",
+									f.getName()), appName,
+							JOptionPane.YES_NO_CANCEL_OPTION,
 							JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
 						return f;
 					}
