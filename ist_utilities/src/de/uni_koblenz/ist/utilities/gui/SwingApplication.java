@@ -38,6 +38,8 @@ public abstract class SwingApplication extends JFrame {
 			.toLowerCase().startsWith("mac os x");
 
 	protected JMenu fileMenu;
+	protected JMenu recentFilesMenu;
+	protected Action fileClearRecentFilesList;
 	protected Action fileNewAction;
 	protected Action fileOpenAction;
 	protected Action fileSaveAction;
@@ -139,6 +141,14 @@ public abstract class SwingApplication extends JFrame {
 	}
 
 	protected void createActions() {
+		fileClearRecentFilesList = new AbstractAction(getMessage(
+				"Application.Action.File.ClearRecentFiles", "Clear list")) {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				fileClearRecentFiles();
+			}
+		};
+
 		fileNewAction = new AbstractAction(getMessage(
 				"Application.Action.File.New", "New ...")) {
 			{
@@ -286,7 +296,8 @@ public abstract class SwingApplication extends JFrame {
 			}
 		};
 
-		editPreferencesAction = new AbstractAction("Einstellungen") {
+		editPreferencesAction = new AbstractAction(getMessage(
+				"Application.Action.Edit.Settings", "Settings")) {
 			{
 				putValue(AbstractAction.ACCELERATOR_KEY,
 						KeyStroke
@@ -309,9 +320,14 @@ public abstract class SwingApplication extends JFrame {
 	}
 
 	protected JMenuBar createMenuBar() {
+		recentFilesMenu = new JMenu(getMessage(
+				"Application.Menu.File.RecentFiles", "Recent files"));
+		recentFilesMenu.addSeparator();
+		recentFilesMenu.add(fileClearRecentFilesList);
 		fileMenu = new JMenu(getMessage("Application.Menu.File", "File"));
 		fileMenu.add(fileNewAction);
 		fileMenu.add(fileOpenAction);
+		fileMenu.add(recentFilesMenu);
 		fileMenu.addSeparator();
 		fileMenu.add(fileCloseAction);
 		fileMenu.add(fileSaveAction);
@@ -390,11 +406,19 @@ public abstract class SwingApplication extends JFrame {
 
 	}
 
+	protected void fileClearRecentFiles() {
+
+	}
+
 	protected void fileNew() {
 
 	}
 
 	protected void fileOpen() {
+
+	}
+
+	public void fileOpenRecent(RecentFilesList recentFilesList, String filename) {
 
 	}
 
@@ -532,7 +556,13 @@ public abstract class SwingApplication extends JFrame {
 					}
 				});
 				fd.setModal(true);
+				if (RUNS_ON_MAC_OS_X) {
+					menuBar.setEnabled(false);
+				}
 				fd.setVisible(true);
+				if (RUNS_ON_MAC_OS_X) {
+					menuBar.setEnabled(true);
+				}
 				if (fd.getFile() != null) {
 					String name = fd.getDirectory() + fd.getFile();
 					selectedFile = new File(name);
@@ -577,7 +607,13 @@ public abstract class SwingApplication extends JFrame {
 				}
 			});
 			fd.setModal(true);
+			if (RUNS_ON_MAC_OS_X) {
+				menuBar.setEnabled(false);
+			}
 			fd.setVisible(true);
+			if (RUNS_ON_MAC_OS_X) {
+				menuBar.setEnabled(true);
+			}
 			if (fd.getFile() != null) {
 				String name = fd.getDirectory() + fd.getFile();
 				if (!name.endsWith(extension)) {
@@ -603,4 +639,5 @@ public abstract class SwingApplication extends JFrame {
 			return null;
 		}
 	}
+
 }
