@@ -53,6 +53,8 @@ public abstract class SwingApplication extends JFrame {
 	protected Action editCutAction;
 	protected Action editPasteAction;
 
+	protected Action editPreferencesAction;
+
 	protected JMenu helpMenu;
 	protected Action helpAboutAction;
 
@@ -66,7 +68,7 @@ public abstract class SwingApplication extends JFrame {
 	private ResourceBundle messages;
 
 	public SwingApplication(ResourceBundle messages) {
-		super(messages.getString("Application.title"));
+		super(messages.getString("Application.mainwindow.title"));
 		this.messages = messages;
 	}
 
@@ -284,6 +286,19 @@ public abstract class SwingApplication extends JFrame {
 			}
 		};
 
+		editPreferencesAction = new AbstractAction("Einstellungen") {
+			{
+				putValue(AbstractAction.ACCELERATOR_KEY,
+						KeyStroke
+								.getKeyStroke(KeyEvent.VK_COMMA, menuEventMask));
+				setEnabled(true);
+			}
+
+			public void actionPerformed(ActionEvent e) {
+				editPreferences();
+			}
+		};
+
 		helpAboutAction = new AbstractAction(MessageFormat.format(
 				getMessage("Application.Action.Help.About", "About {0} ..."),
 				getTitle())) {
@@ -305,6 +320,9 @@ public abstract class SwingApplication extends JFrame {
 		fileMenu.add(filePrintAction);
 		if (RUNS_ON_MAC_OS_X) {
 			try {
+				OSXAdapter.setPreferencesHandler(this,
+						SwingApplication.class.getDeclaredMethod(
+								"editPreferences", new Class<?>[] {}));
 				OSXAdapter.setQuitHandler(this, SwingApplication.class
 						.getDeclaredMethod("fileExit", new Class<?>[] {}));
 			} catch (SecurityException e) {
@@ -326,6 +344,10 @@ public abstract class SwingApplication extends JFrame {
 		editMenu.add(editCutAction);
 		editMenu.add(editCopyAction);
 		editMenu.add(editPasteAction);
+		if (!RUNS_ON_MAC_OS_X) {
+			editMenu.addSeparator();
+			editMenu.add(editPreferencesAction);
+		}
 
 		helpMenu = new JMenu(getMessage("Application.Menu.Help", "Help"));
 		// System.out.println(helpMenu);
@@ -354,6 +376,10 @@ public abstract class SwingApplication extends JFrame {
 
 	protected ImageIcon getApplicationIcon() {
 		return null;
+	}
+
+	public String getApplicationName() {
+		return getMessage("Application.name");
 	}
 
 	protected StatusBar createStatusBar() {
@@ -408,8 +434,12 @@ public abstract class SwingApplication extends JFrame {
 
 	}
 
+	protected void editPreferences() {
+
+	}
+
 	protected boolean fileExit() {
-		if (confirmClose()) {
+		if (confirmExit()) {
 			System.exit(0);
 		}
 		return false;
@@ -420,11 +450,11 @@ public abstract class SwingApplication extends JFrame {
 
 	protected abstract Component createContent();
 
-	protected boolean confirmClose() {
-		if (!isModified()) {
-			return true;
-		}
+	protected boolean confirmExit() {
+		return false;
+	}
 
+	protected boolean confirmClose() {
 		return false;
 	}
 
@@ -479,12 +509,21 @@ public abstract class SwingApplication extends JFrame {
 			this.appName = appName;
 		}
 
+		public void setDirectory(File dir) {
+			if (dir.exists() && dir.isDirectory() && dir.canRead()) {
+				lastDir = dir;
+			}
+		}
+
 		public File showFileOpenDialog(JFrame parent, final String title,
 				final String extension, final String documentName) {
 			File selectedFile = null;
 			if (RUNS_ON_MAC_OS_X) {
 				java.awt.FileDialog fd = new java.awt.FileDialog(parent, title,
 						java.awt.FileDialog.LOAD);
+				if (lastDir != null) {
+					fd.setDirectory(lastDir.getAbsolutePath());
+				}
 				fd.setFilenameFilter(new FilenameFilter() {
 					@Override
 					public boolean accept(File dir, String name) {

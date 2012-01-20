@@ -73,9 +73,9 @@ public class FontSelectionDialog extends JDialog {
 	 *            selectable
 	 * @return the selected Font, or null if the dialog is cancelled
 	 */
-	public static Font selectFont(SwingApplication parent, Font oldFont,
-			boolean monospacedOnly) {
-		FontSelectionDialog d = new FontSelectionDialog(parent, oldFont,
+	public static Font selectFont(SwingApplication parent, String title,
+			Font oldFont, boolean monospacedOnly) {
+		FontSelectionDialog d = new FontSelectionDialog(parent, title, oldFont,
 				monospacedOnly);
 		d.setVisible(true);
 		return d.getSelectedFont();
@@ -96,9 +96,10 @@ public class FontSelectionDialog extends JDialog {
 	private final JTextField sizeField;
 	private SwingApplication app;
 
-	private FontSelectionDialog(SwingApplication parent, Font oldFont,
-			boolean monospacedOnly) {
-		super(parent, parent.getMessage("FontSelectionDialog.title")); //$NON-NLS-1$
+	private FontSelectionDialog(SwingApplication parent, String title,
+			Font oldFont, boolean monospacedOnly) {
+		super(parent, title != null ? title : parent
+				.getMessage("FontSelectionDialog.title")); //$NON-NLS-1$
 		app = parent;
 		setModal(true);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -400,10 +401,9 @@ public class FontSelectionDialog extends JDialog {
 	private void setSelectedFont() {
 		selectedFont = new Font(family, style, fontSize.getValue());
 		previewLabel.setFont(selectedFont);
-		fontNameLabel
-				.setText(MessageFormat.format(
-						app.getMessage("FontSelectionDialog.fontNameDisplay"), selectedFont //$NON-NLS-1$
-								.getName(), getStyleAsString(), getFontSize()));
+		fontNameLabel.setText(MessageFormat.format(
+				app.getMessage("FontSelectionDialog.fontNameDisplay"), //$NON-NLS-1$
+				selectedFont.getName(), getStyleAsString(), getFontSize()));
 	}
 
 	private Font getSelectedFont() {
