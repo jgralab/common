@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -30,12 +31,12 @@ import javax.swing.filechooser.FileFilter;
 
 @SuppressWarnings("serial")
 public abstract class SwingApplication extends JFrame {
-	public static boolean RUNS_ON_WINDOWS = System.getProperty("os.name")
-			.toLowerCase().startsWith("windows");
-	public static boolean RUNS_ON_LINUX = System.getProperty("os.name")
-			.toLowerCase().startsWith("linux");
-	public static boolean RUNS_ON_MAC_OS_X = System.getProperty("os.name")
-			.toLowerCase().startsWith("mac os x");
+	public static boolean RUNS_ON_WINDOWS = System.getProperty("os.name") //$NON-NLS-1$
+			.toLowerCase().startsWith("windows"); //$NON-NLS-1$
+	public static boolean RUNS_ON_LINUX = System.getProperty("os.name") //$NON-NLS-1$
+			.toLowerCase().startsWith("linux"); //$NON-NLS-1$
+	public static boolean RUNS_ON_MAC_OS_X = System.getProperty("os.name") //$NON-NLS-1$
+			.toLowerCase().startsWith("mac os x"); //$NON-NLS-1$
 
 	protected JMenu fileMenu;
 	protected JMenu recentFilesMenu;
@@ -70,7 +71,7 @@ public abstract class SwingApplication extends JFrame {
 	private ResourceBundle messages;
 
 	public SwingApplication(ResourceBundle messages) {
-		super(messages.getString("Application.mainwindow.title"));
+		super(messages.getString("Application.mainwindow.title")); //$NON-NLS-1$
 		this.messages = messages;
 	}
 
@@ -103,7 +104,7 @@ public abstract class SwingApplication extends JFrame {
 		}
 
 		if (RUNS_ON_MAC_OS_X) {
-			System.setProperty("apple.laf.useScreenMenuBar", "true");
+			System.setProperty("apple.laf.useScreenMenuBar", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 		menuEventMask = Toolkit.getDefaultToolkit().getMenuShortcutKeyMask();
@@ -142,7 +143,7 @@ public abstract class SwingApplication extends JFrame {
 
 	protected void createActions() {
 		fileClearRecentFilesList = new AbstractAction(getMessage(
-				"Application.Action.File.ClearRecentFiles", "Clear list")) {
+				"Application.Action.File.ClearRecentFiles", "Clear list")) { //$NON-NLS-1$ //$NON-NLS-2$
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				fileClearRecentFiles();
@@ -150,7 +151,7 @@ public abstract class SwingApplication extends JFrame {
 		};
 
 		fileNewAction = new AbstractAction(getMessage(
-				"Application.Action.File.New", "New ...")) {
+				"Application.Action.File.New", "New ...")) { //$NON-NLS-1$ //$NON-NLS-2$
 			{
 				putValue(AbstractAction.ACCELERATOR_KEY,
 						KeyStroke.getKeyStroke(KeyEvent.VK_N, menuEventMask));
@@ -162,7 +163,7 @@ public abstract class SwingApplication extends JFrame {
 		};
 
 		fileOpenAction = new AbstractAction(getMessage(
-				"Application.Action.File.Open", "Open ...")) {
+				"Application.Action.File.Open", "Open ...")) { //$NON-NLS-1$ //$NON-NLS-2$
 			{
 				putValue(AbstractAction.ACCELERATOR_KEY,
 						KeyStroke.getKeyStroke(KeyEvent.VK_O, menuEventMask));
@@ -174,7 +175,7 @@ public abstract class SwingApplication extends JFrame {
 		};
 
 		fileSaveAction = new AbstractAction(getMessage(
-				"Application.Action.File.Save", "Save")) {
+				"Application.Action.File.Save", "Save")) { //$NON-NLS-1$ //$NON-NLS-2$
 			{
 				putValue(AbstractAction.ACCELERATOR_KEY,
 						KeyStroke.getKeyStroke(KeyEvent.VK_S, menuEventMask));
@@ -187,7 +188,7 @@ public abstract class SwingApplication extends JFrame {
 		};
 
 		fileSaveAsAction = new AbstractAction(getMessage(
-				"Application.Action.File.SaveAs", "Save as ...")) {
+				"Application.Action.File.SaveAs", "Save as ...")) { //$NON-NLS-1$ //$NON-NLS-2$
 			{
 				putValue(AbstractAction.ACCELERATOR_KEY,
 						KeyStroke.getKeyStroke(KeyEvent.VK_S,
@@ -200,7 +201,7 @@ public abstract class SwingApplication extends JFrame {
 		};
 
 		fileCloseAction = new AbstractAction(getMessage(
-				"Application.Action.File.Close", "Close ...")) {
+				"Application.Action.File.Close", "Close ...")) { //$NON-NLS-1$ //$NON-NLS-2$
 			{
 				putValue(AbstractAction.ACCELERATOR_KEY,
 						KeyStroke.getKeyStroke(KeyEvent.VK_W, menuEventMask));
@@ -212,7 +213,7 @@ public abstract class SwingApplication extends JFrame {
 		};
 
 		filePrintAction = new AbstractAction(getMessage(
-				"Application.Action.File.Print", "Print ...")) {
+				"Application.Action.File.Print", "Print ...")) { //$NON-NLS-1$ //$NON-NLS-2$
 			{
 				putValue(AbstractAction.ACCELERATOR_KEY,
 						KeyStroke.getKeyStroke(KeyEvent.VK_P, menuEventMask));
@@ -224,7 +225,7 @@ public abstract class SwingApplication extends JFrame {
 		};
 
 		fileExitAction = new AbstractAction(getMessage(
-				"Application.Action.File.Exit", "Exit")) {
+				"Application.Action.File.Exit", "Exit")) { //$NON-NLS-1$ //$NON-NLS-2$
 			{
 				putValue(AbstractAction.ACCELERATOR_KEY,
 						KeyStroke.getKeyStroke(KeyEvent.VK_Q, menuEventMask));
@@ -236,7 +237,7 @@ public abstract class SwingApplication extends JFrame {
 		};
 
 		editUndoAction = new AbstractAction(getMessage(
-				"Application.Action.Edit.Undo", "Undo")) {
+				"Application.Action.Edit.Undo", "Undo")) { //$NON-NLS-1$ //$NON-NLS-2$
 			{
 				putValue(AbstractAction.ACCELERATOR_KEY,
 						KeyStroke.getKeyStroke(KeyEvent.VK_Z, menuEventMask));
@@ -248,7 +249,7 @@ public abstract class SwingApplication extends JFrame {
 		};
 
 		editRedoAction = new AbstractAction(getMessage(
-				"Application.Action.Edit.Redo", "Redo")) {
+				"Application.Action.Edit.Redo", "Redo")) { //$NON-NLS-1$ //$NON-NLS-2$
 			{
 				putValue(AbstractAction.ACCELERATOR_KEY,
 						KeyStroke.getKeyStroke(KeyEvent.VK_Z,
@@ -261,7 +262,7 @@ public abstract class SwingApplication extends JFrame {
 		};
 
 		editCutAction = new AbstractAction(getMessage(
-				"Application.Action.Edit.Cut", "Cut")) {
+				"Application.Action.Edit.Cut", "Cut")) { //$NON-NLS-1$ //$NON-NLS-2$
 			{
 				putValue(AbstractAction.ACCELERATOR_KEY,
 						KeyStroke.getKeyStroke(KeyEvent.VK_X, menuEventMask));
@@ -273,7 +274,7 @@ public abstract class SwingApplication extends JFrame {
 		};
 
 		editCopyAction = new AbstractAction(getMessage(
-				"Application.Action.Edit.Copy", "Copy")) {
+				"Application.Action.Edit.Copy", "Copy")) { //$NON-NLS-1$ //$NON-NLS-2$
 			{
 				putValue(AbstractAction.ACCELERATOR_KEY,
 						KeyStroke.getKeyStroke(KeyEvent.VK_C, menuEventMask));
@@ -285,7 +286,7 @@ public abstract class SwingApplication extends JFrame {
 		};
 
 		editPasteAction = new AbstractAction(getMessage(
-				"Application.Action.Edit.Paste", "Paste")) {
+				"Application.Action.Edit.Paste", "Paste")) { //$NON-NLS-1$ //$NON-NLS-2$
 			{
 				putValue(AbstractAction.ACCELERATOR_KEY,
 						KeyStroke.getKeyStroke(KeyEvent.VK_V, menuEventMask));
@@ -297,7 +298,7 @@ public abstract class SwingApplication extends JFrame {
 		};
 
 		editPreferencesAction = new AbstractAction(getMessage(
-				"Application.Action.Edit.Settings", "Settings")) {
+				"Application.Action.Edit.Settings", "Settings")) { //$NON-NLS-1$ //$NON-NLS-2$
 			{
 				putValue(AbstractAction.ACCELERATOR_KEY,
 						KeyStroke
@@ -311,7 +312,7 @@ public abstract class SwingApplication extends JFrame {
 		};
 
 		helpAboutAction = new AbstractAction(MessageFormat.format(
-				getMessage("Application.Action.Help.About", "About {0} ..."),
+				getMessage("Application.Action.Help.About", "About {0} ..."), //$NON-NLS-1$ //$NON-NLS-2$
 				getTitle())) {
 			public void actionPerformed(ActionEvent e) {
 				helpAbout();
@@ -321,10 +322,10 @@ public abstract class SwingApplication extends JFrame {
 
 	protected JMenuBar createMenuBar() {
 		recentFilesMenu = new JMenu(getMessage(
-				"Application.Menu.File.RecentFiles", "Recent files"));
+				"Application.Menu.File.RecentFiles", "Recent files")); //$NON-NLS-1$ //$NON-NLS-2$
 		recentFilesMenu.addSeparator();
 		recentFilesMenu.add(fileClearRecentFilesList);
-		fileMenu = new JMenu(getMessage("Application.Menu.File", "File"));
+		fileMenu = new JMenu(getMessage("Application.Menu.File", "File")); //$NON-NLS-1$ //$NON-NLS-2$
 		fileMenu.add(fileNewAction);
 		fileMenu.add(fileOpenAction);
 		fileMenu.add(recentFilesMenu);
@@ -338,9 +339,9 @@ public abstract class SwingApplication extends JFrame {
 			try {
 				OSXAdapter.setPreferencesHandler(this,
 						SwingApplication.class.getDeclaredMethod(
-								"editPreferences", new Class<?>[] {}));
+								"editPreferences", new Class<?>[] {})); //$NON-NLS-1$
 				OSXAdapter.setQuitHandler(this, SwingApplication.class
-						.getDeclaredMethod("fileExit", new Class<?>[] {}));
+						.getDeclaredMethod("fileExit", new Class<?>[] {})); //$NON-NLS-1$
 			} catch (SecurityException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -353,7 +354,7 @@ public abstract class SwingApplication extends JFrame {
 			fileMenu.add(fileExitAction);
 		}
 
-		editMenu = new JMenu(getMessage("Application.Menu.Edit", "Edit"));
+		editMenu = new JMenu(getMessage("Application.Menu.Edit", "Edit")); //$NON-NLS-1$ //$NON-NLS-2$
 		editMenu.add(editUndoAction);
 		editMenu.add(editRedoAction);
 		editMenu.addSeparator();
@@ -365,12 +366,12 @@ public abstract class SwingApplication extends JFrame {
 			editMenu.add(editPreferencesAction);
 		}
 
-		helpMenu = new JMenu(getMessage("Application.Menu.Help", "Help"));
+		helpMenu = new JMenu(getMessage("Application.Menu.Help", "Help")); //$NON-NLS-1$ //$NON-NLS-2$
 		// System.out.println(helpMenu);
 		if (RUNS_ON_MAC_OS_X) {
 			try {
 				OSXAdapter.setAboutHandler(this, SwingApplication.class
-						.getDeclaredMethod("helpAbout", new Class<?>[] {}));
+						.getDeclaredMethod("helpAbout", new Class<?>[] {})); //$NON-NLS-1$
 			} catch (SecurityException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -395,11 +396,11 @@ public abstract class SwingApplication extends JFrame {
 	}
 
 	public String getApplicationName() {
-		return getMessage("Application.name");
+		return getMessage("Application.name"); //$NON-NLS-1$
 	}
 
 	protected StatusBar createStatusBar() {
-		return new StatusBar();
+		return new StatusBar(this);
 	}
 
 	protected void updateActions() {
@@ -494,7 +495,7 @@ public abstract class SwingApplication extends JFrame {
 		}
 		if (RUNS_ON_MAC_OS_X) {
 			getRootPane()
-					.putClientProperty("Window.documentModified", modified);
+					.putClientProperty("Window.documentModified", modified); //$NON-NLS-1$
 		}
 		this.modified = modified;
 	}
@@ -523,6 +524,35 @@ public abstract class SwingApplication extends JFrame {
 
 	public StatusBar getStatusBar() {
 		return statusBar;
+	}
+
+	protected String getKeyStrokeAsString(KeyStroke ks) {
+		String result = ""; //$NON-NLS-1$
+		if ((ks.getModifiers() & InputEvent.SHIFT_DOWN_MASK) != 0) {
+			result += (RUNS_ON_MAC_OS_X ? "⇧" : getMessage( //$NON-NLS-1$
+					"Application.Key.Shift", "Shift")); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		if ((ks.getModifiers() & InputEvent.CTRL_DOWN_MASK) != 0) {
+			result += (RUNS_ON_MAC_OS_X ? "⌃" //$NON-NLS-1$
+					: (result.length() > 0 ? "-" : "") //$NON-NLS-1$ //$NON-NLS-2$
+							+ getMessage("Application.Key.Ctrl", "Ctrl")); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		if ((ks.getModifiers() & InputEvent.ALT_DOWN_MASK) != 0) {
+			result += (RUNS_ON_MAC_OS_X ? "⌥" //$NON-NLS-1$
+					: (result.length() > 0 ? "-" : "") //$NON-NLS-1$ //$NON-NLS-2$
+							+ getMessage("Application.Key.Alt", "Alt")); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		if ((ks.getModifiers() & InputEvent.ALT_GRAPH_DOWN_MASK) != 0) {
+			result += (result.length() > 0 ? "-" : "") //$NON-NLS-1$ //$NON-NLS-2$
+					+ getMessage("Application.Key.AltGr", "AltGr"); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		if ((ks.getModifiers() & InputEvent.META_DOWN_MASK) != 0) {
+			result += (RUNS_ON_MAC_OS_X ? "⌘" //$NON-NLS-1$
+					: (result.length() > 0 ? "-" : "") //$NON-NLS-1$ //$NON-NLS-2$
+							+ getMessage("Application.Key.Meta", "Meta")); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		result += (char) ks.getKeyCode();
+		return result;
 	}
 
 	public class FileDialog {
@@ -622,11 +652,10 @@ public abstract class SwingApplication extends JFrame {
 				File f = new File(name);
 				System.out.println(f);
 				if (f.exists()) {
-					if (JOptionPane.showConfirmDialog(parent,
-							MessageFormat.format(SwingApplication.this
-									.getMessage(
-											"Application.FileDialog.Overwrite",
-											"File {0} exists. Overwrite?"), f
+					if (JOptionPane.showConfirmDialog(parent, MessageFormat
+							.format(SwingApplication.this.getMessage(
+									"Application.FileDialog.Overwrite", //$NON-NLS-1$
+									"File {0} exists. Overwrite?"), f //$NON-NLS-1$
 									.getName()), appName,
 							JOptionPane.YES_NO_CANCEL_OPTION,
 							JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
@@ -640,4 +669,11 @@ public abstract class SwingApplication extends JFrame {
 		}
 	}
 
+	@Override
+	public void setVisible(boolean b) {
+		super.setVisible(b);
+		if (b) {
+			updateActions();
+		}
+	}
 }

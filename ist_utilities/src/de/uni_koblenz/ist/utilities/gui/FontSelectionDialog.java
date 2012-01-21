@@ -99,7 +99,7 @@ public class FontSelectionDialog extends JDialog {
 	private FontSelectionDialog(SwingApplication parent, String title,
 			Font oldFont, boolean monospacedOnly) {
 		super(parent, title != null ? title : parent
-				.getMessage("FontSelectionDialog.title")); //$NON-NLS-1$
+				.getMessage("FontSelectionDialog.Title")); //$NON-NLS-1$
 		app = parent;
 		setModal(true);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -152,16 +152,16 @@ public class FontSelectionDialog extends JDialog {
 		JPanel familyPanel = new JPanel();
 		familyPanel.setLayout(new BorderLayout(0, 4));
 		JLabel lbl = new JLabel(
-				app.getMessage("FontSelectionDialog.familyLabel"), JLabel.LEFT); //$NON-NLS-1$
+				app.getMessage("FontSelectionDialog.FamilyLabel"), JLabel.LEFT); //$NON-NLS-1$
 		lbl.setFont(f);
 		familyPanel.add(lbl, BorderLayout.NORTH);
 		JScrollPane scp = new JScrollPane(familyList);
 		familyPanel.add(scp, BorderLayout.CENTER);
 
-		String[] styles = { app.getMessage("FontSelectionDialog.plainStyle"), //$NON-NLS-1$
-				app.getMessage("FontSelectionDialog.boldStyle"), //$NON-NLS-1$
-				app.getMessage("FontSelectionDialog.italicStyle"), //$NON-NLS-1$
-				app.getMessage("FontSelectionDialog.boldItalicStyle") }; //$NON-NLS-1$
+		String[] styles = { app.getMessage("FontSelectionDialog.PlainStyle"), //$NON-NLS-1$
+				app.getMessage("FontSelectionDialog.BoldStyle"), //$NON-NLS-1$
+				app.getMessage("FontSelectionDialog.ItalicStyle"), //$NON-NLS-1$
+				app.getMessage("FontSelectionDialog.BoldItalicStyle") }; //$NON-NLS-1$
 		styleList = new JList(styles);
 		styleList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		styleList.setFont(f);
@@ -190,7 +190,7 @@ public class FontSelectionDialog extends JDialog {
 		JPanel stylePanel = new JPanel();
 		stylePanel.setLayout(new BorderLayout(0, 4));
 		lbl = new JLabel(
-				app.getMessage("FontSelectionDialog.styleLabel"), JLabel.LEFT); //$NON-NLS-1$
+				app.getMessage("FontSelectionDialog.StyleLabel"), JLabel.LEFT); //$NON-NLS-1$
 		lbl.setFont(f);
 		stylePanel.add(lbl, BorderLayout.NORTH);
 		scp = new JScrollPane(styleList);
@@ -239,7 +239,7 @@ public class FontSelectionDialog extends JDialog {
 		JPanel sizePanel = new JPanel();
 		sizePanel.setLayout(new BorderLayout(0, 0));
 		lbl = new JLabel(
-				app.getMessage("FontSelectionDialog.sizeLable"), JLabel.LEFT); //$NON-NLS-1$
+				app.getMessage("FontSelectionDialog.SizeLabel"), JLabel.LEFT); //$NON-NLS-1$
 		lbl.setFont(f);
 		sizePanel.add(lbl, BorderLayout.NORTH);
 		JPanel p = new JPanel();
@@ -277,11 +277,11 @@ public class FontSelectionDialog extends JDialog {
 		previewPanel.setBackground(Color.WHITE);
 
 		previewLabel = new JLabel(
-				app.getMessage("FontSelectionDialog.sampleText"), JLabel.CENTER); //$NON-NLS-1$
+				app.getMessage("FontSelectionDialog.SampleText"), JLabel.CENTER); //$NON-NLS-1$
 		previewLabel.setPreferredSize(new Dimension(320, 60));
 
 		fontNameLabel = new JLabel(
-				app.getMessage("FontSelectionDialog.fontNameLabel"), JLabel.CENTER); //$NON-NLS-1$
+				app.getMessage("FontSelectionDialog.FontNameLabel"), JLabel.CENTER); //$NON-NLS-1$
 		fontNameLabel.setForeground(Color.GRAY);
 		fontNameLabel.setFont(f);
 		previewPanel.setBorder(BorderFactory.createEtchedBorder());
@@ -300,7 +300,7 @@ public class FontSelectionDialog extends JDialog {
 
 		JPanel p6 = new JPanel();
 		JButton okButton = new JButton(
-				app.getMessage("FontSelectionDialog.okButtonText")); //$NON-NLS-1$
+				app.getMessage("FontSelectionDialog.OkButtonText")); //$NON-NLS-1$
 		okButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -310,7 +310,7 @@ public class FontSelectionDialog extends JDialog {
 
 		});
 		JButton cancelButton = new JButton(
-				app.getMessage("FontSelectionDialog.cancelButtonText")); //$NON-NLS-1$
+				app.getMessage("FontSelectionDialog.CancelButtonText")); //$NON-NLS-1$
 		cancelButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				selectedFont = null;
@@ -382,15 +382,15 @@ public class FontSelectionDialog extends JDialog {
 	private String getStyleAsString() {
 		switch (style) {
 		case Font.PLAIN:
-			return app.getMessage("FontSelectionDialog.plainSampleText"); //$NON-NLS-1$
+			return app.getMessage("FontSelectionDialog.PlainSampleText"); //$NON-NLS-1$
 		case Font.BOLD:
-			return app.getMessage("FontSelectionDialog.boldSampleText"); //$NON-NLS-1$
+			return app.getMessage("FontSelectionDialog.BoldSampleText"); //$NON-NLS-1$
 		case Font.ITALIC:
-			return app.getMessage("FontSelectionDialog.italicSampleText"); //$NON-NLS-1$
+			return app.getMessage("FontSelectionDialog.ItalicSampleText"); //$NON-NLS-1$
 		case Font.BOLD + Font.ITALIC:
-			return app.getMessage("FontSelectionDialog.boldItalicSampleText"); //$NON-NLS-1$
+			return app.getMessage("FontSelectionDialog.BoldItalicSampleText"); //$NON-NLS-1$
 		default:
-			return app.getMessage("FontSelectionDialog.unknownExampleText"); //$NON-NLS-1$
+			return app.getMessage("FontSelectionDialog.UnknownExampleText"); //$NON-NLS-1$
 		}
 	}
 
@@ -402,7 +402,7 @@ public class FontSelectionDialog extends JDialog {
 		selectedFont = new Font(family, style, fontSize.getValue());
 		previewLabel.setFont(selectedFont);
 		fontNameLabel.setText(MessageFormat.format(
-				app.getMessage("FontSelectionDialog.fontNameDisplay"), //$NON-NLS-1$
+				app.getMessage("FontSelectionDialog.FontNameDisplay"), //$NON-NLS-1$
 				selectedFont.getName(), getStyleAsString(), getFontSize()));
 	}
 

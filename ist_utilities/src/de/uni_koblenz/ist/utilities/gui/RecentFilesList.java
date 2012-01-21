@@ -17,6 +17,7 @@ public abstract class RecentFilesList {
 	private Preferences prefs;
 	private String key;
 	private JMenu menu;
+	private int initialItemCount;
 
 	public RecentFilesList(Preferences prefs, String key, int maxEntries,
 			JMenu menu) {
@@ -24,6 +25,7 @@ public abstract class RecentFilesList {
 		this.key = key;
 		this.maxEntries = maxEntries;
 		this.menu = menu;
+		initialItemCount = menu.getItemCount();
 		filenames = new ArrayList<String>(maxEntries);
 		for (int n = 0; n < maxEntries; ++n) {
 			String s = prefs.get(key + n, null);
@@ -81,7 +83,7 @@ public abstract class RecentFilesList {
 	}
 
 	private void updateMenu() {
-		while (menu.getItemCount() > 2) {
+		while (menu.getItemCount() > initialItemCount) {
 			menu.remove(menu.getItem(0));
 		}
 		for (int n = 0; n < filenames.size(); ++n) {

@@ -13,7 +13,7 @@ public class EmphasizedLabel extends JLabel {
 
 	private boolean fUseEmphasisColor;
 
-	public static final Color OS_X_EMPHASIZED__FONT_COLOR = new Color(255, 255,
+	public static final Color OS_X_EMPHASIZED_FONT_COLOR = new Color(255, 255,
 			255, 110);
 	public static final Color OS_X_EMPHASIZED_FOCUSED_FONT_COLOR = new Color(
 			0x000000);
@@ -38,7 +38,7 @@ public class EmphasizedLabel extends JLabel {
 		boolean hasFoucs = window != null && window.isFocused();
 
 		if (fUseEmphasisColor) {
-			retVal = OS_X_EMPHASIZED__FONT_COLOR;
+			retVal = OS_X_EMPHASIZED_FONT_COLOR;
 		} else if (hasFoucs) {
 			retVal = OS_X_EMPHASIZED_FOCUSED_FONT_COLOR;
 		} else {
