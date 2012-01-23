@@ -151,7 +151,7 @@ public abstract class SwingApplication extends JFrame {
 		};
 
 		fileNewAction = new AbstractAction(getMessage(
-				"Application.Action.File.New", "New ...")) { //$NON-NLS-1$ //$NON-NLS-2$
+				"Application.Action.File.New", "New")) { //$NON-NLS-1$ //$NON-NLS-2$
 			{
 				putValue(AbstractAction.ACCELERATOR_KEY,
 						KeyStroke.getKeyStroke(KeyEvent.VK_N, menuEventMask));
@@ -325,7 +325,10 @@ public abstract class SwingApplication extends JFrame {
 				"Application.Menu.File.RecentFiles", "Recent files")); //$NON-NLS-1$ //$NON-NLS-2$
 		recentFilesMenu.addSeparator();
 		recentFilesMenu.add(fileClearRecentFilesList);
-		fileMenu = new JMenu(getMessage("Application.Menu.File", "File")); //$NON-NLS-1$ //$NON-NLS-2$
+		fileMenu = new JMenu(
+				getMessage(
+						RUNS_ON_MAC_OS_X ? "Application.Menu.File.MacOS" : "Application.Menu.File", //$NON-NLS-1$ //$NON-NLS-2$ 
+						"File"));//$NON-NLS-3$
 		fileMenu.add(fileNewAction);
 		fileMenu.add(fileOpenAction);
 		fileMenu.add(recentFilesMenu);
