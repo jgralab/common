@@ -394,6 +394,24 @@ public class FontSelectionDialog extends JDialog {
 		}
 	}
 
+	public static String getFontName(SwingApplication app, Font font) {
+		String style = (font.getStyle() == Font.PLAIN) ? app
+				.getMessage("FontSelectionDialog.PlainStyle") : font //$NON-NLS-1$
+				.getStyle() == Font.BOLD ? app
+				.getMessage("FontSelectionDialog.BoldStyle") //$NON-NLS-1$
+				: font.getStyle() == Font.ITALIC ? app
+						.getMessage("FontSelectionDialog.ItalicStyle") : //$NON-NLS-1$
+						app.getMessage("FontSelectionDialog.BoldItalicStyle"); //$NON-NLS-1$
+		return font.getFamily() + "-" + style + "-" + font.getSize(); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+
+	public static String getInternalFontName(Font font) {
+		String style = (font.getStyle() == Font.PLAIN) ? "plain" : font //$NON-NLS-1$
+				.getStyle() == Font.BOLD ? "bold" //$NON-NLS-1$
+				: font.getStyle() == Font.ITALIC ? "italic" : "bolditalic"; //$NON-NLS-1$ //$NON-NLS-2$
+		return font.getFamily() + "-" + style + "-" + font.getSize(); //$NON-NLS-1$ //$NON-NLS-2$
+	}
+
 	private int getFontSize() {
 		return fontSize.getValue();
 	}
