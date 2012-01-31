@@ -537,24 +537,29 @@ public abstract class SwingApplication extends JFrame {
 		}
 		if ((ks.getModifiers() & InputEvent.CTRL_DOWN_MASK) != 0) {
 			result += (RUNS_ON_MAC_OS_X ? "⌃" //$NON-NLS-1$
-					: (result.length() > 0 ? "-" : "") //$NON-NLS-1$ //$NON-NLS-2$
+					: (result.length() > 0 ? "+" : "") //$NON-NLS-1$ //$NON-NLS-2$
 							+ getMessage("Application.Key.Ctrl", "Ctrl")); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		if ((ks.getModifiers() & InputEvent.ALT_DOWN_MASK) != 0) {
 			result += (RUNS_ON_MAC_OS_X ? "⌥" //$NON-NLS-1$
-					: (result.length() > 0 ? "-" : "") //$NON-NLS-1$ //$NON-NLS-2$
+					: (result.length() > 0 ? "+" : "") //$NON-NLS-1$ //$NON-NLS-2$
 							+ getMessage("Application.Key.Alt", "Alt")); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		if ((ks.getModifiers() & InputEvent.ALT_GRAPH_DOWN_MASK) != 0) {
-			result += (result.length() > 0 ? "-" : "") //$NON-NLS-1$ //$NON-NLS-2$
+			result += (result.length() > 0 ? "+" : "") //$NON-NLS-1$ //$NON-NLS-2$
 					+ getMessage("Application.Key.AltGr", "AltGr"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		if ((ks.getModifiers() & InputEvent.META_DOWN_MASK) != 0) {
 			result += (RUNS_ON_MAC_OS_X ? "⌘" //$NON-NLS-1$
-					: (result.length() > 0 ? "-" : "") //$NON-NLS-1$ //$NON-NLS-2$
+					: (result.length() > 0 ? "+" : "") //$NON-NLS-1$ //$NON-NLS-2$
 							+ getMessage("Application.Key.Meta", "Meta")); //$NON-NLS-1$ //$NON-NLS-2$
 		}
-		result += (char) ks.getKeyCode();
+		if (RUNS_ON_MAC_OS_X) {
+			result += (char) ks.getKeyCode();
+		} else {
+			result += (result.length() > 0 ? "+" : "") + //$NON-NLS-1$ //$NON-NLS-2$ 
+					(char) ks.getKeyCode();
+		}
 		return result;
 	}
 
