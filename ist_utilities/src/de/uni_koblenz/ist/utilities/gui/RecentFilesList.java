@@ -4,36 +4,23 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-public abstract class RecentFilesList {
-	private ArrayList<String> filenames;
+public abstract class RecentFilesList extends StringListPreferences {
 	private int maxEntries;
-	private Preferences prefs;
-	private String key;
 	private JMenu menu;
 	private int initialItemCount;
 
 	public RecentFilesList(Preferences prefs, String key, int maxEntries,
 			JMenu menu) {
-		this.prefs = prefs;
-		this.key = key;
+		super(prefs, key);
 		this.maxEntries = maxEntries;
 		this.menu = menu;
 		initialItemCount = menu.getItemCount();
-		filenames = new ArrayList<String>(maxEntries);
-		for (int n = 0; n < maxEntries; ++n) {
-			String s = prefs.get(key + n, null);
-			if (s == null) {
-				break;
-			}
-			filenames.add(s);
-		}
+		load(maxEntries);
 		updateMenu();
 	}
 
@@ -43,51 +30,29 @@ public abstract class RecentFilesList {
 		}
 		try {
 			String name = f.getCanonicalPath();
-			int i = filenames.indexOf(name);
+			int i = entries.indexOf(name);
 			if (i == 0) {
 				return;
 			}
 			if (i > 0) {
-				filenames.remove(i);
+				entries.remove(i);
 			}
-			while (filenames.size() >= maxEntries) {
-				filenames.remove(filenames.size() - 1);
+			while (entries.size() >= maxEntries) {
+				entries.remove(size() - 1);
 			}
-			filenames.add(0, name);
+			entries.add(0, name);
 			updateMenu();
 			save();
 		} catch (IOException e) {
 		}
 	}
 
-	private void save() {
-		int n = 0;
-		while (n < filenames.size()) {
-			prefs.put(key + n, filenames.get(n));
-			++n;
-		}
-		while (prefs.get(key + n, null) != null) {
-			prefs.remove(key + n);
-			++n;
-		}
-		try {
-			prefs.flush();
-		} catch (BackingStoreException e) {
-		}
-	}
-
-	public void clear() {
-		filenames.clear();
-		updateMenu();
-		save();
-	}
-
 	private void updateMenu() {
 		while (menu.getItemCount() > initialItemCount) {
 			menu.remove(menu.getItem(0));
 		}
-		for (int n = 0; n < filenames.size(); ++n) {
-			menu.add(new RecentMenuItem(filenames.get(n)), n);
+		for (int n = 0; n < entries.size(); ++n) {
+			menu.add(new RecentMenuItem(entries.get(n)), n);
 		}
 	}
 
