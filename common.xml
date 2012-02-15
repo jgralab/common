@@ -115,6 +115,13 @@
 	<!-- excludes for compiling sources -->
 	<property name="compileexcludes" value="" />
 
+	<!-- properties for the target "testcompile" -->
+	<!-- includes for compiling sources -->
+	<property name="testcompileincludes" value="" />
+
+	<!-- excludes for compiling sources -->
+	<property name="testcompileexcludes" value="" />
+
 	<!--Target VM for javac-->
 	<property name="javac.targetVM" value="1.6" />
 
@@ -293,7 +300,7 @@
 	<target name="testcompile">
 		<mkdir dir="${testclasses.dir}" />
 		<echo>Compiling test case classes...</echo>
-		<javac fork="true" srcdir="${testcases.dir}" destdir="${testclasses.dir}" memoryinitialsize="512m" memorymaximumsize="${maxmemsize}" classpathref="testclasspath">
+		<javac fork="true" srcdir="${testcases.dir}" destdir="${testclasses.dir}" includes="${testcompileincludes}" excludes="${testcompileexcludes}" memoryinitialsize="512m" memorymaximumsize="${maxmemsize}" classpathref="testclasspath">
 		</javac>
 	</target>
 
