@@ -157,6 +157,7 @@ public abstract class SwingApplication extends JFrame {
 						KeyStroke.getKeyStroke(KeyEvent.VK_N, menuEventMask));
 			}
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				fileNew();
 			}
@@ -169,6 +170,7 @@ public abstract class SwingApplication extends JFrame {
 						KeyStroke.getKeyStroke(KeyEvent.VK_O, menuEventMask));
 			}
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				fileOpen();
 			}
@@ -181,6 +183,7 @@ public abstract class SwingApplication extends JFrame {
 						KeyStroke.getKeyStroke(KeyEvent.VK_S, menuEventMask));
 			}
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				fileSave();
 			}
@@ -195,6 +198,7 @@ public abstract class SwingApplication extends JFrame {
 								KeyEvent.SHIFT_DOWN_MASK | menuEventMask));
 			}
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				fileSaveAs();
 			}
@@ -207,6 +211,7 @@ public abstract class SwingApplication extends JFrame {
 						KeyStroke.getKeyStroke(KeyEvent.VK_W, menuEventMask));
 			}
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				fileClose();
 			}
@@ -219,6 +224,7 @@ public abstract class SwingApplication extends JFrame {
 						KeyStroke.getKeyStroke(KeyEvent.VK_P, menuEventMask));
 			}
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				filePrint();
 			}
@@ -231,6 +237,7 @@ public abstract class SwingApplication extends JFrame {
 						KeyStroke.getKeyStroke(KeyEvent.VK_Q, menuEventMask));
 			}
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				fileExit();
 			}
@@ -243,6 +250,7 @@ public abstract class SwingApplication extends JFrame {
 						KeyStroke.getKeyStroke(KeyEvent.VK_Z, menuEventMask));
 			}
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				editUndo();
 			}
@@ -256,6 +264,7 @@ public abstract class SwingApplication extends JFrame {
 								KeyEvent.SHIFT_DOWN_MASK | menuEventMask));
 			}
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				editRedo();
 			}
@@ -268,6 +277,7 @@ public abstract class SwingApplication extends JFrame {
 						KeyStroke.getKeyStroke(KeyEvent.VK_X, menuEventMask));
 			}
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				editCut();
 			}
@@ -280,6 +290,7 @@ public abstract class SwingApplication extends JFrame {
 						KeyStroke.getKeyStroke(KeyEvent.VK_C, menuEventMask));
 			}
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				editCopy();
 			}
@@ -292,6 +303,7 @@ public abstract class SwingApplication extends JFrame {
 						KeyStroke.getKeyStroke(KeyEvent.VK_V, menuEventMask));
 			}
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				editPaste();
 			}
@@ -306,6 +318,7 @@ public abstract class SwingApplication extends JFrame {
 				setEnabled(true);
 			}
 
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				editPreferences();
 			}
@@ -314,6 +327,7 @@ public abstract class SwingApplication extends JFrame {
 		helpAboutAction = new AbstractAction(MessageFormat.format(
 				getMessage("Application.Action.Help.About", "About {0} ..."), //$NON-NLS-1$ //$NON-NLS-2$
 				getTitle())) {
+			@Override
 			public void actionPerformed(ActionEvent e) {
 				helpAbout();
 			}
@@ -328,7 +342,7 @@ public abstract class SwingApplication extends JFrame {
 		fileMenu = new JMenu(
 				getMessage(
 						RUNS_ON_MAC_OS_X ? "Application.Menu.File.MacOS" : "Application.Menu.File", //$NON-NLS-1$ //$NON-NLS-2$ 
-						"File"));//$NON-NLS-3$
+						"File"));
 		fileMenu.add(fileNewAction);
 		fileMenu.add(fileOpenAction);
 		fileMenu.add(recentFilesMenu);
@@ -532,16 +546,16 @@ public abstract class SwingApplication extends JFrame {
 	protected String getKeyStrokeAsString(KeyStroke ks) {
 		String result = ""; //$NON-NLS-1$
 		if ((ks.getModifiers() & InputEvent.SHIFT_DOWN_MASK) != 0) {
-			result += (RUNS_ON_MAC_OS_X ? "⇧" : getMessage( //$NON-NLS-1$
+			result += (RUNS_ON_MAC_OS_X ? "\u21e7" : getMessage( //$NON-NLS-1$
 					"Application.Key.Shift", "Shift")); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		if ((ks.getModifiers() & InputEvent.CTRL_DOWN_MASK) != 0) {
-			result += (RUNS_ON_MAC_OS_X ? "⌃" //$NON-NLS-1$
+			result += (RUNS_ON_MAC_OS_X ? "\u2303" //$NON-NLS-1$
 					: (result.length() > 0 ? "+" : "") //$NON-NLS-1$ //$NON-NLS-2$
 							+ getMessage("Application.Key.Ctrl", "Ctrl")); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		if ((ks.getModifiers() & InputEvent.ALT_DOWN_MASK) != 0) {
-			result += (RUNS_ON_MAC_OS_X ? "⌥" //$NON-NLS-1$
+			result += (RUNS_ON_MAC_OS_X ? "\u2325" //$NON-NLS-1$
 					: (result.length() > 0 ? "+" : "") //$NON-NLS-1$ //$NON-NLS-2$
 							+ getMessage("Application.Key.Alt", "Alt")); //$NON-NLS-1$ //$NON-NLS-2$
 		}
@@ -550,7 +564,7 @@ public abstract class SwingApplication extends JFrame {
 					+ getMessage("Application.Key.AltGr", "AltGr"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		if ((ks.getModifiers() & InputEvent.META_DOWN_MASK) != 0) {
-			result += (RUNS_ON_MAC_OS_X ? "⌘" //$NON-NLS-1$
+			result += (RUNS_ON_MAC_OS_X ? "\u2318" //$NON-NLS-1$
 					: (result.length() > 0 ? "+" : "") //$NON-NLS-1$ //$NON-NLS-2$
 							+ getMessage("Application.Key.Meta", "Meta")); //$NON-NLS-1$ //$NON-NLS-2$
 		}

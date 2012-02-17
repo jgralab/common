@@ -51,7 +51,7 @@ AND WHETHER UNDER THEORY OF CONTRACT, TORT (INCLUDING NEGLIGENCE),
 STRICT LIABILITY OR OTHERWISE, EVEN IF APPLE HAS BEEN ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 
-Copyright � 2003-2007 Apple, Inc., All Rights Reserved
+Copyright (C) 2003-2007 Apple, Inc., All Rights Reserved
 
  */
 
@@ -222,6 +222,7 @@ public class OSXAdapter implements InvocationHandler {
 	// InvocationHandler implementation
 	// This is the entry point for our proxy object; it is called every time an
 	// ApplicationListener method is invoked
+	@Override
 	public Object invoke(Object proxy, Method method, Object[] args)
 			throws Throwable {
 		if (isCorrectMethod(method, args)) {

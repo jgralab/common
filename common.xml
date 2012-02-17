@@ -122,8 +122,10 @@
 	<!-- excludes for compiling sources -->
 	<property name="testcompileexcludes" value="" />
 
-	<!--Target VM for javac-->
+	<!-- Settings for javac -->
 	<property name="javac.targetVM" value="1.6" />
+
+	<property name="javac.encoding" value="UTF8" />
 
 	<!-- debug infos in compiled sources -->
 	<property name="debug" value="false" />
@@ -252,7 +254,20 @@
 	<!-- compile -->
 	<!-- compiles all Java sources in $src.dir and puts teh generated classes into $classes.dir-->
 	<target name="compile" depends="createClassesDir,generateschema">
-		<javac fork="true" srcdir="${src.dir}" includes="${compileincludes}" excludes="${compileexcludes}" destdir="${classes.dir}" memoryinitialsize="${minmemsize}" memorymaximumsize="${maxmemsize}" classpathref="classpath" includeantruntime="false" debug="${debug}" debuglevel="${debuglevel}" source="${javac.targetVM}" target="${javac.targetVM}">
+		<javac fork="true"
+			srcdir="${src.dir}" 
+			includes="${compileincludes}"
+			excludes="${compileexcludes}"
+			destdir="${classes.dir}"
+			memoryinitialsize="${minmemsize}"
+			memorymaximumsize="${maxmemsize}"
+			classpathref="classpath" 
+			includeantruntime="false"
+			debug="${debug}"
+			debuglevel="${debuglevel}"
+			source="${javac.targetVM}"
+			target="${javac.targetVM}"
+			encoding="${javac.encoding}">
 			<compilerarg line="-Xlint:unchecked" />
 		</javac>
 	</target>
@@ -300,8 +315,19 @@
 	<target name="testcompile">
 		<mkdir dir="${testclasses.dir}" />
 		<echo>Compiling test case classes...</echo>
-		<javac fork="true" srcdir="${testcases.dir}" destdir="${testclasses.dir}" includes="${testcompileincludes}" excludes="${testcompileexcludes}" memoryinitialsize="512m" memorymaximumsize="${maxmemsize}" classpathref="testclasspath">
-		</javac>
+		<javac 
+			fork="true"
+			srcdir="${testcases.dir}"
+			destdir="${testclasses.dir}"
+			includes="${testcompileincludes}"
+			excludes="${testcompileexcludes}"
+			memoryinitialsize="512m"
+			memorymaximumsize="${maxmemsize}"
+			classpathref="testclasspath"
+			source="${javac.targetVM}"
+			target="${javac.targetVM}"
+			encoding="${javac.encoding}"
+		/>
 	</target>
 
 	<!-- test -->
