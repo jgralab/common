@@ -428,8 +428,14 @@
 	<target name="document">
 		<delete dir="${doc.dir}/html" />
 		<mkdir dir="${doc.dir}/html" />
-		<javadoc sourcepath="${src.dir}" destdir="${doc.dir}/html" packagenames="${basePackage}.*" excludepackagenames="${documentexcludes}" access="${document.access}" maxmemory="${maxmemsize}" classpathref="classpath">
-		</javadoc>
+		<javadoc sourcepath="${src.dir}"
+			destdir="${doc.dir}/html"
+			packagenames="${basePackage}.*"
+			excludepackagenames="${documentexcludes}"
+			access="${document.access}"
+			maxmemory="${maxmemsize}"
+			classpathref="classpath"
+			encoding="{$javac.encoding}" />
 		<zip destfile="${doc.dir}/${projectname}_api.zip" basedir="${doc.dir}/html" compress="true" />
 	</target>
 
@@ -447,7 +453,4 @@
 	</target>
 
 	<!-- TODO add an improved "newproject"-target -->
-
 </project>
-
-
