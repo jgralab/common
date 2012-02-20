@@ -435,7 +435,7 @@
 			access="${document.access}"
 			maxmemory="${maxmemsize}"
 			classpathref="classpath"
-			encoding="{$javac.encoding}" />
+			encoding="${javac.encoding}" />
 		<zip destfile="${doc.dir}/${projectname}_api.zip" basedir="${doc.dir}/html" compress="true" />
 	</target>
 
