@@ -440,7 +440,7 @@
 	</target>
 
 	<!-- Adds the license header to all java source files -->
-	<target name="addLicenseHeaders" depends="ist_utilities, clean" if="license.file">
+	<target name="addLicenseHeaders" depends="ist_utilities, clean, createMissingPackageDocumentation" if="license.file">
 		<java classname="de.uni_koblenz.ist.utilities.license_header.LicenseHeader" classpathref="classpath" fork="true" dir="${run.dir}">
 			<arg line="-i ${src.dir} -l ${license.file} -r" />
 		</java>
@@ -450,6 +450,11 @@
 		<java classname="de.uni_koblenz.ist.utilities.license_header.LicenseHeader" classpathref="classpath" fork="true" dir="${run.dir}">
 			<arg line="-i ${project.dir} -l ${license.file}" />
 		</java>
+	</target>
+	
+	<target name="createMissingPackageDocumentation">
+		<taskdef name="create-pi" classname="de.uni_koblenz.ist.utilities.ant.CreateMissingPackageDocumentation" classpathref="classpath" />
+		<create-pi srcDir="${src.dir}" />
 	</target>
 
 	<!-- TODO add an improved "newproject"-target -->
