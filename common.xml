@@ -357,7 +357,7 @@
 				<exclude name="META-INF/**" />
 			</patternset>
 		</unjar-->
-		<taskdef name="unjar_mp" classname="de.uni_koblenz.jgralab.utilities.ant.MetaDataPreservingUnjar" classpathref="classpath" />
+		<taskdef name="unjar_mp" classname="de.uni_koblenz.ist.utilities.ant.MetaDataPreservingUnjar" classpathref="classpath" />
 		<unjar_mp dest="${tmp.dir}/">
 			<fileset dir="${lib.dir}" includes="**/*.jar" excludes="${unjarexcludes}" />
 			<fileset dir="${comlib.dir}/ist_utilities/" includes="**/*.jar" />
@@ -373,7 +373,7 @@
 	
 	<target name="merge_manifest" >
 		<copy file="${manifest.file}" tofile="${manifest.tmp.file}" />
-		<taskdef name="merge_manifest" classname="de.uni_koblenz.jgralab.utilities.ant.MergeManifest" classpathref="classpath" />
+		<taskdef name="merge_manifest" classname="de.uni_koblenz.ist.utilities.ant.MergeManifest" classpathref="classpath" />
 		<merge_manifest dest="${tmp.dir}" manifest="${manifest.tmp.file}" />
 	</target>
 	
