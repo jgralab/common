@@ -114,6 +114,9 @@
 
 	<!-- excludes for compiling sources -->
 	<property name="compileexcludes" value="" />
+	
+	<!-- excludes package-info.java -->
+	<property name="no_package_info" value="**/package-info.java" />
 
 	<!-- properties for the target "testcompile" -->
 	<!-- includes for compiling sources -->
