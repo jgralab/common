@@ -487,7 +487,7 @@ public class LicenseHeader {
 
 		PrintWriter writer = new PrintWriter(toProcess);
 		for (String currentOutputLine : javaHeaderLines) {
-			writer.println(currentOutputLine);
+			writer.println(currentOutputLine.trim());
 		}
 		for (String currentOutputLine : outputLines) {
 			writer.println(currentOutputLine);
