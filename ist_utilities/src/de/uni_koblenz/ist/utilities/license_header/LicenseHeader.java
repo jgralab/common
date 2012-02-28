@@ -22,6 +22,7 @@ public class LicenseHeader {
 	private static final String INDENT = "    ";
 	private static final String JAVA_FIRST_LINE = "/*";
 	private static final String JAVA_PREFIX = " * ";
+	private static final String JAVA_EMPTY_LINE = " *";
 	private static final String JAVA_LAST_LINE = " */";
 
 	private static final String XML_START = "<!-- ";
@@ -54,8 +55,8 @@ public class LicenseHeader {
 		CommandLine cl = processCommandLineOptions(args);
 		assert cl.hasOption('i');
 		assert cl.hasOption('l');
-		LicenseHeader lh = new LicenseHeader(cl.getOptionValue('i'), cl
-				.getOptionValue('l'), cl.hasOption('r'), cl.hasOption('V'));
+		LicenseHeader lh = new LicenseHeader(cl.getOptionValue('i'),
+				cl.getOptionValue('l'), cl.hasOption('r'), cl.hasOption('V'));
 		try {
 			lh.process();
 		} catch (IOException e) {
@@ -380,7 +381,7 @@ public class LicenseHeader {
 						skippedLines++;
 						continue;
 					}
-					assert(trimmedLine.startsWith("TGraph2"));
+					assert (trimmedLine.startsWith("TGraph2"));
 					state = ParseState.AFTER_HEADERS;
 					outputLines.add(currentLine);
 					break;
@@ -407,7 +408,7 @@ public class LicenseHeader {
 			}
 			newlyAdded++;
 		}
-		
+
 		PrintWriter writer = new PrintWriter(toProcess);
 		for (String currentOutputLine : tgHeaderLines) {
 			writer.println(currentOutputLine);
@@ -427,7 +428,7 @@ public class LicenseHeader {
 		}
 
 		if (javaHeaderLines == null) {
-			cacheJavaHeader(firstLine, prefix, lastLine);
+			cacheJavaHeader(firstLine, lastLine);
 		}
 
 		List<String> outputLines = new LinkedList<String>();
@@ -496,8 +497,8 @@ public class LicenseHeader {
 
 	}
 
-	private void cacheJavaHeader(String firstLine, String prefix,
-			String lastLine) throws FileNotFoundException, IOException {
+	private void cacheJavaHeader(String firstLine, String lastLine)
+			throws FileNotFoundException, IOException {
 		if (verbose) {
 			System.out.println("Caching license header for Java...");
 		}
@@ -510,7 +511,8 @@ public class LicenseHeader {
 		do {
 			currentLine = reader.readLine();
 			if (currentLine != null) {
-				javaHeaderLines.add(prefix + currentLine);
+				javaHeaderLines.add(currentLine.isEmpty() ? JAVA_EMPTY_LINE
+						: JAVA_PREFIX + currentLine);
 			}
 		} while (currentLine != null);
 		javaHeaderLines.add(lastLine);
@@ -545,7 +547,6 @@ public class LicenseHeader {
 			out.append(" ");
 		}
 		out.append(XML_END);
-
 		return out.toString();
 	}
 
@@ -560,7 +561,7 @@ public class LicenseHeader {
 		do {
 			currentLine = reader.readLine();
 			if (currentLine != null) {
-				tgHeaderLines.add(TG_PREFIX + currentLine);
+				tgHeaderLines.add((TG_PREFIX + currentLine).trim());
 			}
 		} while (currentLine != null);
 		tgHeaderLines.add("");
