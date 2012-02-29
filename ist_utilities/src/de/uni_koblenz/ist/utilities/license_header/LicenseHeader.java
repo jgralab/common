@@ -29,6 +29,7 @@ public class LicenseHeader {
 	private static final String XML_END = " -->";
 
 	private static final String TG_PREFIX = "// ";
+	private static final String TG_EMPTY_LINE = "//";
 
 	private static enum ParseState {
 		/**
@@ -350,7 +351,7 @@ public class LicenseHeader {
 			System.out.println("Processing file " + toProcess.getName());
 		}
 
-		if (xmlHeaderLines == null) {
+		if (tgHeaderLines == null) {
 			cacheTGHeader();
 		}
 
@@ -373,7 +374,7 @@ public class LicenseHeader {
 						skippedLines++;
 						continue;
 					}
-					if (trimmedLine.startsWith(TG_PREFIX)) {
+					if (trimmedLine.startsWith(TG_EMPTY_LINE)) {
 						if (currentLine.contains("Version :")) {
 							state = ParseState.AFTER_HEADERS;
 							outputLines.add(currentLine);
@@ -487,7 +488,7 @@ public class LicenseHeader {
 
 		PrintWriter writer = new PrintWriter(toProcess);
 		for (String currentOutputLine : javaHeaderLines) {
-			writer.println(currentOutputLine.trim());
+			writer.println(currentOutputLine);
 		}
 		for (String currentOutputLine : outputLines) {
 			writer.println(currentOutputLine);
