@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
@@ -69,7 +70,11 @@ public abstract class XmlProcessor {
 				endElementEvent();
 				break;
 			case XMLStreamConstants.CHARACTERS:
-				elementContentStack.peek().append(parser.getText());
+				if (ignoreCounter == 0) {
+					String t = parser.getText();
+					characters(t);
+					elementContentStack.peek().append(t);
+				}
 				break;
 			}
 		}
@@ -151,6 +156,9 @@ public abstract class XmlProcessor {
 		elementContentStack.pop();
 	}
 
+	protected void characters(String text) {
+	}
+
 	protected abstract void startElement(String name) throws XMLStreamException;
 
 	protected abstract void endElement(String name, StringBuilder content)
@@ -165,7 +173,29 @@ public abstract class XmlProcessor {
 		return parser.getAttributeValue(parser.getNamespaceURI(nsPrefix), name);
 	}
 
+	protected Set<String> getAttributeNames() {
+		LinkedHashSet<String> attrNames = new LinkedHashSet<String>();
+		int n = parser.getAttributeCount();
+		for (int i = 0; i < n; ++i) {
+			String ns = parser.getAttributePrefix(i);
+			String localName = parser.getAttributeLocalName(i);
+			attrNames.add((ns == null || ns.isEmpty()) ? localName : ns + ":"
+					+ localName);
+		}
+		return attrNames;
+	}
+
 	protected String getAttribute(String name) throws XMLStreamException {
+		int p = name.indexOf(":");
+		if (p >= 0) {
+			if (p > 0) {
+				return getAttribute(name.substring(0, p - 1),
+						name.substring(p + 1));
+			} else {
+				name = name.substring(p + 1);
+			}
+		}
+
 		// TODO: The following line should work, but with java 1.6.0.18 it
 		// returns the first attribute named `name' and doesn't care about
 		// namespaces. Thus in <a ns1:x="..." x="..."/> there's no way of
