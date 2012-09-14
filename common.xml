@@ -2,7 +2,6 @@
 
 <project name="common" basedir="." default="warning">
 
-
 	<!-- global project specific properties; if empty, they have to be overridden by specializations -->
 	<!-- the name of the project - MUST BE CHANGED, THIS VALUE "common" IS ONLY THERE TO AVOID WARNINGS! -->
 	<property name="projectname" value="common" />
@@ -147,11 +146,6 @@
 
 	<!-- the generated schema classes will be placed here -->
 	<property name="schema.location" value="${src.dir}" />
-
-	<!-- the implementation mode of the schema to generate 
-	     ATM possible values are "standard", "transaction" and "all",
-	     but this will change in the near future -->
-	<property name="schema.implementationMode" value="standard" />
 
 	<!-- TODO comment this option -->
 	<property name="schema.withoutTypes" value="false" />
@@ -312,7 +306,7 @@
 	<!-- generateschema -->
 	<!-- generates schmema sources out of schema ${schemafile} -->
 	<target name="generateschema" depends="customAntTasks,convertschema" if="schema.file">
-		<tgschema2java schemaFile="${schema.file}" sourcePath="${schema.location}" implementationMode="${schema.implementationMode}" withoutTypes="${schema.withoutTypes}" />
+		<tgschema2java schemaFile="${schema.file}" sourcePath="${schema.location}" withoutTypes="${schema.withoutTypes}" />
 	</target>
 
 	<target name="testcompile">
