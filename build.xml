@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 
-<project name="ist.utilities" basedir="." default="build">
+<project xmlns:ivy="antlib:org.apache.ivy.ant" name="ist.utilities" basedir="." default="build">
 	<property name="projectname" value="ist_utilities" />
 	<property name="build.dir" value="./ist_utilities/build" />
 	<property name="classes.dir" value="${build.dir}/classes" />
@@ -14,6 +14,11 @@
 	<property name="compileincludes" value="**" />
 	<property name="compileexcludes" value="" />
 	<property name="main" value="None" />
+
+	<!-- IVY -->
+	<target name="resolve" description="--> retrieve dependencies with ivy">
+		<ivy:retrieve />
+	</target>
 
 	<!-- classpath -->
 	<path id="classpath">
@@ -40,7 +45,7 @@
 		<delete dir="${jar.dir}" />
 	</target>
 
-	<target name="jar" depends="compile">
+	<target name="jar" depends="compile, resolve">
 		<mkdir dir="${jar.dir}" />
 		<mkdir dir="${classes.dir}" />
 		<jar destfile="${jar.dir}/${projectname}.jar" basedir="${classes.dir}" compress="true">

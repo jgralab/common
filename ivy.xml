@@ -1,0 +1,8 @@
+<ivy-module version="2.0">
+	<info organisation="org.apache" module="jgralab-core" />
+	<dependencies>
+		<dependency org="commons-cli" name="commons-cli" rev="1.2" />
+		<dependency org="org.apache.ant" name="ant" rev="1.8.4"/>
+		<dependency org="com.svnkit" name="svnkit" rev="1.1.0"/>
+	</dependencies>
+</ivy-module>
