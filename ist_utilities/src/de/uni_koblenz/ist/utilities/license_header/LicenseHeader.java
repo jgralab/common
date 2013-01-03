@@ -265,83 +265,90 @@ public class LicenseHeader {
 
 		// now open the current input file
 		BufferedReader reader = new BufferedReader(new FileReader(toProcess));
-		ParseState state = ParseState.BEFORE_HEADER;
-		int skippedLines = 0;
-		String currentLine = null;
-		do {
-			currentLine = reader.readLine();
-			if (currentLine != null) {
-				String trimmedLine = currentLine.trim();
-				switch (state) {
-				case BEFORE_HEADER:
-					if (trimmedLine.length() == 0) {
-						// ignore empty lines in the beginning
-						skippedLines++;
-						continue;
-					}
-					if (trimmedLine.startsWith(XML_START.trim())) {
-						// ignore comments in the beginning
-						state = trimmedLine.endsWith(XML_END.trim()) ? ParseState.BEFORE_HEADER
-								: ParseState.IN_HEADER;
-						skippedLines++;
-						continue;
-					}
-					if (trimmedLine.toLowerCase().startsWith(
-							XML_ENCODING_PREFIX)) {
-						// preserve xml version and encoding settings
-						outputLines.add(currentLine);
-						continue;
-					}
+		try {
+			ParseState state = ParseState.BEFORE_HEADER;
+			int skippedLines = 0;
+			String currentLine = null;
+			do {
+				currentLine = reader.readLine();
+				if (currentLine != null) {
+					String trimmedLine = currentLine.trim();
+					switch (state) {
+					case BEFORE_HEADER:
+						if (trimmedLine.length() == 0) {
+							// ignore empty lines in the beginning
+							skippedLines++;
+							continue;
+						}
+						if (trimmedLine.startsWith(XML_START.trim())) {
+							// ignore comments in the beginning
+							state = trimmedLine.endsWith(XML_END.trim()) ? ParseState.BEFORE_HEADER
+									: ParseState.IN_HEADER;
+							skippedLines++;
+							continue;
+						}
+						if (trimmedLine.toLowerCase().startsWith(
+								XML_ENCODING_PREFIX)) {
+							// preserve xml version and encoding settings
+							outputLines.add(currentLine);
+							continue;
+						}
 
-					// now only the root element is possible
-					assert (trimmedLine.startsWith("<"));
-					state = ParseState.AFTER_HEADERS;
-					outputLines.add(currentLine);
-					break;
-				case IN_HEADER:
-					skippedLines++;
-					if (trimmedLine.endsWith(XML_END.trim())) {
-						state = ParseState.BEFORE_HEADER;
+						// now only the root element is possible
+						assert (trimmedLine.startsWith("<"));
+						state = ParseState.AFTER_HEADERS;
+						outputLines.add(currentLine);
+						break;
+					case IN_HEADER:
+						skippedLines++;
+						if (trimmedLine.endsWith(XML_END.trim())) {
+							state = ParseState.BEFORE_HEADER;
+						}
+						break;
+					case AFTER_HEADERS:
+						// normal case, just copy
+						outputLines.add(currentLine);
+						break;
 					}
-					break;
-				case AFTER_HEADERS:
-					// normal case, just copy
-					outputLines.add(currentLine);
-					break;
 				}
+			} while (currentLine != null);
+			if (skippedLines > 0) {
+				if (verbose) {
+					printIndent(level + 1);
+					System.out.println("Skipped " + skippedLines
+							+ " lines and replaced "
+							+ (skippedLines == 1 ? "it" : "them")
+							+ " with new header.");
+				}
+				replaced++;
+			} else {
+				if (verbose) {
+					printIndent(level + 1);
+					System.out.println("Added header.");
+				}
+				newlyAdded++;
 			}
-		} while (currentLine != null);
-		if (skippedLines > 0) {
-			if (verbose) {
-				printIndent(level + 1);
-				System.out.println("Skipped " + skippedLines
-						+ " lines and replaced "
-						+ (skippedLines == 1 ? "it" : "them")
-						+ " with new header.");
-			}
-			replaced++;
-		} else {
-			if (verbose) {
-				printIndent(level + 1);
-				System.out.println("Added header.");
-			}
-			newlyAdded++;
+		} finally {
+			reader.close();
 		}
 
 		PrintWriter writer = new PrintWriter(toProcess);
-		String firstLine = outputLines.get(0);
-		if (firstLine.trim().startsWith(XML_ENCODING_PREFIX)) {
-			writer.println(firstLine);
-			outputLines.remove(0);
+		try {
+			String firstLine = outputLines.get(0);
+			if (firstLine.trim().startsWith(XML_ENCODING_PREFIX)) {
+				writer.println(firstLine);
+				outputLines.remove(0);
+			}
+			for (String currentOutputLine : xmlHeaderLines) {
+				writer.println(currentOutputLine);
+			}
+			for (String currentOutputLine : outputLines) {
+				writer.println(currentOutputLine);
+			}
+			writer.flush();
+		} finally {
+			writer.close();
 		}
-		for (String currentOutputLine : xmlHeaderLines) {
-			writer.println(currentOutputLine);
-		}
-		for (String currentOutputLine : outputLines) {
-			writer.println(currentOutputLine);
-		}
-		writer.flush();
-		writer.close();
 	}
 
 	private void processTGFile(File toProcess, int level)
@@ -359,66 +366,75 @@ public class LicenseHeader {
 
 		// now open the current input file
 		BufferedReader reader = new BufferedReader(new FileReader(toProcess));
-		ParseState state = ParseState.IN_HEADER;
-		int skippedLines = 0;
-		String currentLine = null;
+		try {
+			ParseState state = ParseState.IN_HEADER;
+			int skippedLines = 0;
+			String currentLine = null;
 
-		do {
-			currentLine = reader.readLine();
-			if (currentLine != null) {
-				String trimmedLine = currentLine.trim();
-				switch (state) {
-				case IN_HEADER:
-					if (trimmedLine.length() == 0) {
-						// ignore empty lines in the beginning
-						skippedLines++;
-						continue;
-					}
-					if (trimmedLine.startsWith(TG_EMPTY_LINE)) {
-						if (currentLine.contains("Version :")) {
-							state = ParseState.AFTER_HEADERS;
-							outputLines.add(currentLine);
+			do {
+				currentLine = reader.readLine();
+				if (currentLine != null) {
+					String trimmedLine = currentLine.trim();
+					switch (state) {
+					case BEFORE_HEADER:
+						// do nothing
+						break;
+					case IN_HEADER:
+						if (trimmedLine.length() == 0) {
+							// ignore empty lines in the beginning
+							skippedLines++;
+							continue;
 						}
-						skippedLines++;
-						continue;
+						if (trimmedLine.startsWith(TG_EMPTY_LINE)) {
+							if (currentLine.contains("Version :")) {
+								state = ParseState.AFTER_HEADERS;
+								outputLines.add(currentLine);
+							}
+							skippedLines++;
+							continue;
+						}
+						assert (trimmedLine.startsWith("TGraph2"));
+						state = ParseState.AFTER_HEADERS;
+						outputLines.add(currentLine);
+						break;
+					case AFTER_HEADERS:
+						// normal case, just copy
+						outputLines.add(currentLine);
+						break;
 					}
-					assert (trimmedLine.startsWith("TGraph2"));
-					state = ParseState.AFTER_HEADERS;
-					outputLines.add(currentLine);
-					break;
-				case AFTER_HEADERS:
-					// normal case, just copy
-					outputLines.add(currentLine);
-					break;
 				}
+			} while (currentLine != null);
+			if (skippedLines > 0) {
+				if (verbose) {
+					printIndent(level + 1);
+					System.out.println("Skipped " + skippedLines
+							+ " lines and replaced "
+							+ (skippedLines == 1 ? "it" : "them")
+							+ " with new header.");
+				}
+				replaced++;
+			} else {
+				if (verbose) {
+					printIndent(level + 1);
+					System.out.println("Added header.");
+				}
+				newlyAdded++;
 			}
-		} while (currentLine != null);
-		if (skippedLines > 0) {
-			if (verbose) {
-				printIndent(level + 1);
-				System.out.println("Skipped " + skippedLines
-						+ " lines and replaced "
-						+ (skippedLines == 1 ? "it" : "them")
-						+ " with new header.");
-			}
-			replaced++;
-		} else {
-			if (verbose) {
-				printIndent(level + 1);
-				System.out.println("Added header.");
-			}
-			newlyAdded++;
+		} finally {
+			reader.close();
 		}
-
 		PrintWriter writer = new PrintWriter(toProcess);
-		for (String currentOutputLine : tgHeaderLines) {
-			writer.println(currentOutputLine);
+		try {
+			for (String currentOutputLine : tgHeaderLines) {
+				writer.println(currentOutputLine);
+			}
+			for (String currentOutputLine : outputLines) {
+				writer.println(currentOutputLine);
+			}
+			writer.flush();
+		} finally {
+			writer.close();
 		}
-		for (String currentOutputLine : outputLines) {
-			writer.println(currentOutputLine);
-		}
-		writer.flush();
-		writer.close();
 	}
 
 	private void processJavaFile(File toProcess, int level, String firstLine,
@@ -436,65 +452,71 @@ public class LicenseHeader {
 
 		// now open the current input file
 		BufferedReader reader = new BufferedReader(new FileReader(toProcess));
-		ParseState state = ParseState.BEFORE_HEADER;
-		int skippedHeaders = 0;
-		String currentLine = null;
-		do {
-			currentLine = reader.readLine();
-			if (currentLine != null) {
-				switch (state) {
-				case BEFORE_HEADER:
-					if (currentLine.trim().startsWith(firstLine.trim())
-							&& !currentLine.trim().startsWith("/**")) {
-						state = ParseState.IN_HEADER;
-						skippedHeaders++;
-						continue;
+		try {
+			ParseState state = ParseState.BEFORE_HEADER;
+			int skippedHeaders = 0;
+			String currentLine = null;
+			do {
+				currentLine = reader.readLine();
+				if (currentLine != null) {
+					switch (state) {
+					case BEFORE_HEADER:
+						if (currentLine.trim().startsWith(firstLine.trim())
+								&& !currentLine.trim().startsWith("/**")) {
+							state = ParseState.IN_HEADER;
+							skippedHeaders++;
+							continue;
+						}
+						if (currentLine.contains("package")
+								|| currentLine.contains("import")
+								|| currentLine.contains("class")) {
+							state = ParseState.AFTER_HEADERS;
+						}
+						outputLines.add(currentLine);
+						break;
+					case IN_HEADER:
+						if (currentLine.trim().endsWith(lastLine.trim())) {
+							state = ParseState.BEFORE_HEADER;
+						}
+						break;
+					case AFTER_HEADERS:
+						// normal case, just copy
+						outputLines.add(currentLine);
+						break;
 					}
-					if (currentLine.contains("package")
-							|| currentLine.contains("import")
-							|| currentLine.contains("class")) {
-						state = ParseState.AFTER_HEADERS;
-					}
-					outputLines.add(currentLine);
-					break;
-				case IN_HEADER:
-					if (currentLine.trim().endsWith(lastLine.trim())) {
-						state = ParseState.BEFORE_HEADER;
-					}
-					break;
-				case AFTER_HEADERS:
-					// normal case, just copy
-					outputLines.add(currentLine);
-					break;
 				}
+			} while (currentLine != null);
+			if (skippedHeaders > 0) {
+				if (verbose) {
+					printIndent(level + 1);
+					System.out.println("Skipped " + skippedHeaders
+							+ " headers and replaced "
+							+ (skippedHeaders == 1 ? "it" : "them")
+							+ " with new header.");
+				}
+				replaced++;
+			} else {
+				if (verbose) {
+					printIndent(level + 1);
+					System.out.println("Added header.");
+				}
+				newlyAdded++;
 			}
-		} while (currentLine != null);
-		if (skippedHeaders > 0) {
-			if (verbose) {
-				printIndent(level + 1);
-				System.out.println("Skipped " + skippedHeaders
-						+ " headers and replaced "
-						+ (skippedHeaders == 1 ? "it" : "them")
-						+ " with new header.");
-			}
-			replaced++;
-		} else {
-			if (verbose) {
-				printIndent(level + 1);
-				System.out.println("Added header.");
-			}
-			newlyAdded++;
+		} finally {
+			reader.close();
 		}
-
 		PrintWriter writer = new PrintWriter(toProcess);
-		for (String currentOutputLine : javaHeaderLines) {
-			writer.println(currentOutputLine);
+		try {
+			for (String currentOutputLine : javaHeaderLines) {
+				writer.println(currentOutputLine);
+			}
+			for (String currentOutputLine : outputLines) {
+				writer.println(currentOutputLine);
+			}
+			writer.flush();
+		} finally {
+			writer.close();
 		}
-		for (String currentOutputLine : outputLines) {
-			writer.println(currentOutputLine);
-		}
-		writer.flush();
-		writer.close();
 
 	}
 
@@ -528,15 +550,20 @@ public class LicenseHeader {
 		}
 		xmlHeaderLines = new LinkedList<String>();
 		BufferedReader reader = new BufferedReader(new FileReader(licence));
-		String currentLine = "";
+		try {
+			String currentLine = "";
 
-		do {
-			currentLine = reader.readLine();
-			if (currentLine != null) {
-				xmlHeaderLines.add(createXMLHeaderLine(length, currentLine));
-			}
-		} while (currentLine != null);
-		xmlHeaderLines.add("");
+			do {
+				currentLine = reader.readLine();
+				if (currentLine != null) {
+					xmlHeaderLines
+							.add(createXMLHeaderLine(length, currentLine));
+				}
+			} while (currentLine != null);
+			xmlHeaderLines.add("");
+		} finally {
+			reader.close();
+		}
 	}
 
 	private String createXMLHeaderLine(int length, String content) {
@@ -557,14 +584,18 @@ public class LicenseHeader {
 		}
 		tgHeaderLines = new LinkedList<String>();
 		BufferedReader reader = new BufferedReader(new FileReader(licence));
-		String currentLine = "";
+		try {
+			String currentLine = "";
 
-		do {
-			currentLine = reader.readLine();
-			if (currentLine != null) {
-				tgHeaderLines.add((TG_PREFIX + currentLine).trim());
-			}
-		} while (currentLine != null);
-		tgHeaderLines.add("");
+			do {
+				currentLine = reader.readLine();
+				if (currentLine != null) {
+					tgHeaderLines.add((TG_PREFIX + currentLine).trim());
+				}
+			} while (currentLine != null);
+			tgHeaderLines.add("");
+		} finally {
+			reader.close();
+		}
 	}
 }
